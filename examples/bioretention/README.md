@@ -29,13 +29,13 @@ components:
   Native_1_to_2: Unsaturated flow between the two native soil layers. Positive downward.
   Recharge: Flow from the native soil to the water table. Positive downward.
   Rain: Hourly rainfall at BWI airport, Maryland, 1 July to 4 October 2010, applied to the parking area and to the ponding zone.
-  Penman_ET: "Penman-type evapotranspiration from the top media layer, driven by hourly air temperature, relative humidity, solar radiation and wind speed, with half of the incoming solar radiation taken as available energy."
+  Penman_ET: "Penman-type evapotranspiration from the top media layer, driven by hourly air temperature, relative humidity, solar radiation and wind speed, with half of the incoming solar radiation taken as available energy. Uses the standard Penman combination equation."
 inputs:
   rainfall.txt: "Rainfall in the three-column precipitation format: interval start (day), interval end (day), rainfall depth in the interval (m). Hourly intervals; day 0 is 1 July 2010; dry hours are omitted. Source: NOAA hourly precipitation record at Baltimore/Washington International Airport (BWI), Maryland, USA (US public domain, 0.01 in = 0.254 mm resolution)."
   air_temperature.csv: "Air temperature (°C) versus time (day, day 0 = 1 July 2010), roughly hourly. Hourly weather record at BWI airport, Maryland, USA."
   relative_humidity.csv: "Relative humidity as a fraction (0 to 1) versus time (day). Hourly weather record at BWI airport, Maryland, USA."
   solar_radiation.csv: "Incoming solar radiation (W/m²) versus time (day), every 30 minutes. Weather record at BWI airport, Maryland, USA."
-  wind_speed.csv: "Wind speed (m/s) versus time (day). Hourly weather record at BWI airport, Maryland, USA. The source file gave no unit; its values were taken to be in mph and multiplied by 0.447 to convert to m/s."
+  wind_speed.csv: "Wind speed (m/s) versus time (day). Hourly weather record at BWI airport, Maryland, USA. Data assumption: the source file gave no unit; its values were taken to be in mph, multiplied by 0.447 to convert to m/s, and treated as measured at 10 m height."
 plots:
   - title: Inflow and outflows of the cell
     ylabel: Flow (m³/day)
@@ -62,7 +62,7 @@ plots:
     ylabel: ET (m³/day, negative = loss)
     series:
       - {column: "Media_1_Evapotranspiration", label: "Evapotranspiration"}
-    caption: ET follows the daily solar cycle and is largest just after storms, when the top layer is wet. It declines through dry spells as the media dries.
+    caption: ET follows the daily cycle of radiation, temperature and humidity and is largest just after storms, when the top layer is wet. It declines through dry spells as the media dries.
 ---
 
 ## What this model represents
@@ -107,16 +107,20 @@ so there is no underdrain flow while the gravel water depth is below 0.1 m. The 
 
   ET = A · (θ/θ_s) · (Δ·E_r + γ·E_a)/(Δ + γ)  (m³/day, negative)
 
-with a radiation term E_r = −f_s·R_s·86400/(λ_v·1000) (m/day; R_s in W/m², λ_v = 2,501,000 − 2,370·T J/kg, f_s = 0.5), an aerodynamic term E_a = B·e_s·(RH − 1) with B = 0.000102·u/[ln(z₂/z₀)]², e_s = 611·exp(17.27T/(237.3 + T)) Pa, z₂ = 10 m, z₀ = 0.0003 m, and γ = 66.8 Pa/°C. The factor θ/θ_s reduces ET as the layer dries. In the plugin, the slope of the saturation vapour pressure curve is written as Δ = 4098·e_s/(237.3 + T), without the square on the denominator of the usual formula, so Δ is about 260 times larger than the standard value. As a result, Δ/(Δ + γ) is close to 1 and the computed ET is practically the radiation term alone; wind speed and humidity have almost no effect.
+with a radiation term E_r = −f_s·R_s·86400/(λ_v·1000) (m/day; R_s in W/m², λ_v = 2,501,000 − 2,370·T J/kg, f_s = 0.5), an aerodynamic term E_a = B·e_s·(RH − 1) with B = 0.000102·u/[ln(z₂/z₀)]², e_s = 611·exp(17.27T/(237.3 + T)) Pa, z₂ = 10 m, z₀ = 0.0003 m, γ = 66.8 Pa/°C, and the slope of the saturation vapour pressure curve
+
+  Δ = 4098 · e_s / (237.3 + T)²  (Pa/°C)
+
+This is the standard Penman combination of an energy term and a drying-power term, each weighted by its share of Δ + γ. At 25 °C, Δ ≈ 189 Pa/°C, so the radiation term carries about 74% of the weight and the aerodynamic term about 26%. The aerodynamic term grows with wind speed u and with the vapour pressure deficit e_s·(1 − RH). The factor θ/θ_s reduces ET as the layer dries.
 
 ## What to look for in the results
 
-- **Water budget.** Over 96 days, 370.6 mm of rain falls, delivering 775 m³ to the cell (738 m³ of runoff and 37 m³ of direct rain). Of this, 46% leaves through the underdrain (356 m³), 35% exfiltrates into the native soil (269 m³), 14% overflows (111 m³) and 2% evaporates (15 m³); the rest is stored in the soil at the end. The storage changes and outflows balance the rainfall to within 0.1%.
+- **Water budget.** Over 96 days, 370.6 mm of rain falls on the 2,100 m² of parking area and cell, 778 m³ in total. The cell receives 738 m³ of runoff and 37 m³ of direct rain. The storm sewer receives 484 m³ (62%): about 357 m³ through the underdrain (46%) and about 127 m³ as overflow (16%). About 275 m³ (35%) exfiltrates into the native soil, of which 263 m³ reaches the water table by the end of the run. Evapotranspiration removes 14 m³ (1.8%), and the media, gravel and native soil hold 16 m³ more water at the end than at the start. The storage changes, boundary inflows and ET balance the rainfall to within 0.1%.
 - **Overflow only in large storms.** The ponding depth reaches the 0.25 m crest only in the 47 mm storm on day 12 and the 118 mm storm on day 91, when the runoff rate exceeds what the media can take in. All other storms are fully treated.
 - **Short ponding.** In most storms the ponding zone empties within a few hours of the end of the rain, because the media conducts 1.5 m/day when saturated.
 - **Internal water storage.** The gravel water level rises to 0.12 to 0.14 m in most storms, so the underdrain flows for only about 7 days in total. Between storms the 0.1 m below the invert drains slowly into the native soil.
 - **Fast media, slow native soil.** The media moisture swings between near-residual (0.06) and saturation (0.41). The native loam stays between 0.25 and 0.43 and drains more slowly, which limits exfiltration.
-- **Evapotranspiration.** ET averages 1.5 mm/day over the cell. It is close to 3 mm/day right after a storm and falls below 1 mm/day after a week without rain, as the top layer dries toward its residual water content.
+- **Evapotranspiration.** ET averages 1.5 mm/day over the cell. It reaches 2 to 3 mm/day in the day or two after a storm and falls to about 1 mm/day or less after a week without rain, as the top layer dries toward its residual water content. ET is limited by the water in the top layer more than by the weather: the potential rate on a summer day is several mm/day.
 
 ## Assumptions and limitations
 
@@ -124,7 +128,7 @@ with a radiation term E_r = −f_s·R_s·86400/(λ_v·1000) (m/day; R_s in W/m²
 - The ponding zone has vertical sides, so its surface area does not grow with depth.
 - Four media and soil layers are a coarse discretization of the vertical profile. Finer layers resolve wetting fronts better at a higher computing cost.
 - The head of each soil block is referenced to its top. At the link from the native soil to the water table, which uses half a block thickness as its length, this makes the gravity gradient 2 (twice that of a cell-centred formulation) when the bottom block is saturated. At the pond-to-media link it has the opposite effect: the gravity term over the top half layer is left out, and infiltration is driven by ponding depth and suction alone.
-- The Penman source uses a slope Δ that is not squared in the denominator (see above), so ET depends almost only on solar radiation. Evapotranspiration is taken only from the top 0.2 m, with no explicit root uptake or plant water stress, and it can dry the top layer to its residual water content.
+- The radiation term uses half of the incoming solar radiation as available energy (f_s = 0.5), a simple stand-in for net radiation and soil heat flux. Evapotranspiration is taken only from the top 0.2 m, with no explicit root uptake or plant water stress, and it can dry the top layer to its residual water content.
 - The parking area has no depression storage or losses. Runoff water quality is not modelled.
 - Soil hydraulic parameters are textbook values for a loamy sand media and a loam native soil, not site measurements. The media conductivity is set lower than that of a new loamy sand to represent some clogging.
-- The wind speed unit in the source data was not documented. Because the aerodynamic term has almost no weight in this ET formulation, the assumption made in the conversion has a negligible effect on the results.
+- Data assumption: the wind speed unit in the source record was not documented. The values were assumed to be in mph, converted to m/s (×0.447), and taken as measured at z₂ = 10 m, the standard height of an airport anemometer. If the original values were in another unit, the aerodynamic part of ET (about a quarter of the total weight) would be scaled accordingly.

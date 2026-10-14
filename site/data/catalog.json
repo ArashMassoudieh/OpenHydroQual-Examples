@@ -560,33 +560,44 @@
    "track": "wq",
    "level": 3,
    "status": "planned",
-   "summary": "A multi-cell stormwater wet pond with bed sediment, aeration, Penman evaporation and nitrogen, carbon and oxygen dynamics.",
+   "summary": "A six-cell stormwater wet pond over an organic bed sediment, driven by measured storm inflows and loads and by weather. Penman evaporation, surface reaeration, organic matter decomposition, nitrification and sediment denitrification move carbon, oxygen and nitrogen between the water, the bed, the outlet and the groundwater.",
    "plugins": [
     "Pond_Plugin",
-    "river_processes",
+    "groundwater",
     "mass_transfer",
     "evapotranspiration_models"
    ],
    "features": [
     "Bed sediment exchange",
-    "Atmospheric exchange",
-    "Penman ET"
+    "Surface reaeration",
+    "Penman ET",
+    "Nitrogen cycle",
+    "Seepage"
    ],
    "keywords": [
     "wet pond",
+    "retention pond",
+    "stormwater pond",
     "wetland",
     "nutrients",
     "nitrogen",
     "ammonia",
+    "ammonium",
     "nitrate",
     "nitrification",
     "denitrification",
+    "dom",
     "doc",
+    "organic matter",
     "dissolved oxygen",
+    "sediment oxygen demand",
     "sediment",
+    "reaeration",
     "penman",
     "evaporation",
-    "stormwater"
+    "seepage",
+    "stormwater",
+    "bmp"
    ]
   },
   {
@@ -1703,25 +1714,40 @@
    "title": "Autocorrelated Residuals (AR1 Error Model)",
    "track": "calib",
    "level": 3,
-   "status": "planned",
-   "summary": "Calibrate against high-frequency data with a continuous-time AR1 error model.",
+   "status": "ready",
+   "summary": "A treatment basin calibrated against a 15-minute ammonium sensor record whose errors are serially correlated. The same data are fitted with independent errors and with the continuous-time AR1 error model, and a 30-replicate study shows which of the two reports honest parameter uncertainty.",
    "plugins": [
     "mass_transfer"
    ],
    "features": [
     "AR1 error model",
-    "Likelihood"
+    "Correlation time",
+    "Levenberg-Marquardt",
+    "Likelihood",
+    "Coverage test"
    ],
    "keywords": [
     "ar1",
     "autocorrelation",
     "autoregressive",
+    "serial correlation",
+    "ornstein uhlenbeck",
     "error model",
     "residuals",
+    "whitening",
     "likelihood",
-    "time series",
-    "uncertainty"
-   ]
+    "effective sample size",
+    "correlation time",
+    "high frequency data",
+    "sensor",
+    "confidence interval",
+    "coverage",
+    "levenberg marquardt",
+    "cstr",
+    "nitrification",
+    "ammonium"
+   ],
+   "thumb": "examples/ar1-error-model/thumb.svg"
   },
   {
    "id": "mcmc-bayesian",
