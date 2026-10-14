@@ -1,0 +1,18 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = mass_transfer.json
+addtemplate; filename = wastewater.json
+create constituent;type=Particle,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],external_mass_flow_timeseries=,external_source=,name=P1,settling_velocity=0.5[m/day],stoichiometric_constant=0,time_variable_inflow_concentration=,turbidity_coefficient=0,turbidity_exponent=0
+create constituent;type=Particle,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],external_mass_flow_timeseries=,external_source=,name=P2,settling_velocity=2[m/day],stoichiometric_constant=0,time_variable_inflow_concentration=,turbidity_coefficient=0,turbidity_exponent=0
+create constituent;type=Particle,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],external_mass_flow_timeseries=,external_source=,name=P3,settling_velocity=10[m/day],stoichiometric_constant=0,time_variable_inflow_concentration=,turbidity_coefficient=0,turbidity_exponent=0
+create constituent;type=Particle,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],external_mass_flow_timeseries=,external_source=,name=P4,settling_velocity=50[m/day],stoichiometric_constant=0,time_variable_inflow_concentration=,turbidity_coefficient=0,turbidity_exponent=0
+create block;type=Reactor,P1:concentration=50[g/m~^3],P1:constant_inflow_concentration=50[g/m~^3],P2:concentration=50[g/m~^3],P2:constant_inflow_concentration=50[g/m~^3],P3:concentration=50[g/m~^3],P3:constant_inflow_concentration=50[g/m~^3],P4:concentration=50[g/m~^3],P4:constant_inflow_concentration=50[g/m~^3],Storage=200[m~^3],_height=200,_width=200,bottom_elevation=2[m],constant_inflow=2000[m~^3/day],name=Influent,time_variable_inflow=,x=100,y=200
+create composite;type=Clarifier (4 layers),P1:concentration=0[g/m~^3],P2:concentration=0[g/m~^3],P3:concentration=0[g/m~^3],P4:concentration=0[g/m~^3],_height=200,_width=200,depth=4[m],floor_elevation=-3[m],inflow=,name=Sed_Basin,surface_area=400[m~^2],total_volume=1600[m~^3],underflow=0[m~^3/day],underflow_timeseries=,x=500,y=200
+create block;type=Reactor,P1:concentration=0[g/m~^3],P2:concentration=0[g/m~^3],P3:concentration=0[g/m~^3],P4:concentration=0[g/m~^3],Storage=1[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Effluent,time_variable_inflow=,x=900,y=200
+create link;from=Influent,to=Sed_Basin,type=Fixed flow,flow=2000[m~^3/day],name=Influent_to_Basin
+create link;from=Sed_Basin,to=Effluent,type=Effluent flow,flow=2000[m~^3/day],name=Basin_to_Effluent
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=30
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=5

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCS Curve Number: Design Storm · OpenHydroQual Examples</title>
+<meta name="description" content="A rural and an urban sub-watershed in series respond to a 75 mm, 6-hour design storm. Runoff volume follows the NRCS Curve Number equation and is routed through a Nash cascade timed by the NRCS lag. A third catchment compares the 5-reservoir and 3-reservoir cascades.">
+<meta name="keywords" content="curve number, scs, nrcs, cn, tr-55, tr-20, design storm, hyetograph, runoff, rainfall excess, initial abstraction, retention, unit hydrograph, nash cascade, linear reservoir, lag time, watershed, hydrograph, peak flow, urbanization">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#3a6fb0">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Watershed Hydrology</div>
+<h1>SCS Curve Number: Design Storm</h1>
+<p class="lede">A rural and an urban sub-watershed in series respond to a 75 mm, 6-hour design storm. Runoff volume follows the NRCS Curve Number equation and is routed through a Nash cascade timed by the NRCS lag. A third catchment compares the 5-reservoir and 3-reservoir cascades.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class=''></b><b class=''></b><span>Beginner</span></span><a class='plug' href='../../?plugin=cn_catchment'>cn_catchment</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/cn-design-storm.zip" download>Download model (.zip)</a>
+    <div class="muted">6 KB · 2 files · open <code>cn_watershed.ohq</code> in OpenHydroQual and press Run</div>
+    <a class='btn ghost' href='../../docs/curve_number_method.pdf' target='_blank' rel='noopener'>Technical guide (PDF)</a>
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>This model applies the classical NRCS (formerly SCS) Curve Number method to a small two-part watershed during a single design storm. An upstream <strong>rural</strong> sub-watershed (100 ha, CN 65, for example pasture and woodland on moderately permeable soil) drains through a downstream <strong>urban</strong> sub-watershed (40 ha, CN 90, a densely developed area). The urban outlet is the watershed outlet. A third catchment, <strong>Rural_3res</strong>, repeats the rural parameters with a shorter routing cascade, so that the effect of hydrograph shape can be seen on its own.</p>
+<p>The Curve Number method is the standard tool for design-storm runoff in small watersheds (TR-55, TR-20, HEC-HMS). The model shows how OpenHydroQual turns this event method into a continuous simulation and how a watershed is built by chaining catchments.</p>
+<h2>How it works</h2>
+<p>Each catchment is a composite block. <code>CN_Catchment</code> contains one abstraction store (<code>Retention</code>) and five linear reservoirs (<code>R1</code> to <code>R5</code>). <code>CN_Catchment_3</code> is identical except that it has three reservoirs. Rain falls on the surface reservoir <code>R1</code>. Members appear in the output with the catchment name as a prefix, for example <code>Rural__Retention_C</code> or <code>Urban__R1_Storage</code>.</p>
+<p><strong>Retention and runoff fraction.</strong> The Curve Number sets the maximum retention S and the initial abstraction Ia (both in m):</p>
+<p>S = 25.4/CN − 0.254,  Ia = 0.2·S</p>
+<p>which gives S = 136.8 mm and Ia = 27.4 mm for the rural catchments, and S = 28.2 mm and Ia = 5.6 mm for the urban one. The <code>Retention</code> member stores the abstracted volume V_W. Its depth W = V_W/A sets the instantaneous runoff fraction</p>
+<p>C = max(1 − ((S + Ia − W)/S)², 0)</p>
+<p>The internal partition link moves the abstracted part of the rainfall, i·A·(1 − C), from <code>R1</code> into <code>Retention</code>, where i is the rainfall intensity and A the catchment area. The rest, i·A·C, stays in <code>R1</code> and becomes runoff. While W &lt; Ia the bracket is negative, so C = 0 and all rain is abstracted. Once W passes Ia, C rises toward 1 as W approaches 1.2·S. Integrated over a storm, this rate form gives exactly the Curve Number equation for the cumulative runoff depth Q (the technical guide has the derivation):</p>
+<p>Q = (P − Ia)² / (P − Ia + S)  for P &gt; Ia, where P is the cumulative rainfall depth</p>
+<p><strong>Recovery.</strong> The abstraction store drains as dV_W/dt = −k·V_W, with the recovery coefficient k = 0.1 1/day. This lets the method run continuously over several storms. The drained water leaves the model. Over a single 1.5-day event its effect is small.</p>
+<p><strong>Routing (Nash cascade).</strong> Runoff is routed through n equal linear reservoirs, each with outflow Storage/K. The outlet link (<code>CN_outlet</code>) carries the discharge of the last reservoir. The residence time K comes from the NRCS lag equation, written for a flow length ℓ in m, slope s in m/m and lag L in days:</p>
+<p>L = ℓ^0.8 · (1000/CN − 9)^0.7 / (176300 · √s),  K = L/(n − 1)</p>
+<p>With K = L/(n − 1) the impulse response (a gamma distribution) peaks exactly at the lag for any n. Here:</p>
+<table>
+<thead>
+<tr>
+<th>Catchment</th>
+<th>n</th>
+<th>Lag L</th>
+<th>K per reservoir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rural</td>
+<td>5</td>
+<td>1.26 h</td>
+<td>18.9 min</td>
+</tr>
+<tr>
+<td>Rural_3res</td>
+<td>3</td>
+<td>1.26 h</td>
+<td>37.7 min</td>
+</tr>
+<tr>
+<td>Urban</td>
+<td>5</td>
+<td>0.48 h</td>
+<td>7.2 min</td>
+</tr>
+</tbody>
+</table>
+<p>With n = 5 the peak of the response is close to the peak of the NRCS dimensionless unit hydrograph. With n = 3 the peak is lower and the recession longer.</p>
+<p><strong>Two composites, one difference.</strong> <code>CN_Catchment</code> and <code>CN_Catchment_3</code> take the same properties and compute the same runoff volume. They differ only in the number of routing reservoirs, and therefore only in the shape of the hydrograph. Use the 5-reservoir version to reproduce NRCS peak flows. Use the 3-reservoir version where fewer state variables matter more than the peak, for example in large models.</p>
+<p><strong>Chaining.</strong> The <code>CN_outlet</code> link from <code>Rural</code> enters the surface reservoir <code>R1</code> of <code>Urban</code>. This inflow is not partitioned (the partition link acts only on rainfall), so the rural runoff is routed through the urban cascade on its way to the outlet. Flows are in m³/day, the model's internal unit (86,400 m³/day = 1 m³/s).</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Initial abstraction.</strong> The urban runoff fraction leaves zero after 5.6 mm of rain, about 1.2 hours into the storm. The rural one stays at zero until 27.4 mm has fallen, about 2.2 hours in, just before the most intense rain. The rural catchment produces no runoff at all during the first part of the storm.</li>
+<li><strong>Runoff volumes.</strong> The final volumes are 12,300 m³ for the rural catchment (12.3 mm, 16% of the rain) and 32,000 m³ for the whole watershed, of which 19,700 m³ (49.3 mm, 66% of the rain) comes from the urban area. The Curve Number equation gives 12.31 mm and 49.30 mm. The rural catchment is 2.5 times larger but produces less runoff than the urban one.</li>
+<li><strong>Peak timing.</strong> The rainfall peaks between 2.50 and 2.75 h. The watershed outlet peaks at 3.4 h (229,000 m³/day, 2.65 m³/s), driven by the fast urban response. Rural runoff peaks at the urban inlet at 4.7 h (126,000 m³/day, 1.46 m³/s). Its lag is longer, and its rainfall excess comes late in the storm because C grows with cumulative rain. The routed rural water gives the watershed hydrograph its raised falling limb.</li>
+<li><strong>Cascade length.</strong> <code>Rural_runoff</code> (n = 5) and <code>Rural_3res_hydrograph</code> (n = 3) carry the same volume and peak at about the same time (4.7 h and 4.8 h), but the 3-reservoir peak is 20% lower (1.16 m³/s) and its recession is longer.</li>
+<li><strong>Recovery.</strong> After the rain stops the runoff fraction falls slowly as the abstraction store empties at 10% per day.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The closure Ia = 0.2·S is fixed. Antecedent moisture is represented only through the initial abstraction depth (zero here, a dry start). There is no AMC I/II/III switching.</li>
+<li>Rainfall is uniform over each catchment.</li>
+<li>The model produces direct runoff only. There is no baseflow, the abstracted water is not tracked as soil moisture, and water removed by recovery leaves the model.</li>
+<li>The lag equation is calibrated for catchments below about 800 ha with CN between 50 and 95. Both catchments are inside that range.</li>
+<li>There is no channel routing between the two sub-watersheds. The rural hydrograph enters the urban cascade directly, so the urban lag also delays the rural runoff.</li>
+<li>The cascade matches the NRCS peak ordinate, not every ordinate of the dimensionless unit hydrograph.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1320 926" class="ohq-diagram" style="max-width:660px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Rural_runoff"><title>Rural_runoff (CN_outlet)</title><path d="M260.0 130.0 L380.0 130.0 L500.0 130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Watershed_hydrograph"><title>Watershed_hydrograph (CN_outlet)</title><path d="M760.0 130.0 L880.0 130.0 L1000.0 130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Rural_3res_hydrograph"><title>Rural_3res_hydrograph (CN_outlet)</title><path d="M260.0 630.0 L630.0 630.0 L1000.0 630.0" marker-mid="url(#arr)"/></g>
+<g class="d-node composite" data-name="Rural"><title>Rural (CN_Catchment)</title><rect x="0" y="0" width="260" height="260" rx="21"/>
+<image href="icons/cn_catchment.png" x="29" y="29" width="203" height="203"/>
+<text x="130" y="287" font-size="21" text-anchor="middle">Rural</text></g>
+<g class="d-node composite" data-name="Urban"><title>Urban (CN_Catchment)</title><rect x="500" y="0" width="260" height="260" rx="21"/>
+<image href="icons/cn_catchment.png" x="529" y="29" width="203" height="203"/>
+<text x="630" y="287" font-size="21" text-anchor="middle">Urban</text></g>
+<g class="d-node composite" data-name="Rural_3res"><title>Rural_3res (CN_Catchment_3)</title><rect x="0" y="500" width="260" height="260" rx="21"/>
+<image href="icons/cn_catchment_3.png" x="29" y="529" width="203" height="203"/>
+<text x="130" y="787" font-size="21" text-anchor="middle">Rural_3res</text></g>
+<g class="d-node" data-name="Watershed_outlet"><title>Watershed_outlet (fixed_head)</title><rect x="1000" y="30" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1022" y="52" width="156" height="156"/>
+<text x="1100" y="257" font-size="21" text-anchor="middle">Watershed_outlet</text></g>
+<g class="d-node" data-name="Comparison_outlet"><title>Comparison_outlet (fixed_head)</title><rect x="1000" y="530" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1022" y="552" width="156" height="156"/>
+<text x="1100" y="757" font-size="21" text-anchor="middle">Comparison_outlet</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>2</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Watershed-outlet'><summary><span class='cname'>Watershed_outlet</span><span class='ctype'>fixed_head</span><span class='crole'><p>Fixed-head boundary that receives the combined hydrograph. Its storage starts at zero, so it accumulates the total runoff volume leaving the watershed.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Comparison-outlet'><summary><span class='cname'>Comparison_outlet</span><span class='ctype'>fixed_head</span><span class='crole'><p>Fixed-head boundary for the comparison catchment. Its storage accumulates the runoff volume of <code>Rural_3res</code>.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Composite blocks <small>3</small></h3><p class='kind-blurb'>Pre-assembled groups of blocks and links that behave as a single unit.</p><div class='comp-list'>
+<details class='comp' id='c-Rural'><summary><span class='cname'>Rural</span><span class='ctype'>CN_Catchment · cn_catchment</span><span class='crole'><p>An upstream rural sub-watershed of 1 km² (100 ha) with CN = 65, a 2000 m longest flow path and 3% slope. Uses the 5-reservoir cascade (<code>CN_Catchment</code>). Its outlet hydrograph discharges into the surface reservoir of <code>Urban</code>.</p></span></summary><div class='cbody'><p class=type-help><b>CN_Catchment:</b> Rainfall-runoff catchment using the classical SCS Curve Number method with Ia = 0.2S, routed through a five-element Nash cascade whose residence time is derived from the NRCS lag equation. Five elements reproduce the peak of the NRCS dimensionless unit hydrograph closely. Runoff volume is exactly the Curve Number equation Q = (P-Ia)^2/(P-Ia+S). Water leaves only through a CN_outlet link.</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Curve Number</td><td class='v'>65</td><td></td><td>Sets the maximum retention S = 25.4/CN - 0.254 m and the initial abstraction Ia = 0.2S, and also enters the NRCS lag equation.</td></tr><tr><td>Catchment area</td><td class='v'>1000000</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Longest flow path</td><td class='v'>2000</td><td>m</td><td>Hydraulic length of the catchment. With the Curve Number and the slope it sets the NRCS lag L = l^0.8*(1000/CN-9)^0.7/(176300*sqrt(slope)) in days, and every cascade element gets a residence time K = L/(n-1), which places the peak of the hydrograph exactly at the lag.</td></tr><tr><td>Average catchment slope</td><td class='v'>0.03</td><td></td><td>Dimensionless, as a rise over run (m/m). The NRCS lag equation is written for percent slope; the conversion is done internally.</td></tr><tr><td>Drying (recovery) coefficient</td><td class='v'>0.1</td><td>1/day</td><td>Rate at which the abstraction store empties between storms, allowing continuous simulation. Its inverse should sit between a typical storm duration and a typical inter-event time. The recovered water leaves the model.</td></tr><tr><td>Initial depth of water already abstracted</td><td class='v'>0</td><td>m</td><td>Antecedent condition. Zero means the first 0.2S of rainfall produces no runoff.</td></tr><tr><td>Precipitation source</td><td class='v'>Design_storm</td><td></td><td>Applied to the surface reservoir; the Curve Number partition then splits it into runoff and abstraction.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Urban'><summary><span class='cname'>Urban</span><span class='ctype'>CN_Catchment · cn_catchment</span><span class='crole'><p>A downstream urban sub-watershed of 0.4 km² (40 ha) with CN = 90, an 800 m flow path and 1% slope. It generates its own runoff and also routes the inflow from <code>Rural</code> through its cascade to the watershed outlet.</p></span></summary><div class='cbody'><p class=type-help><b>CN_Catchment:</b> Rainfall-runoff catchment using the classical SCS Curve Number method with Ia = 0.2S, routed through a five-element Nash cascade whose residence time is derived from the NRCS lag equation. Five elements reproduce the peak of the NRCS dimensionless unit hydrograph closely. Runoff volume is exactly the Curve Number equation Q = (P-Ia)^2/(P-Ia+S). Water leaves only through a CN_outlet link.</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Curve Number</td><td class='v'>90</td><td></td><td>Sets the maximum retention S = 25.4/CN - 0.254 m and the initial abstraction Ia = 0.2S, and also enters the NRCS lag equation.</td></tr><tr><td>Catchment area</td><td class='v'>400000</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Longest flow path</td><td class='v'>800</td><td>m</td><td>Hydraulic length of the catchment. With the Curve Number and the slope it sets the NRCS lag L = l^0.8*(1000/CN-9)^0.7/(176300*sqrt(slope)) in days, and every cascade element gets a residence time K = L/(n-1), which places the peak of the hydrograph exactly at the lag.</td></tr><tr><td>Average catchment slope</td><td class='v'>0.01</td><td></td><td>Dimensionless, as a rise over run (m/m). The NRCS lag equation is written for percent slope; the conversion is done internally.</td></tr><tr><td>Drying (recovery) coefficient</td><td class='v'>0.1</td><td>1/day</td><td>Rate at which the abstraction store empties between storms, allowing continuous simulation. Its inverse should sit between a typical storm duration and a typical inter-event time. The recovered water leaves the model.</td></tr><tr><td>Initial depth of water already abstracted</td><td class='v'>0</td><td>m</td><td>Antecedent condition. Zero means the first 0.2S of rainfall produces no runoff.</td></tr><tr><td>Precipitation source</td><td class='v'>Design_storm</td><td></td><td>Applied to the surface reservoir; the Curve Number partition then splits it into runoff and abstraction.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Rural-3res'><summary><span class='cname'>Rural_3res</span><span class='ctype'>CN_Catchment_3 · cn_catchment</span><span class='crole'><p>A copy of <code>Rural</code> that uses the 3-reservoir cascade (<code>CN_Catchment_3</code>). It is not connected to the rest of the watershed and exists only so that the two cascade lengths can be compared on one plot.</p></span></summary><div class='cbody'><p class=type-help><b>CN_Catchment_3:</b> As CN_Catchment but with a three-element routing cascade. Time to peak is still placed exactly at the NRCS lag; the hydrograph peak is flatter and the recession longer than the NRCS dimensionless unit hydrograph, which the five-element version matches more closely. Use it where fewer state variables are preferred.</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Curve Number</td><td class='v'>65</td><td></td><td></td></tr><tr><td>Catchment area</td><td class='v'>1000000</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Longest flow path</td><td class='v'>2000</td><td>m</td><td>With the Curve Number and the slope it sets the NRCS lag L = l^0.8*(1000/CN-9)^0.7/(176300*sqrt(slope)) in days; each of the three elements gets K = L/2, placing the peak at the lag.</td></tr><tr><td>Average catchment slope</td><td class='v'>0.03</td><td></td><td>Dimensionless, as a rise over run (m/m).</td></tr><tr><td>Drying (recovery) coefficient</td><td class='v'>0.1</td><td>1/day</td><td></td></tr><tr><td>Initial depth of water already abstracted</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Precipitation source</td><td class='v'>Design_storm</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>3</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Rural-runoff'><summary><span class='cname'>Rural_runoff</span><span class='ctype'>CN_outlet · cn_catchment</span><span class='crole'><p>Outlet hydrograph of <code>Rural</code> (discharge of its fifth reservoir), delivered to the surface reservoir of <code>Urban</code>.</p></span></summary><div class='cbody'><p class=type-help><b>CN_outlet:</b> Outlet hydrograph of a Curve Number catchment: the discharge of the last element of its routing cascade. This is the only way water leaves a CN_Catchment, and it may discharge to any block that accepts inflow.</p></div></details>
+<details class='comp' id='c-Watershed-hydrograph'><summary><span class='cname'>Watershed_hydrograph</span><span class='ctype'>CN_outlet · cn_catchment</span><span class='crole'><p>Outlet hydrograph of <code>Urban</code>, which carries the urban runoff plus the routed rural runoff. This is the watershed hydrograph.</p></span></summary><div class='cbody'><p class=type-help><b>CN_outlet:</b> Outlet hydrograph of a Curve Number catchment: the discharge of the last element of its routing cascade. This is the only way water leaves a CN_Catchment, and it may discharge to any block that accepts inflow.</p></div></details>
+<details class='comp' id='c-Rural-3res-hydrograph'><summary><span class='cname'>Rural_3res_hydrograph</span><span class='ctype'>CN_outlet · cn_catchment</span><span class='crole'><p>Outlet hydrograph of <code>Rural_3res</code> (discharge of its third reservoir).</p></span></summary><div class='cbody'><p class=type-help><b>CN_outlet:</b> Outlet hydrograph of a Curve Number catchment: the discharge of the last element of its routing cascade. This is the only way water leaves a CN_Catchment, and it may discharge to any block that accepts inflow.</p></div></details>
+</div>
+<h3>Sources <small>1</small></h3><p class='kind-blurb'>External inputs or sinks applied to blocks: rainfall, evaporation, loads, exchange with the atmosphere.</p><div class='comp-list'>
+<details class='comp' id='c-Design-storm'><summary><span class='cname'>Design_storm</span><span class='ctype'>Precipitation</span><span class='crole'><p>The design storm: 75 mm of rain in 6 hours, peaking at 31 mm/h between hours 2.50 and 2.75, followed by 30 hours without rain. Applied uniformly to all three catchments.</p></span></summary><div class='cbody'><p class=type-help><b>Precipitation:</b> Precipitation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Precipitation Cumulative</td><td class='v'>design_storm.csv</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>design_storm.csv</code></td><td><p>Rainfall depth per interval. Three columns, no header: interval start (days), interval end (days), depth that fell in the interval (m). 144 intervals of 15 minutes over 1.5 days; total depth 0.075 m.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>1.5</td></tr><tr><td>Initial time step</td><td class='v'>0.0001</td></tr><tr><td>Write interval (steps)</td><td class='v'>5</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>1e-06</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Design storm' loading='lazy'><figcaption><b>Design storm</b> The hyetograph. 0.75 m/day is 31 mm/h. All rain falls in the first 6 hours.</figcaption></figure><figure><img src='plot_2.png' alt='Outlet hydrographs' loading='lazy'><figcaption><b>Outlet hydrographs</b> The urban catchment responds first and sets the watershed peak. The rural runoff arrives later and forms the raised falling limb. The 3-reservoir cascade gives a lower, broader rural peak with the same volume.</figcaption></figure><figure><img src='plot_3.png' alt='Runoff fraction' loading='lazy'><figcaption><b>Runoff fraction</b> The share of the instantaneous rainfall that becomes runoff. It stays at zero until the initial abstraction is filled, then rises with cumulative rain. After the storm it falls slowly as the abstraction store recovers.</figcaption></figure><figure><img src='plot_4.png' alt='Cumulative runoff volume' loading='lazy'><figcaption><b>Cumulative runoff volume</b> Total runoff volumes. The final values (32,000 m³ and 12,300 m³) match the Curve Number equation to within 0.1%.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/cn-design-storm">View source on GitHub</a>.</div></footer>
+</body></html>

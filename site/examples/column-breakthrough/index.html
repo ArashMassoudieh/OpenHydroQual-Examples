@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soil Column Breakthrough · OpenHydroQual Examples</title>
+<meta name="description" content="A 1 m saturated soil column fed with a 30-day pulse of copper and a bromide tracer. Bromide shows advection and dispersion alone; copper is retarded fivefold by kinetic sorption, arrives late, and tails long after the pulse ends.">
+<meta name="keywords" content="column, soil column, breakthrough, btc, porous media, transport, advection dispersion, ade, dispersivity, retardation, retardation factor, kinetic sorption, nonequilibrium, tailing, tracer, bromide, copper, kd, ogata banks, numerical dispersion, lab experiment, lysimeter">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#1f9e89">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Reactions &amp; Water Quality</div>
+<h1>Soil Column Breakthrough</h1>
+<p class="lede">A 1 m saturated soil column fed with a 30-day pulse of copper and a bromide tracer. Bromide shows advection and dispersion alone; copper is retarded fivefold by kinetic sorption, arrives late, and tails long after the pulse ends.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=groundwater'>groundwater</a><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/column-breakthrough.zip" download>Download model (.zip)</a>
+    <div class="muted">9 KB · 5 files · open <code>column_breakthrough.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A column experiment: soil is packed in a tube, water is pumped through it at a steady rate, and a solution containing a contaminant is fed for a while before switching back to clean water. Measuring the effluent gives a <strong>breakthrough curve</strong>. The usual practice is to add a conservative tracer (here bromide) to the same feed. The tracer fixes the water velocity and dispersivity, and the difference between the tracer and the contaminant curves isolates sorption.</p>
+<p>Here the column is 1 m long and 1 m² in cross section, which can be read as a large laboratory column, a lysimeter or a 1 m soil profile below an infiltration practice. Water moves through it at a Darcy flux of 0.1 m/day. The feed carries 8 g/m³ of both bromide and copper for 30 days, then clean water for another 50 days.</p>
+<h2>How it works</h2>
+<p><strong>Water.</strong> The column is divided into 20 Groundwater cells of length Δx = 0.05 m. Each holds V = A·Δx·θ = 1 × 0.05 × 0.4 = 0.02 m³ of water. The flows are prescribed: 0.1 m³/day enters Cell_01 and the same flow passes through every link. The water storage therefore stays constant, and the average pore-water velocity is</p>
+<p>v = Q/(A·θ) = 0.1/(1 × 0.4) = 0.25 m/day</p>
+<p>One pore volume (0.4 m³) passes in θ·L·A/Q = 4 days.</p>
+<p><strong>Transport.</strong> For each mobile constituent, a link carries an advective flux taken from the upstream cell plus a dispersive flux proportional to the concentration difference (from the <code>Constituent</code> definition):</p>
+<p>J = Q·C_upstream + (α·Q/Δx)·(C_from − C_to)</p>
+<p>where α is the constituent's dispersivity and Δx is the link length. Bromide and Cu_aq use α = 0.025 m. Because each cell is fully mixed, the upstream scheme adds numerical dispersion of about Δx/2 = 0.025 m, and the implicit time stepping adds about v·Δt/2 ≈ 0.0025 m (the time step is capped at 0.02 day). The column therefore behaves as if the dispersivity were about 0.05 m, which is what the input value was chosen to produce. The Péclet number is L/α ≈ 20.</p>
+<p><strong>Sorption.</strong> The sorbed copper Cu_s is an <code>Immobile_Constituent</code>, which has no link transport. Its concentration is computed as mass divided by the water volume in the cell. The single reaction moves copper between the two phases:</p>
+<p>r = k_s · (Cu_aq − θ·Cu_s/(ρ_b·K_d))</p>
+<p>with stoichiometric coefficients −1 for Cu_aq and +1 for Cu_s. OpenHydroQual multiplies the rate by each cell's water volume, so the mass gained by the soil equals the mass lost from the water. At equilibrium the sorbed loading per mass of soil is q = θ·Cu_s/ρ_b = K_d·Cu_aq, a linear isotherm. Under equilibrium the copper front would move slower than the water by the retardation factor</p>
+<p>R = 1 + ρ_b·K_d/θ = 1 + 1600 × 0.001/0.4 = 5</p>
+<p>so copper would need 5 pore volumes, or 20 days, to reach the outlet. With k_s = 2 per day the sorbed phase relaxes toward equilibrium at a rate k_s·θ/(ρ_b·K_d) = 0.5 per day, about a 2-day time scale. This is short compared with the 20-day travel time, but not instantaneous.</p>
+<p><strong>Analytical check.</strong> The Ogata-Banks solution of the one-dimensional advection-dispersion equation with a step input, superimposed to form the 30-day pulse, gives the bromide curve at the outlet (R = 1) and the equilibrium copper curve (R = 5). Both use α = 0.05 m.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Tracer.</strong> Bromide reaches half the feed concentration at the outlet at 3.8 days, about one pore volume, and matches the analytical solution to within about 0.06 g/m³. It drops back to near zero within 6 days after the feed stops.</li>
+<li><strong>Retardation.</strong> Copper reaches half the feed concentration at 18.5 days, close to R = 5 pore volumes. Its curve is much more spread out than the bromide curve, because the same dispersion acts over a five times longer travel time and because sorption is kinetic.</li>
+<li><strong>Nonequilibrium.</strong> Compared with the equilibrium solution (dashed), the kinetic copper curve starts earlier (1.2 g/m³ at day 10 against 0.1 g/m³), never reaches the feed concentration (peak 7.1 g/m³ at day 34), and tails far longer (1.2 g/m³ at day 60 against 0.6 g/m³). Early breakthrough with long tailing is the classic signature of rate-limited sorption in column data.</li>
+<li><strong>Desorption front.</strong> After day 30 clean water strips copper from the top of the column first. The sorbed concentration at 0.25 m depth falls while the deepest cell is still near its peak (28 g/m³ at day 36). The peak value of about 32 g/m³ of pore water corresponds to q = 0.4 × 32/1600 = 0.008 g/kg (8 mg/kg), which is K_d × 8 g/m³.</li>
+<li><strong>Mass recovery.</strong> The feed delivers 0.1 m³/day × 8 g/m³ × 30 days = 24 g of each constituent. At day 80 the collector holds 24.00 g of bromide and 23.95 g of copper, and 0.05 g of copper is still sorbed in the column.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The column is saturated and the flow is steady and prescribed; heads and hydraulic conductivity play no role.</li>
+<li>Sorption is linear, reversible and first order, with a single sorption site. Two-site models (an equilibrium fraction plus a kinetic fraction) or nonlinear isotherms are common refinements.</li>
+<li>The 20-cell grid adds numerical dispersion of about Δx/2. The physical dispersivity was reduced by this amount so that the total matches the target value of 0.05 m; when refining the grid, increase the input dispersivity accordingly.</li>
+<li>Bromide and copper use the same dispersivity; molecular diffusion is neglected.</li>
+<li>The collector is only a mass-accounting device. The effluent concentration is read from Cell_20.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="140 140 1720 1006" class="ohq-diagram" style="max-width:860px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Flow_01"><title>Flow_01 (Time-Dependent flow)</title><path d="M300.0 320.0 L300.0 345.0 L300.0 370.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_02"><title>Flow_02 (Time-Dependent flow)</title><path d="M300.0 490.0 L300.0 515.0 L300.0 540.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_03"><title>Flow_03 (Time-Dependent flow)</title><path d="M300.0 660.0 L300.0 685.0 L300.0 710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_04"><title>Flow_04 (Time-Dependent flow)</title><path d="M300.0 830.0 L300.0 855.0 L300.0 880.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_05"><title>Flow_05 (Time-Dependent flow)</title><path d="M330.9 880.0 L475.0 600.0 L619.1 320.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_06"><title>Flow_06 (Time-Dependent flow)</title><path d="M650.0 320.0 L650.0 345.0 L650.0 370.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_07"><title>Flow_07 (Time-Dependent flow)</title><path d="M650.0 490.0 L650.0 515.0 L650.0 540.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_08"><title>Flow_08 (Time-Dependent flow)</title><path d="M650.0 660.0 L650.0 685.0 L650.0 710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_09"><title>Flow_09 (Time-Dependent flow)</title><path d="M650.0 830.0 L650.0 855.0 L650.0 880.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_10"><title>Flow_10 (Time-Dependent flow)</title><path d="M680.9 880.0 L825.0 600.0 L969.1 320.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_11"><title>Flow_11 (Time-Dependent flow)</title><path d="M1000.0 320.0 L1000.0 345.0 L1000.0 370.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_12"><title>Flow_12 (Time-Dependent flow)</title><path d="M1000.0 490.0 L1000.0 515.0 L1000.0 540.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_13"><title>Flow_13 (Time-Dependent flow)</title><path d="M1000.0 660.0 L1000.0 685.0 L1000.0 710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_14"><title>Flow_14 (Time-Dependent flow)</title><path d="M1000.0 830.0 L1000.0 855.0 L1000.0 880.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_15"><title>Flow_15 (Time-Dependent flow)</title><path d="M1030.9 880.0 L1175.0 600.0 L1319.1 320.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_16"><title>Flow_16 (Time-Dependent flow)</title><path d="M1350.0 320.0 L1350.0 345.0 L1350.0 370.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_17"><title>Flow_17 (Time-Dependent flow)</title><path d="M1350.0 490.0 L1350.0 515.0 L1350.0 540.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_18"><title>Flow_18 (Time-Dependent flow)</title><path d="M1350.0 660.0 L1350.0 685.0 L1350.0 710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_19"><title>Flow_19 (Time-Dependent flow)</title><path d="M1350.0 830.0 L1350.0 855.0 L1350.0 880.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_20"><title>Flow_20 (Time-Dependent flow)</title><path d="M1450.0 940.0 L1525.0 940.0 L1600.0 940.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Cell_01"><title>Cell_01 (Groundwater cell)</title><rect x="200" y="200" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="253" y="213" width="94" height="94"/>
+<text x="300" y="352" font-size="25" text-anchor="middle">Cell_01</text></g>
+<g class="d-node" data-name="Cell_02"><title>Cell_02 (Groundwater cell)</title><rect x="200" y="370" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="253" y="383" width="94" height="94"/>
+<text x="300" y="522" font-size="25" text-anchor="middle">Cell_02</text></g>
+<g class="d-node" data-name="Cell_03"><title>Cell_03 (Groundwater cell)</title><rect x="200" y="540" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="253" y="553" width="94" height="94"/>
+<text x="300" y="692" font-size="25" text-anchor="middle">Cell_03</text></g>
+<g class="d-node" data-name="Cell_04"><title>Cell_04 (Groundwater cell)</title><rect x="200" y="710" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="253" y="723" width="94" height="94"/>
+<text x="300" y="862" font-size="25" text-anchor="middle">Cell_04</text></g>
+<g class="d-node" data-name="Cell_05"><title>Cell_05 (Groundwater cell)</title><rect x="200" y="880" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="253" y="893" width="94" height="94"/>
+<text x="300" y="1032" font-size="25" text-anchor="middle">Cell_05</text></g>
+<g class="d-node" data-name="Cell_06"><title>Cell_06 (Groundwater cell)</title><rect x="550" y="200" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="603" y="213" width="94" height="94"/>
+<text x="650" y="352" font-size="25" text-anchor="middle">Cell_06</text></g>
+<g class="d-node" data-name="Cell_07"><title>Cell_07 (Groundwater cell)</title><rect x="550" y="370" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="603" y="383" width="94" height="94"/>
+<text x="650" y="522" font-size="25" text-anchor="middle">Cell_07</text></g>
+<g class="d-node" data-name="Cell_08"><title>Cell_08 (Groundwater cell)</title><rect x="550" y="540" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="603" y="553" width="94" height="94"/>
+<text x="650" y="692" font-size="25" text-anchor="middle">Cell_08</text></g>
+<g class="d-node" data-name="Cell_09"><title>Cell_09 (Groundwater cell)</title><rect x="550" y="710" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="603" y="723" width="94" height="94"/>
+<text x="650" y="862" font-size="25" text-anchor="middle">Cell_09</text></g>
+<g class="d-node" data-name="Cell_10"><title>Cell_10 (Groundwater cell)</title><rect x="550" y="880" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="603" y="893" width="94" height="94"/>
+<text x="650" y="1032" font-size="25" text-anchor="middle">Cell_10</text></g>
+<g class="d-node" data-name="Cell_11"><title>Cell_11 (Groundwater cell)</title><rect x="900" y="200" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="953" y="213" width="94" height="94"/>
+<text x="1000" y="352" font-size="25" text-anchor="middle">Cell_11</text></g>
+<g class="d-node" data-name="Cell_12"><title>Cell_12 (Groundwater cell)</title><rect x="900" y="370" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="953" y="383" width="94" height="94"/>
+<text x="1000" y="522" font-size="25" text-anchor="middle">Cell_12</text></g>
+<g class="d-node" data-name="Cell_13"><title>Cell_13 (Groundwater cell)</title><rect x="900" y="540" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="953" y="553" width="94" height="94"/>
+<text x="1000" y="692" font-size="25" text-anchor="middle">Cell_13</text></g>
+<g class="d-node" data-name="Cell_14"><title>Cell_14 (Groundwater cell)</title><rect x="900" y="710" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="953" y="723" width="94" height="94"/>
+<text x="1000" y="862" font-size="25" text-anchor="middle">Cell_14</text></g>
+<g class="d-node" data-name="Cell_15"><title>Cell_15 (Groundwater cell)</title><rect x="900" y="880" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="953" y="893" width="94" height="94"/>
+<text x="1000" y="1032" font-size="25" text-anchor="middle">Cell_15</text></g>
+<g class="d-node" data-name="Cell_16"><title>Cell_16 (Groundwater cell)</title><rect x="1250" y="200" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="1303" y="213" width="94" height="94"/>
+<text x="1350" y="352" font-size="25" text-anchor="middle">Cell_16</text></g>
+<g class="d-node" data-name="Cell_17"><title>Cell_17 (Groundwater cell)</title><rect x="1250" y="370" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="1303" y="383" width="94" height="94"/>
+<text x="1350" y="522" font-size="25" text-anchor="middle">Cell_17</text></g>
+<g class="d-node" data-name="Cell_18"><title>Cell_18 (Groundwater cell)</title><rect x="1250" y="540" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="1303" y="553" width="94" height="94"/>
+<text x="1350" y="692" font-size="25" text-anchor="middle">Cell_18</text></g>
+<g class="d-node" data-name="Cell_19"><title>Cell_19 (Groundwater cell)</title><rect x="1250" y="710" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="1303" y="723" width="94" height="94"/>
+<text x="1350" y="862" font-size="25" text-anchor="middle">Cell_19</text></g>
+<g class="d-node" data-name="Cell_20"><title>Cell_20 (Groundwater cell)</title><rect x="1250" y="880" width="200" height="120" rx="10"/>
+<image href="icons/Groundwater.png" x="1303" y="893" width="94" height="94"/>
+<text x="1350" y="1032" font-size="25" text-anchor="middle">Cell_20</text></g>
+<g class="d-node" data-name="Effluent_collector"><title>Effluent_collector (Reactor)</title><rect x="1600" y="840" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="1622" y="862" width="156" height="156"/>
+<text x="1700" y="1072" font-size="25" text-anchor="middle">Effluent_collector</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>21</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Cell-01'><summary><span class='cname'>20 × Groundwater cell</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>Twenty saturated soil cells, Cell_01 at the top (inlet) to Cell_20 at the bottom (outlet). Each is 1 m² in cross section and 0.05 m long, with porosity and moisture content 0.4, so it holds 0.02 m³ of water. The diagram draws them as four stacks of five, read top to bottom and left to right. Cell_01 receives the inflow from <code>flow.txt</code> with the concentrations in <code>inflow_concentration.txt</code>.</p></span></summary><div class='cbody'><p class='members'>Cell_01, Cell_02, Cell_03, Cell_04, Cell_05, Cell_06, Cell_07, Cell_08 …</p><p class='muted'>Showing properties of <b>Cell_01</b>.</p><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Bromide: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Bromide: Time Variable Inflow concentration</td><td class='v'>inflow_concentration.txt</td><td>g/m^3</td><td></td></tr><tr><td>Cu_aq: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cu_aq: Time Variable Inflow concentration</td><td class='v'>inflow_concentration.txt</td><td>g/m^3</td><td></td></tr><tr><td>Cu_s: Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cell area</td><td class='v'>1.0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>-0.05</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>0.05</td><td>m</td><td></td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>1</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Inflow time series</td><td class='v'>flow.txt</td><td>m^3/day</td><td>Time series representing external water input to the groundwater cell, such as recharge from precipitation or surface water.</td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.4</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.4</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Effluent-collector'><summary><span class='cname'>Effluent_collector</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A vessel that receives the column effluent, starting with 0.01 m³ of water. It accumulates all the water and copper that leave the column and is used to check mass recovery. Reactions are evaluated in every block, so the sorption reaction also runs here; this has no effect on the column.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>0.01</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>-1.5</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>20</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Flow-01'><summary><span class='cname'>20 × Time-Dependent flow</span><span class='ctype'>Time-Dependent flow · mass_transfer</span><span class='crole'><p>Twenty links that carry the water downward at 0.1 m³/day (<code>flow.txt</code>). Flow_01 to Flow_19 join neighbouring cells, are 0.05 m long and have 1 m² of area, which sets the dispersive exchange between cells. Flow_20 joins Cell_20 to the collector; its length is set to 10 m so that dispersion between the collector and the column is negligible (a free-outflow boundary). Positive flow is downward.</p></span></summary><div class='cbody'><p class='members'>Flow_01, Flow_02, Flow_03, Flow_04, Flow_05, Flow_06, Flow_07, Flow_08 …</p><p class='muted'>Showing properties of <b>Flow_01</b>.</p><p class=type-help><b>Time-Dependent flow:</b> Time-Dependent flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cross-sectional area of the connection</td><td class='v'>1.0</td><td>m<sup>2</sup></td><td>Flow area shared by the two blocks. It multiplies the molecular-diffusion term in Constituent::diffusive_masstransfer, so the default of 1e-9 m^2 suppresses diffusion entirely no matter what diffusion_coefficient is set on the constituent. Set it to the real interface area for any model where molecular diffusion matters. The tiny default is kept so existing models are unchanged.</td></tr><tr><td>Flow rate</td><td class='v'>flow.txt</td><td>m^3/day</td><td></td></tr><tr><td>Separation between the connected blocks</td><td class='v'>0.05</td><td>m</td><td>Distance between the centres of the two connected blocks. It divides the diffusive/dispersive exchange in Constituent::diffusive_masstransfer, so it must be the real separation or dispersion is scaled wrongly: a chain of 0.0254 m cells left at the default 1 m disperses 39x too weakly, and a dispersivity calibrated that way absorbs the error. The default of 1 m is kept only so existing models are unchanged -- set it for any model where dispersion or diffusion matters.</td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>3</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-Bromide'><summary><span class='cname'>Bromide</span><span class='ctype'>Constituent</span><span class='crole'><p>A conservative tracer. It moves with the water and is not sorbed or degraded.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/day</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0.025</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Cu-aq'><summary><span class='cname'>Cu_aq</span><span class='ctype'>Constituent</span><span class='crole'><p>Dissolved copper (g/m³ of pore water). Moves with the water and exchanges with the solid.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/day</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0.025</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Cu-s'><summary><span class='cname'>Cu_s</span><span class='ctype'>Immobile_Constituent · mass_transfer</span><span class='crole'><p>Copper sorbed on the soil. An Immobile_Constituent: it does not move between cells. Its concentration is mass per volume of pore water (g/m³); the loading per mass of soil is q = θ·Cu_s/ρ_b (g/kg).</p></span></summary><div class='cbody'><p class=type-help><b>Immobile_Constituent:</b> Immobile constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>4</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-K-d'><summary><span class='cname'>K_d</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Linear distribution coefficient (m³/kg). 0.001 m³/kg is 1 L/kg.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.001</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-s'><summary><span class='cname'>k_s</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>First-order sorption rate coefficient (1/day).</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>2</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-rho-b'><summary><span class='cname'>rho_b</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Dry bulk density of the soil (kg/m³).</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1600</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-theta'><summary><span class='cname'>theta</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Porosity of the saturated soil (dimensionless), used to convert between pore-water and solid-phase concentrations.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.4</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reactions <small>1</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-Sorption'><summary><span class='cname'>Sorption</span><span class='ctype'>Reaction</span><span class='crole'><p>Net transfer of copper from the pore water to the soil, rate k_s·(Cu_aq − θ·Cu_s/(ρ_b·K_d)). Negative values mean desorption.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_s*(Cu_aq-theta*Cu_s/(rho_b*K_d)))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Cu_aq</td><td class='v'>-1</td></tr><tr><td>Cu_s</td><td class='v'>1</td></tr></tbody></table></div></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>inflow_concentration.txt</code></td><td><p>Concentration of the inflow (g/m³) versus time (days), used for both bromide and copper: 8 g/m³ from day 0 to day 30, then 0.</p></td></tr><tr><td><code>flow.txt</code></td><td><p>Flow rate through the column (m³/day) versus time (days): a constant 0.1 m³/day. Read both as the inflow of Cell_01 and as the flow of every link.</p></td></tr><tr><td><code>analytical_bromide.csv</code></td><td><p>Ogata-Banks solution for the bromide pulse at the column outlet (days, g/m³), with dispersivity 0.05 m. For the comparison plot only.</p></td></tr><tr><td><code>analytical_cu_equilibrium.csv</code></td><td><p>Ogata-Banks solution for copper assuming instantaneous (equilibrium) sorption, R = 5 (days, g/m³). For the comparison plot only.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>80</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Breakthrough curves at the outlet' loading='lazy'><figcaption><b>Breakthrough curves at the outlet</b> Bromide breaks through after one pore volume (4 days). Copper arrives five times later; kinetic sorption makes it break through earlier and more gradually than the equilibrium solution and leaves a long tail after the pulse.</figcaption></figure><figure><img src='plot_2.png' alt='Copper held by the soil' loading='lazy'><figcaption><b>Copper held by the soil</b> The sorbed front moves down the column during loading and the soil is stripped from the top down once clean water arrives at day 30.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/column-breakthrough">View source on GitHub</a>.</div></footer>
+</body></html>

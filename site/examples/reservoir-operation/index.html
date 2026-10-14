@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reservoir Operation Rule · OpenHydroQual Examples</title>
+<meta name="description" content="A water-supply reservoir passes a year of inflows. Releases follow a storage-based operating rule with a minimum environmental flow, a linear conservation zone and a maximum outlet capacity, and a spillway takes the excess in floods.">
+<meta name="keywords" content="reservoir, dam, reservoir operation, operating rule, release rule, rule curve, storage zones, conservation pool, flood control pool, dead storage, minimum release, environmental flow, outlet works, spillway, storage-discharge, water supply, flood control, drought">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#6a55c2">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Hydraulic Structures</div>
+<h1>Reservoir Operation Rule</h1>
+<p class="lede">A water-supply reservoir passes a year of inflows. Releases follow a storage-based operating rule with a minimum environmental flow, a linear conservation zone and a maximum outlet capacity, and a spillway takes the excess in floods.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=Reservoir_operation'>Reservoir_operation</a><a class='plug' href='../../?plugin=main_components'>main_components</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/reservoir-operation.zip" download>Download model (.zip)</a>
+    <div class="muted">13 KB · 2 files · open <code>reservoir_operation.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A dam stores water in the wet season and releases it through the year for water supply and to keep a minimum flow in the river downstream. The operator divides the reservoir volume into zones and sets the release according to which zone the storage is in. This is the simplest form of a reservoir operating rule (a rule curve), and it is how many planning models represent reservoir operation.</p>
+<p>The model follows one reservoir through a synthetic year with a wet season around day 120 and a long dry season afterwards. It shows how a rule tied to storage attenuates floods, carries water over into the dry season, and protects a minimum release when inflows are low.</p>
+<h2>How it works</h2>
+<p><strong>Reservoir.</strong> The reservoir is a single storage S (m³) with the mass balance</p>
+<p>dS/dt = Q_in(t) − Q_release − Q_spill</p>
+<p>where Q_in is read from <code>reservoir_inflow.csv</code>.</p>
+<p><strong>Outlet works (operating rule).</strong> The release depends only on the current storage, in three zones:</p>
+<table>
+<thead>
+<tr>
+<th>Zone</th>
+<th>Storage</th>
+<th>Release</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Below the conservation zone</td>
+<td>S &lt; S_min</td>
+<td>Q_min</td>
+</tr>
+<tr>
+<td>Conservation zone</td>
+<td>S_min &lt; S &lt; S_max</td>
+<td>Q_min + (S − S_min)/(S_max − S_min) · (Q_max − Q_min)</td>
+</tr>
+<tr>
+<td>Flood zone</td>
+<td>S &gt; S_max</td>
+<td>Q_max</td>
+</tr>
+</tbody>
+</table>
+<p>With S_min = 4 × 10⁶ m³, S_max = 16 × 10⁶ m³, Q_min = 1 m³/s and Q_max = 15 m³/s, the release in the conservation zone rises by 1.17 m³/s for every million m³ of storage. Q_min plays the role of an environmental or downstream supply release. Q_max is the capacity of the outlet works. The release is reduced automatically only if the reservoir is about to empty, so that storage cannot become negative.</p>
+<p><strong>Spillway.</strong> The spillway link uses a power-law rating in storage:</p>
+<p>Q_spill = c · S^p,  c = 8.44 × 10⁻⁸², p = 12</p>
+<p>with S in m³ and Q in m³/day. The coefficient is chosen so that Q_spill = 40 m³/s at S = 20 million m³. With an exponent this high the rating acts like an overflow crest: it passes less than 0.001 m³/s at 8 million m³, 2.8 m³/s at S_max, and grows rapidly above that. The link has no explicit crest, so it is never exactly zero.</p>
+<p><strong>Downstream river.</strong> Both links discharge to a fixed-level boundary. Neither link depends on the water level downstream, so the boundary only collects the released volume.</p>
+<p><strong>Sign convention and units.</strong> Both links are positive from the reservoir to the river. Flows are in m³/day (1 m³/s = 86,400 m³/day), storage in m³, time in days.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Start of the year.</strong> At 6 million m³ the rule releases 3.3 m³/s, more than the 1.8 m³/s inflow, so storage first drops to about 5.2 million m³ (day 15) before the rising base flow brings it back up.</li>
+<li><strong>Flood attenuation.</strong> The largest storm brings 63 m³/s at day 120. Storage climbs above S_max on day 121 and peaks at 18.4 million m³ on day 123. The outlet works release their maximum of 15 m³/s and the spillway adds up to 15 m³/s, so the peak outflow is 30 m³/s, about half of the peak inflow. Storage is in the flood zone from day 121 to 129 and again from day 142 to 146, after the third storm.</li>
+<li><strong>Conservation zone.</strong> Between the storms the release follows storage along the straight line of the rule, so it falls gradually as the reservoir drains and keeps the downstream river well above the minimum.</li>
+<li><strong>Dry season.</strong> From day 284 to 300, and again from day 333 to 346, storage is below S_min = 4 million m³ and the release is held at Q_min = 1 m³/s, more than the inflow (as low as 0.51 m³/s). The minimum release continues to draw the reservoir down, to a low of 3.44 million m³ on day 299. The small storms on days 250 and 300 lift the storage only briefly.</li>
+<li><strong>Annual balance.</strong> Over the year 157 million m³ flows in, 149 million m³ leaves through the outlet works and 9.4 million m³ over the spillway, and storage ends 1.6 million m³ lower than it started.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The reservoir has no stage-storage-area relationship, so there is no reservoir water level and no evaporation, seepage or direct rainfall on the water surface.</li>
+<li>The rule depends on storage only. Real rule curves usually change with the season (a lower flood-zone limit in the wet season, for example) and may also depend on forecasts or downstream conditions, which this link does not represent.</li>
+<li>The release changes instantly with storage. Real gate operation happens in discrete steps.</li>
+<li>The spillway rating is a smooth power law in storage, not a weir equation with a crest elevation. Its parameters were chosen for this illustration.</li>
+<li>Downstream water levels do not affect either release.</li>
+<li>The inflow series is synthetic.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 820 366" class="ohq-diagram" style="max-width:410px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Outlet_Works"><title>Outlet_Works (Reservoir_link_rule)</title><path d="M200.0 100.0 L350.0 100.0 L500.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Spillway"><title>Spillway (Spillway)</title><path d="M200.0 118.0 L350.0 118.0 L500.0 118.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Reservoir"><title>Reservoir (Reservoir)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Reservoir_Rating_Curve.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="218" font-size="14" text-anchor="middle">Reservoir</text></g>
+<g class="d-node" data-name="Downstream_River"><title>Downstream_River (fixed_head)</title><rect x="500" y="0" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="522" y="22" width="156" height="156"/>
+<text x="600" y="218" font-size="14" text-anchor="middle">Downstream_River</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>2</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Reservoir'><summary><span class='cname'>Reservoir</span><span class='ctype'>Reservoir · Reservoir_operation</span><span class='crole'><p>A storage reservoir with a volume of 6 million m³ at the start of the year. It is described by its stored volume only (no elevation or surface area). Receives the inflow from <code>reservoir_inflow.csv</code>.</p></span></summary><div class='cbody'><p class=type-help><b>Reservoir:</b> Reservoir</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>6000000</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the reservoir at the beginning of the simulation.</td></tr><tr><td>Flow rate time series</td><td class='v'>reservoir_inflow.csv</td><td></td><td>Time series representing the flow rate entering the reservoir.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Downstream-River'><summary><span class='cname'>Downstream_River</span><span class='ctype'>fixed_head</span><span class='crole'><p>The river below the dam. A boundary that receives both releases. Its storage is the cumulative volume released.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>2</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Outlet-Works'><summary><span class='cname'>Outlet_Works</span><span class='ctype'>Reservoir_link_rule</span><span class='crole'><p>The controlled release (gates or valves in the outlet works). Release follows the operating rule with S_min = 4 million m³, S_max = 16 million m³, Q_min = 1 m³/s (86,400 m³/day) and Q_max = 15 m³/s (1,296,000 m³/day).</p></span></summary><div class='cbody'><p class=type-help><b>Reservoir_link_rule:</b> Reservoir outflow with a rule-based flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Minimum storage</td><td class='v'>4000000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Maximum storage</td><td class='v'>16000000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Minimum flow</td><td class='v'>86400</td><td>m<sup>3</sup>/day</td><td></td></tr><tr><td>Maximum flow</td><td class='v'>1296000</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Spillway'><summary><span class='cname'>Spillway</span><span class='ctype'>Spillway · Reservoir_operation</span><span class='crole'><p>Uncontrolled overflow represented by a steep power-law rating in storage, Q = c·S^12. Negligible at normal storage, it grows quickly once the reservoir rises above S_max.</p></span></summary><div class='cbody'><p class=type-help><b>Spillway:</b> Reservoir spillway</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Reservoir rating curve coefficient</td><td class='v'>8.44e-82</td><td></td><td></td></tr><tr><td>Reservoir rating curve power</td><td class='v'>12</td><td></td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>reservoir_inflow.csv</code></td><td><p>Inflow to the reservoir over one year. A seasonal base flow between 0.5 and 5.5 m³/s (highest around day 120) plus six storm events with peaks of 25, 60, 35, 20, 8 and 12 m³/s on days 95, 120, 140, 175, 250 and 300, each with a one-day rise and a 4-day exponential recession. Time in days, flow in m³/day, every 0.25 day. Synthetic.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>365</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>1</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Storage' loading='lazy'><figcaption><b>Storage</b> Storage rises above S_max = 16 million m³ during the wet-season storms (days 121 to 129 and 142 to 146) and falls below S_min = 4 million m³ late in the dry season (days 284 to 300 and 333 to 346).</figcaption></figure><figure><img src='plot_2.png' alt='Inflow and releases' loading='lazy'><figcaption><b>Inflow and releases</b> The release follows storage, not inflow. It holds at Q_max (1.30 million m³/day) while the reservoir is above S_max, and at Q_min (86,400 m³/day) while it is below S_min. The spillway only matters during the largest storm.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/reservoir-operation">View source on GitHub</a>.</div></footer>
+</body></html>

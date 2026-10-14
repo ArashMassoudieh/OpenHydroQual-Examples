@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 820 366" class="ohq-diagram" style="max-width:410px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Outlet_Works"><title>Outlet_Works (Reservoir_link_rule)</title><path d="M200.0 100.0 L350.0 100.0 L500.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Spillway"><title>Spillway (Spillway)</title><path d="M200.0 118.0 L350.0 118.0 L500.0 118.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Reservoir"><title>Reservoir (Reservoir)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Reservoir_Rating_Curve.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="218" font-size="14" text-anchor="middle">Reservoir</text></g>
+<g class="d-node" data-name="Downstream_River"><title>Downstream_River (fixed_head)</title><rect x="500" y="0" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="522" y="22" width="156" height="156"/>
+<text x="600" y="218" font-size="14" text-anchor="middle">Downstream_River</text></g>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="240 -10 720 866" class="ohq-diagram" style="max-width:360px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Withdrawal"><title>Withdrawal (Fixed flow)</title><path d="M500.0 462.5 L600.0 525.0 L700.0 587.5" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Weir"><title>Weir (wier)</title><path d="M500.0 337.5 L600.0 275.0 L700.0 212.5" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Pond"><title>Pond (Pond)</title><rect x="300" y="300" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="322" y="322" width="156" height="156"/>
+<text x="400" y="521" font-size="16" text-anchor="middle">Pond</text></g>
+<g class="d-node" data-name="Withdrawal_Sink"><title>Withdrawal_Sink (Reactor)</title><rect x="700" y="550" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="722" y="572" width="156" height="156"/>
+<text x="800" y="771" font-size="16" text-anchor="middle">Withdrawal_Sink</text></g>
+<g class="d-node" data-name="Downstream"><title>Downstream (Reactor)</title><rect x="700" y="50" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="722" y="72" width="156" height="156"/>
+<text x="800" y="271" font-size="16" text-anchor="middle">Downstream</text></g>
+</svg>

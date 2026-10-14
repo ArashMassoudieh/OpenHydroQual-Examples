@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 770 366" class="ohq-diagram" style="max-width:385px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Baseflow"><title>Baseflow (Linear_baseflow)</title><path d="M200.0 100.0 L325.0 100.0 L450.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Aquifer"><title>Aquifer (Groundwater cell)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="218" font-size="14" text-anchor="middle">Aquifer</text></g>
+<g class="d-node" data-name="Stream"><title>Stream (fixed_head)</title><rect x="450" y="0" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="472" y="22" width="156" height="156"/>
+<text x="550" y="218" font-size="14" text-anchor="middle">Stream</text></g>
+</svg>

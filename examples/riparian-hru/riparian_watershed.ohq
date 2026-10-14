@@ -1,0 +1,30 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = unsaturated_soil.json
+addtemplate; filename = groundwater.json
+addtemplate; filename = unconfined_groundwater.json
+addtemplate; filename = open_channel.json
+addtemplate; filename = soil_evapotranspiration_models.json
+addtemplate; filename = urban_hru.json
+addtemplate; filename = mixed_hydrologic_response_unit.json
+addtemplate; filename = riparian_urban_hru.json
+create source;type=Precipitation,name=Rain,timeseries=precipitation.csv
+create source;type=Evapotranspiration_Time_Series (Soil),name=ET,corr_fact=0.8,ET_timeseries=evapotranspiration.csv
+create composite;type=Mixed_Hydrologic_Response_Unit,name=Upland,area=800000[m~^2],impervious_fraction=0.15,surface_elevation=110[m],depth_to_groundwater=3.5[m],groundwater_thickness=8[m],Precipitation=Rain,Evapotranspiration=ET,catchment_slope=0.04,catchment_width=4000[m],manning_coefficient=0.15,depression_storage=0.005[m],runoff_coefficient=1,impervious_manning_coefficient=0.015,impervious_depression_storage=0.0015[m],K_sat=0.5[m/day],alpha_vG=1.5[1/m],n_vG=1.4,theta_sat=0.42,theta_res=0.06,soil_specific_storage=0.01[1/m],initial_moisture_content=0.23,recharge_K=0.05[m/day],groundwater_K=2[m/day],groundwater_porosity=0.25,groundwater_specific_storage=0.03125[1/m],initial_groundwater_moisture_content=0.1406,reach_base_width=1[m],reach_side_slope=2,reach_manning_coefficient=0.05,reach_length=600[m],initial_reach_depth=0.01[m],impervious_reach_base_width=1[m],impervious_reach_side_slope=2,impervious_reach_manning_coefficient=0.02,impervious_reach_length=600[m],initial_impervious_reach_depth=0.01[m],_width=260,_height=260,x=0,y=0
+create composite;type=Riparian_Urban_HRU,name=Riparian,area=200000[m~^2],impervious_fraction=0.1,impervious_multiplier=1,near_stream_fraction=0.25,surface_elevation=100[m],depth_to_groundwater=1.7[m],groundwater_thickness=8[m],groundwater_residual_thickness=0[m],Precipitation=Rain,Evapotranspiration=ET,catchment_slope=0.02,catchment_width=2000[m],manning_coefficient=0.2,depression_storage=0.005[m],runoff_coefficient=1,impervious_manning_coefficient=0.015,impervious_depression_storage=0.0015[m],K_sat_1=0.5[m/day],K_sat_2=0.5[m/day],K_sat_3=0.5[m/day],alpha_vG_1=1.5[1/m],alpha_vG_2=1.5[1/m],alpha_vG_3=1.5[1/m],n_vG_1=1.4,n_vG_2=1.4,n_vG_3=1.4,theta_sat_1=0.42,theta_sat_2=0.42,theta_sat_3=0.42,theta_res_1=0.06,theta_res_2=0.06,theta_res_3=0.06,soil_specific_storage=0.01[1/m],initial_moisture_content=0.34,K_sat_scale=1,K_sat_scale_surface=1,groundwater_K=2[m/day],groundwater_porosity=0.2,initial_water_table_elevation=98.3[m],near_stream_specific_yield=0.25,near_stream_K=5[m/day],hillslope_link_width=2000[m],hillslope_link_length=100[m],recharge_elevation_offset=0[m],reach_base_width=1[m],reach_side_slope=2,reach_manning_coefficient=0.05,reach_length=300[m],initial_reach_depth=0.01[m],impervious_reach_base_width=1[m],impervious_reach_side_slope=2,impervious_reach_manning_coefficient=0.02,impervious_reach_length=300[m],initial_impervious_reach_depth=0.01[m],_width=260,_height=260,x=500,y=450
+create block;type=Trapezoidal Channel Segment,name=Upper_stream,base_width=2[m],side_slope=2,ManningCoeff=0.035,bottom_elevation=101.5[m],length=1000[m],depth=0.05[m],_width=240,_height=200,x=520,y=30
+create block;type=Trapezoidal Channel Segment,name=Lower_stream,base_width=3[m],side_slope=2,ManningCoeff=0.035,bottom_elevation=98[m],length=1000[m],depth=0.05[m],_width=240,_height=200,x=1000,y=480
+create block;type=fixed_head,name=Outlet,head=97[m],Storage=0[m~^3],_width=200,_height=200,x=1450,y=480
+create link;type=Reach_link,name=Upland_pervious_runoff,from=Upland,to=Upper_stream
+create link;type=Impervious_Reach_link,name=Upland_impervious_runoff,from=Upland,to=Upper_stream
+create link;type=groundwater_to_stream,name=Upland_baseflow,from=Upland,to=Upper_stream,area=4000[m~^2],length=200[m],hydraulic_conductivity=2[m/day]
+create link;type=Trapezoidal_Channel_link,name=Stream_reach,from=Upper_stream,to=Lower_stream
+create link;type=Reach_link,name=Riparian_pervious_runoff,from=Riparian,to=Lower_stream
+create link;type=Impervious_Reach_link,name=Riparian_impervious_runoff,from=Riparian,to=Lower_stream
+create link;type=unconfined_groundwater_to_stream,name=Bank_exchange,from=Riparian,to=Lower_stream,area=4000[m~^2],length=12.5[m],hydraulic_conductivity=5[m/day]
+create link;type=channel2fixed,name=Stream_outlet,from=Lower_stream,to=Outlet
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=30
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=10

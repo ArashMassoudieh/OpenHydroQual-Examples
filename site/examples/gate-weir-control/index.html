@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gated Check Structure in a Canal · OpenHydroQual Examples</title>
+<meta name="description" content="A two-leaf sluice gate holds the water level in a canal pool. The gates follow a pre-set opening schedule while a flood passes, and the pool rises when they open too late and drops when they close too late.">
+<meta name="keywords" content="gate, sluice gate, check structure, control structure, gate operation, gate schedule, submerged orifice, discharge coefficient, canal, irrigation canal, pool level, water level regulation, headwater, tailwater, leakage, open-loop control, operation">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#6a55c2">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Hydraulic Structures</div>
+<h1>Gated Check Structure in a Canal</h1>
+<p class="lede">A two-leaf sluice gate holds the water level in a canal pool. The gates follow a pre-set opening schedule while a flood passes, and the pool rises when they open too late and drops when they close too late.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=Gate_control'>Gate_control</a><a class='plug' href='../../?plugin=open_channel'>open_channel</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/gate-weir-control.zip" download>Download model (.zip)</a>
+    <div class="muted">6 KB · 4 files · open <code>gated_canal.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A check structure is a gate across a canal that holds the water level in the pool above it, so that turnouts and offtakes along the pool keep a steady head. When the flow in the canal changes, the gate operator has to change the gate opening to pass the new flow at the same pool level.</p>
+<p>This model represents a canal with one such structure: an upstream pool, a two-leaf sluice gate and a downstream reach. A flood wave raises the inflow from 4 m³/s to 15 m³/s and back over about four days. The gates follow a fixed schedule of openings, prepared in advance (open-loop operation). The model shows how well that schedule holds the pool level, and what happens when gate movements are early or late compared with the flow. The same setup can be used to test a proposed operating schedule, or to reproduce recorded gate positions at an existing structure and check the computed flows against measurements.</p>
+<h2>How it works</h2>
+<p><strong>Canal reaches.</strong> Each reach is one storage cell with a trapezoidal section. Its depth follows from the storage S, length L, base width b and side slope z:</p>
+<p>d = (−b + √(b² + 4·z·S/L)) / (2·z),  head h = z_bed + d</p>
+<p>The pool gains the inflow from <code>canal_inflow.csv</code> and loses the gate flow. The downstream reach gains the gate flow and drains to the fixed outlet level through a Manning link:</p>
+<p>Q_out = (1/n)·A·R^(2/3)·√((h_reach − h_outlet)/L)</p>
+<p>with A and R the flow area and hydraulic radius of the downstream reach.</p>
+<p><strong>Gate.</strong> The gate link treats each leaf as a submerged orifice whose area is the leaf width times its imposed opening. With the openings a₁(t) and a₂(t) read from the two schedule files:</p>
+<p>Q_i = C_d · (w·max(a_i, 0)) · √(2g·max(h_pool − h_tail, 0)),  i = 1, 2
+  Q_leak = C_d · A_leak · √(2g·max(h_pool − h_tail, 0))
+  Q_gate = Q_1 + Q_2 + Q_leak</p>
+<p>with C_d = 0.7, w = 3 m per leaf, A_leak = 0.05 m² and g = 9.81 m/s². The link computes this in m³/s and passes 86,400 times that value (m³/day) to the mass balance. Flow is only allowed from the pool to the downstream reach: when the tailwater is higher than the pool, the gate passes nothing (as a flap or a closed check would).</p>
+<p><strong>Positive direction.</strong> All links are positive in the downstream direction (pool → downstream reach → outlet).</p>
+<p><strong>Units.</strong> Flows in the model and in the output are in m³/day (1 m³/s = 86,400 m³/day). Output columns <code>Check_Gate_flow_m3_sec</code> and <code>Check_Gate_flow_ft3_sec</code> give the gate flow in m³/s and ft³/s.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Steady base flow.</strong> With leaf 1 at 0.32 m, the gate area is 0.96 m² plus 0.05 m² of leakage. Passing 4 m³/s through 1.01 m² needs √(2g·Δh) = 4.0/(0.7 × 1.01) = 5.66 m/s, so Δh = 1.63 m. With the tailwater at 0.81 m, the pool settles at 2.44 m, which is what the model gives for days 0.5 to 2.5.</li>
+<li><strong>Gates open late.</strong> The schedule starts to raise leaf 1 at day 3.5 and leaf 2 at day 4.2, but the flood is already rising from day 3. The pool stores the difference and peaks at 3.22 m at day 4.2, 0.8 m above its set level.</li>
+<li><strong>Gates close late.</strong> Both leaves stay open after the peak. At day 6.7 the pool has been drawn down to 1.68 m, about 0.8 m below its set level. It recovers to 2.44 m once leaf 1 returns to 0.32 m.</li>
+<li><strong>Gate flow versus inflow.</strong> The difference between the two flow curves is the rate of change of storage in the pool. Gate flow lags inflow while the pool rises and exceeds it while the pool drains.</li>
+<li><strong>Tailwater.</strong> The downstream reach rises from 0.81 m to 1.39 m during the flood. Because the gate flow depends on the head difference, the higher tailwater reduces the gate capacity at a given opening.</li>
+<li><strong>Submerged flow throughout.</strong> The downstream water level stays above the top of the gate opening (gate sill at 0 m, opening at most 0.9 m, tailwater at least 0.8 m), so the submerged orifice equation applies over the whole run.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The gate equation is a submerged orifice with a constant discharge coefficient. Free (unsubmerged) gate flow, where the discharge depends on the upstream depth only, is not represented. Check that the tailwater stays above the gate opening when adapting this model.</li>
+<li>The gate opening is imposed. Nothing in the model adjusts it in response to the pool level, so the schedule must be prepared outside the model.</li>
+<li>Reverse flow through the gate is blocked.</li>
+<li>Each reach is a single storage cell, so travel time and wave attenuation within a reach are not resolved. A longer canal should be divided into several segments.</li>
+<li>There are no turnouts, seepage or evaporation losses.</li>
+<li>The inflow and the gate schedule are synthetic.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1120 366" class="ohq-diagram" style="max-width:560px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Check_Gate"><title>Check_Gate (imposed_gate_control_weir)</title><path d="M200.0 100.0 L300.0 100.0 L400.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Downstream_Outflow"><title>Downstream_Outflow (channel2fixed)</title><path d="M600.0 100.0 L700.0 100.0 L800.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Upstream_Pool"><title>Upstream_Pool (Trapezoidal Channel Segment)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="221" font-size="16" text-anchor="middle">Upstream_Pool</text></g>
+<g class="d-node" data-name="Downstream_Reach"><title>Downstream_Reach (Trapezoidal Channel Segment)</title><rect x="400" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="422" y="22" width="156" height="156"/>
+<text x="500" y="221" font-size="16" text-anchor="middle">Downstream_Reach</text></g>
+<g class="d-node" data-name="Canal_Outlet"><title>Canal_Outlet (fixed_head)</title><rect x="800" y="0" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="822" y="22" width="156" height="156"/>
+<text x="900" y="221" font-size="16" text-anchor="middle">Canal_Outlet</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>3</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Upstream-Pool'><summary><span class='cname'>Upstream_Pool</span><span class='ctype'>Trapezoidal Channel Segment · open_channel</span><span class='crole'><p>Canal pool upstream of the gate, 2000 m long, trapezoidal with a 6 m base width, side slopes of 1.5 horizontal to 1 vertical, Manning n = 0.025, bed at 0 m. Receives the canal inflow. Its water level is what the gate operator is trying to hold near 2.4 m.</p></span></summary><div class='cbody'><p class=type-help><b>Trapezoidal Channel Segment:</b> Trapezoidal Channel Segment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Base Width</td><td class='v'>6</td><td>m</td><td>The width of the bottom (flat) portion of the trapezoidal channel cross-section.</td></tr><tr><td>Side Slope</td><td class='v'>1.5</td><td></td><td>The horizontal to vertical ratio of the sloped sides (e.g., 2 means 2 horizontal to 1 vertical).</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.025</td><td></td><td>Roughness coefficient used in Manning&#x27;s equation to estimate flow resistance.</td></tr><tr><td>Bottom Elevation</td><td class='v'>0</td><td>m</td><td>Elevation of the channel bottom relative to the model’s vertical datum.</td></tr><tr><td>Segment length</td><td class='v'>2000</td><td>m</td><td></td></tr><tr><td>Initial Water Depth</td><td class='v'>2.4</td><td>m</td><td>Depth of water in the channel segment. If depth is initially unknown, it is estimated based on storage.</td></tr><tr><td>Inflow time series</td><td class='v'>canal_inflow.csv</td><td>m^3/day</td><td></td></tr><tr><td>Inflow multiplier</td><td class='v'>1</td><td></td><td>Scales the inflow time series (for example an uncertain lateral inflow estimate). 1 uses the series as given.</td></tr><tr><td>Obstacle height</td><td class='v'>0</td><td>m</td><td>The water depth below which the flow ceases</td></tr><tr><td>Area of agriculural land</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Area of non-agriculural activity</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Downstream-Reach'><summary><span class='cname'>Downstream_Reach</span><span class='ctype'>Trapezoidal Channel Segment · open_channel</span><span class='crole'><p>Canal reach below the gate, same cross-section, 2000 m long, bed at −0.5 m. Its water level is the gate tailwater.</p></span></summary><div class='cbody'><p class=type-help><b>Trapezoidal Channel Segment:</b> Trapezoidal Channel Segment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Base Width</td><td class='v'>6</td><td>m</td><td>The width of the bottom (flat) portion of the trapezoidal channel cross-section.</td></tr><tr><td>Side Slope</td><td class='v'>1.5</td><td></td><td>The horizontal to vertical ratio of the sloped sides (e.g., 2 means 2 horizontal to 1 vertical).</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.025</td><td></td><td>Roughness coefficient used in Manning&#x27;s equation to estimate flow resistance.</td></tr><tr><td>Bottom Elevation</td><td class='v'>-0.5</td><td>m</td><td>Elevation of the channel bottom relative to the model’s vertical datum.</td></tr><tr><td>Segment length</td><td class='v'>2000</td><td>m</td><td></td></tr><tr><td>Initial Water Depth</td><td class='v'>1.3</td><td>m</td><td>Depth of water in the channel segment. If depth is initially unknown, it is estimated based on storage.</td></tr><tr><td>Inflow multiplier</td><td class='v'>1</td><td></td><td>Scales the inflow time series (for example an uncertain lateral inflow estimate). 1 uses the series as given.</td></tr><tr><td>Obstacle height</td><td class='v'>0</td><td>m</td><td>The water depth below which the flow ceases</td></tr><tr><td>Area of agriculural land</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Area of non-agriculural activity</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Canal-Outlet'><summary><span class='cname'>Canal_Outlet</span><span class='ctype'>fixed_head</span><span class='crole'><p>Fixed water level of 0.5 m at the end of the downstream reach (for example the next pool or a receiving water body).</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>0.5</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>2</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Check-Gate'><summary><span class='cname'>Check_Gate</span><span class='ctype'>imposed_gate_control_weir · Gate_control</span><span class='crole'><p>Two vertical-lift gate leaves side by side, each 3 m wide, discharge coefficient 0.7, with openings read from <code>gate1_opening.csv</code> and <code>gate2_opening.csv</code>. A 0.05 m² leakage area passes water even when both leaves are shut.</p></span></summary><div class='cbody'><p class=type-help><b>imposed_gate_control_weir:</b> S26 Imposed Gate Control Weir - Submerged Orifice</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Observed Gate Opening - Gate 1</td><td class='v'>gate1_opening.csv</td><td>m</td><td></td></tr><tr><td>Observed Gate Opening - Gate 2</td><td class='v'>gate2_opening.csv</td><td>m</td><td></td></tr><tr><td>Submerged Orifice Discharge Coefficient Cd</td><td class='v'>0.7</td><td></td><td></td></tr><tr><td>Width of Each Gate</td><td class='v'>3</td><td>m</td><td></td></tr><tr><td>Equivalent leakage area when the gates are closed</td><td class='v'>0.05</td><td>m<sup>2</sup></td><td>Flow area that passes water regardless of the observed gate openings (seal leakage, partially seated gates). Flow = discharge_coefficient * leakage_area * sqrt(2 g dh). Zero reproduces the closed-gate behaviour.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Downstream-Outflow'><summary><span class='cname'>Downstream_Outflow</span><span class='ctype'>channel2fixed · open_channel</span><span class='crole'><p>Manning flow from the downstream reach to the outlet level.</p></span></summary><div class='cbody'><p class=type-help><b>channel2fixed:</b> Link from a channel segment to fixed head boundary</p></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>canal_inflow.csv</code></td><td><p>Flow entering the upstream pool. Base flow of 4 m³/s with a flood wave peaking at 15 m³/s at t = 5 days (Gaussian, 1 day time scale). Time in days, flow in m³/day. Synthetic.</p></td></tr><tr><td><code>gate1_opening.csv</code></td><td><p>Opening of gate leaf 1 (m) versus time (days): 0.32 m until day 3.5, raised to 0.90 m by day 4.6, held until day 5.8, lowered back to 0.32 m by day 7.2. Linear between the listed points.</p></td></tr><tr><td><code>gate2_opening.csv</code></td><td><p>Opening of gate leaf 2 (m) versus time (days): closed until day 4.2, raised to 0.70 m by day 5.0, held until day 5.3, closed again by day 6.3.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>10</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>1</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Flows' loading='lazy'><figcaption><b>Flows</b> The gate flow lags the inflow on the rising limb, while the pool fills, and exceeds it on the falling limb, while the pool drains.</figcaption></figure><figure><img src='plot_2.png' alt='Water levels' loading='lazy'><figcaption><b>Water levels</b> The pool is steady at 2.44 m under base flow, rises to 3.22 m because the gates open after the flood arrives, and falls to 1.68 m because they stay open after it has passed.</figcaption></figure><figure><img src='plot_3.png' alt='Gate openings' loading='lazy'><figcaption><b>Gate openings</b> The imposed opening schedule. Leaf 2 is only used around the flood peak.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/gate-weir-control">View source on GitHub</a>.</div></footer>
+</body></html>

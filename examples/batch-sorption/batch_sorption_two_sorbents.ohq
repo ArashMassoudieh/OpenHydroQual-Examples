@@ -13,8 +13,6 @@ create reaction;type=Reaction,Cu_aq:stoichiometric_constant=-1,Cu_s_1:stoichiome
 create reaction;type=Reaction,Cu_aq:stoichiometric_constant=-1,Cu_s_1:stoichiometric_constant=0,Cu_s_2:stoichiometric_constant=1,name=Sorption_2,rate_expression=(k_2*(Cu_aq-Cu_s_2/(m_2*K_d_2)))
 create block;type=Reactor,Cu_aq:concentration=10[g/m~^3],Cu_s_1:concentration=0[g/m~^3],Cu_s_2:concentration=0[g/m~^3],Storage=1[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Sorption_test,time_variable_inflow=,x=300,y=300
 create block;type=Reactor,Cu_aq:concentration=0[g/m~^3],Cu_s_1:concentration=8[g/m~^3],Cu_s_2:concentration=50[g/m~^3],Storage=1[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Desorption_test,time_variable_inflow=,x=700,y=300
-create observation;type=Observation,comparison_method=Least Squared,error_structure=normal,expression=Cu_aq:concentration+Cu_s_1:concentration+Cu_s_2:concentration,name=Total_Cu_sorption_test,object=Sorption_test,observed_data=
-create observation;type=Observation,comparison_method=Least Squared,error_structure=normal,expression=Cu_aq:concentration+Cu_s_1:concentration+Cu_s_2:concentration,name=Total_Cu_desorption_test,object=Desorption_test,observed_data=
 setvalue; object=system, quantity=alloutputfile, value=output.txt
 setvalue; object=system, quantity=simulation_start_time, value=0
 setvalue; object=system, quantity=simulation_end_time, value=20

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1320 926" class="ohq-diagram" style="max-width:660px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Rural_runoff"><title>Rural_runoff (CN_outlet)</title><path d="M260.0 130.0 L380.0 130.0 L500.0 130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Watershed_hydrograph"><title>Watershed_hydrograph (CN_outlet)</title><path d="M760.0 130.0 L880.0 130.0 L1000.0 130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Rural_3res_hydrograph"><title>Rural_3res_hydrograph (CN_outlet)</title><path d="M260.0 630.0 L630.0 630.0 L1000.0 630.0" marker-mid="url(#arr)"/></g>
+<g class="d-node composite" data-name="Rural"><title>Rural (CN_Catchment)</title><rect x="0" y="0" width="260" height="260" rx="21"/>
+<image href="icons/cn_catchment.png" x="29" y="29" width="203" height="203"/>
+<text x="130" y="287" font-size="21" text-anchor="middle">Rural</text></g>
+<g class="d-node composite" data-name="Urban"><title>Urban (CN_Catchment)</title><rect x="500" y="0" width="260" height="260" rx="21"/>
+<image href="icons/cn_catchment.png" x="529" y="29" width="203" height="203"/>
+<text x="630" y="287" font-size="21" text-anchor="middle">Urban</text></g>
+<g class="d-node composite" data-name="Rural_3res"><title>Rural_3res (CN_Catchment_3)</title><rect x="0" y="500" width="260" height="260" rx="21"/>
+<image href="icons/cn_catchment_3.png" x="29" y="529" width="203" height="203"/>
+<text x="130" y="787" font-size="21" text-anchor="middle">Rural_3res</text></g>
+<g class="d-node" data-name="Watershed_outlet"><title>Watershed_outlet (fixed_head)</title><rect x="1000" y="30" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1022" y="52" width="156" height="156"/>
+<text x="1100" y="257" font-size="21" text-anchor="middle">Watershed_outlet</text></g>
+<g class="d-node" data-name="Comparison_outlet"><title>Comparison_outlet (fixed_head)</title><rect x="1000" y="530" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1022" y="552" width="156" height="156"/>
+<text x="1100" y="757" font-size="21" text-anchor="middle">Comparison_outlet</text></g>
+</svg>

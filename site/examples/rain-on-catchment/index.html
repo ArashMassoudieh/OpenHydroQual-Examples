@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rain on a Catchment · OpenHydroQual Examples</title>
+<meta name="description" content="A paved 1.2 ha catchment receives 36 days of hourly rainfall and drains through a Manning-type outlet to a fixed-head boundary. The smallest complete rainfall-runoff model.">
+<meta name="keywords" content="first model, rainfall, runoff, precipitation, catchment, outlet, hydrograph, manning, overland flow, sheet flow, nonlinear reservoir, runoff coefficient, impervious, parking lot, time series, water balance, beginner">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#2f7dd1">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Getting Started</div>
+<h1>Rain on a Catchment</h1>
+<p class="lede">A paved 1.2 ha catchment receives 36 days of hourly rainfall and drains through a Manning-type outlet to a fixed-head boundary. The smallest complete rainfall-runoff model.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class=''></b><b class=''></b><span>Beginner</span></span><a class='plug' href='../../?plugin=main_components'>main_components</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/rain-on-catchment.zip" download>Download model (.zip)</a>
+    <div class="muted">8 KB · 2 files · open <code>rain_on_catchment.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A small paved area, such as a parking lot or a commercial block, that sheds rainfall to a single storm drain inlet. It is the smallest complete rainfall-runoff model in OpenHydroQual: one <strong>source</strong> (the rainfall record), one <strong>block</strong> that stores water (the catchment surface), one <strong>link</strong> (the overland flow that leaves it) and one <strong>boundary block</strong> (the outlet).</p>
+<p>The rainfall record is 36 days of hourly data from late summer 2011. It contains a moderate storm on day 4, a short, very intense storm on day 9, a long storm of 85 mm on day 17 and a wet spell from day 26 to day 30. This mix shows how a fast-responding surface reacts to storms of different intensity and duration.</p>
+<h2>How it works</h2>
+<p><strong>Rainfall input.</strong> Each row of <code>rainfall.csv</code> gives a time interval and the rain depth that fell in it. OpenHydroQual converts each row to an average intensity, i = depth / (end − start), in m/day (the <code>[mm]</code> unit tag on the file name converts millimetres to metres). Intensities are placed at the middle of each interval and interpolated linearly between them, so the file should use intervals of equal length, as this one does. The rainfall delivered to a block is</p>
+<p>P = i · A</p>
+<p>where A is the block's area (m²). For this catchment, 1 mm/h corresponds to 288 m³/day.</p>
+<p><strong>Catchment water balance.</strong> The catchment stores water as a thin sheet with depth d = S / A, where S is the stored volume (m³). Its balance is</p>
+<p>dS/dt = C_r · P − Q</p>
+<p>where C_r is the runoff coefficient (0.9 here) and Q is the outflow through the <strong>Runoff</strong> link. The remaining fraction, (1 − C_r) · P, is reported as <code>Precipitation_loss</code> and never enters the storage. Evapotranspiration, external inflow and a first-order loss term (<code>loss_coefficient</code> · S) are available on the Catchment block but are not used here.</p>
+<p><strong>Outflow.</strong> The Runoff link is a <code>Catchment_link</code>, which applies Manning's equation to a wide, shallow sheet of flow:</p>
+<p>Q = 86400 · (W / n) · s^0.5 · max(d − d_s, 0)^(5/3)</p>
+<p>with width W = 100 m, Manning's n = 0.015, slope s = 0.005 and depression storage d_s = 0 m. The factor 86400 converts m³/s to m³/day. Because Q grows with depth to the power 5/3, the catchment behaves as a nonlinear reservoir: a deeper sheet drains much faster than a shallow one. Only the catchment's own depth enters the equation, so the outlet cannot back water up onto the catchment.</p>
+<p><strong>Outlet.</strong> The Outlet is a <code>fixed_head</code> block. Its head and storage are held constant, so it absorbs any flow it receives. Its only role is to give the runoff somewhere to go.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Fast response.</strong> Runoff peaks within about 15 minutes of the rainfall peak. With a 5.3 mm sheet, Q ≈ 6,600 m³/day and S ≈ 64 m³, so the catchment's characteristic response time, S / ((5/3)·Q), is about 8 minutes. A paved surface of this size provides almost no attenuation at hourly resolution.</li>
+<li><strong>Peak flow follows intensity, not storm total.</strong> The storm on day 9 (41 mm, with 31 mm in its wettest hour) produces the largest runoff peak, about 6,600 m³/day. The day 17 storm deposits twice as much rain (85 mm) but more steadily, never exceeding about 10 mm/h, and its runoff peak is less than half as large.</li>
+<li><strong>Small depths.</strong> The ponded depth stays below about 5 mm. After each storm it recedes over a few hours. Because Q ∝ d^(5/3), the tail of the recession is slow: a fraction of a millimetre remains for a day or more.</li>
+<li><strong>Water balance.</strong> 381.8 mm over 1.2 ha is 4,581 m³ of rain. With C_r = 0.9, 4,123 m³ enters the catchment storage, and essentially all of it has reached the outlet by the end of the run.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The catchment is a single, uniform storage. There is no routing along the flow path, so the hydrograph shape comes only from the nonlinear storage-outflow relation.</li>
+<li>Losses are a fixed fraction of rainfall (the runoff coefficient). There is no infiltration capacity, no initial abstraction and no evaporation between storms. Pervious catchments are better represented with the soil or curve-number examples.</li>
+<li>Rainfall is uniform over the catchment and known at hourly resolution. Within each hour the intensity is interpolated linearly, so bursts shorter than an hour are smoothed.</li>
+<li>The outlet is a free boundary: tailwater in the drain does not affect the runoff.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 340 920 366" class="ohq-diagram" style="max-width:460px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Runoff"><title>Runoff (Catchment_link)</title><path d="M200.0 500.0 L400.0 500.0 L600.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Catchment"><title>Catchment (Catchment)</title><rect x="0" y="400" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="22" y="422" width="156" height="156"/>
+<text x="100" y="618" font-size="14" text-anchor="middle">Catchment</text></g>
+<g class="d-node" data-name="Outlet"><title>Outlet (fixed_head)</title><rect x="600" y="400" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="622" y="422" width="156" height="156"/>
+<text x="700" y="618" font-size="14" text-anchor="middle">Outlet</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>2</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Catchment'><summary><span class='cname'>Catchment</span><span class='ctype'>Catchment</span><span class='crole'><p>A 12,000 m² (1.2 ha) paved surface, 100 m wide and 120 m long in the flow direction, with a 0.5% slope and Manning's n of 0.015 (smooth asphalt). 90% of the rain becomes runoff; the other 10% is treated as lost (wetting, small depressions, evaporation).</p></span></summary><div class='cbody'><p class=type-help><b>Catchment:</b> Catchment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.015</td><td></td><td>The Manning&#x27;s roughness coefficient representing surface resistance to flow. Typical values vary by land cover type.</td></tr><tr><td>Precipitation</td><td class='v'>Rainfall</td><td>m^3/day</td><td>A precipitation source object must be selected.</td></tr><tr><td>Runoff coefficient</td><td class='v'>0.9</td><td></td><td>This is the fraction of rain that converts to runoff in case infiltration is not explicitly modeled</td></tr><tr><td>Catchment slope in the direction of flow</td><td class='v'>0.005</td><td></td><td>The average slope of the catchment along the dominant flow direction</td></tr><tr><td>The width of the catchment</td><td class='v'>100</td><td>m</td><td>The average width of the catchment perpendicular to the dominant flow direction</td></tr><tr><td>Catchment area</td><td class='v'>12000</td><td>m<sup>2</sup></td><td>Total horizontal surface area of the catchment. Used to compute initial storage and flow-related parameters.</td></tr><tr><td>Depression storage</td><td class='v'>0</td><td>m</td><td>The depth of water that is retained in surface depressions and does not contribute to surface runoff.</td></tr><tr><td>Average water depth</td><td class='v'>0</td><td>m</td><td>The initial depth of the standing water before the simulation start time. Most of the times, this value is zero</td></tr><tr><td>Mean elevation of the catchment</td><td class='v'>0</td><td>m</td><td>The elevation of the centroid of the catchment based on the model datum.</td></tr><tr><td>Loss coefficient</td><td class='v'>0</td><td>1/day</td><td>A coefficient representing losses (e.g., infiltration or leakage) as a first-order rate constant. Used in loss expression.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Outlet'><summary><span class='cname'>Outlet</span><span class='ctype'>fixed_head</span><span class='crole'><p>The drainage point of the catchment, for example a storm drain inlet. A fixed-head boundary at 0 m that accepts any flow without filling up.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Head</td><td class='v'>0</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>1</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Runoff'><summary><span class='cname'>Runoff</span><span class='ctype'>Catchment_link</span><span class='crole'><p>Sheet flow leaving the catchment, computed from Manning's equation with the catchment's ponded water depth. Always directed from Catchment to Outlet.</p></span></summary><div class='cbody'><p class=type-help><b>Catchment_link:</b> Link from a catchment</p></div></details>
+</div>
+<h3>Sources <small>1</small></h3><p class='kind-blurb'>External inputs or sinks applied to blocks: rainfall, evaporation, loads, exchange with the atmosphere.</p><div class='comp-list'>
+<details class='comp' id='c-Rainfall'><summary><span class='cname'>Rainfall</span><span class='ctype'>Precipitation</span><span class='crole'><p>Hourly rainfall depths read from <code>rainfall.csv</code>. Any block that names this source as its precipitation receives the intensity multiplied by the block's area.</p></span></summary><div class='cbody'><p class=type-help><b>Precipitation:</b> Precipitation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Precipitation Cumulative</td><td class='v'>rainfall.csv</td><td>mm</td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>rainfall.csv</code></td><td><p>Hourly rainfall. Three columns, comma separated, no header: interval start (days), interval end (days), rainfall depth in that interval (mm). Day 0 is 10 August 2011 at 00:00; the record covers 36 days (864 hourly intervals, 381.8 mm in total). Extracted from the sample rain gauge record distributed with the OpenHydroQual tutorials.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>36</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Effective rainfall and runoff' loading='lazy'><figcaption><b>Effective rainfall and runoff</b> Runoff follows the rainfall within minutes. Peaks are set by the most intense hour of a storm, not by its total depth.</figcaption></figure><figure><img src='plot_2.png' alt='Ponded water depth on the catchment' loading='lazy'><figcaption><b>Ponded water depth on the catchment</b> The sheet of water on the pavement never exceeds about 5 mm and drains away within a few hours after rain stops.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/rain-on-catchment">View source on GitHub</a>.</div></footer>
+</body></html>

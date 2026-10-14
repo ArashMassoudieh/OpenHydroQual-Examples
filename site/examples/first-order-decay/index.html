@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First-Order Decay in a Batch Reactor · OpenHydroQual Examples</title>
+<meta name="description" content="One constituent decays exponentially in a closed, well-mixed reactor. The computed concentration is compared with the exact solution C₀·e^(−kt).">
+<meta name="keywords" content="decay, first order, batch, batch reactor, kinetics, rate constant, half-life, degradation, exponential, radioactive decay, die-off, reaction, stoichiometry, verification, validation, analytical solution">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#2f7dd1">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Getting Started</div>
+<h1>First-Order Decay in a Batch Reactor</h1>
+<p class="lede">One constituent decays exponentially in a closed, well-mixed reactor. The computed concentration is compared with the exact solution C₀·e^(−kt).</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class=''></b><b class=''></b><span>Beginner</span></span><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/first-order-decay.zip" download>Download model (.zip)</a>
+    <div class="muted">4 KB · 2 files · open <code>first_order_decay.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>The simplest reaction model: a single substance disappearing at a rate proportional to its own concentration, in a closed container. First-order kinetics describe radioactive decay, the die-off of bacteria, hydrolysis and the biodegradation of many dilute organic compounds. A batch experiment like this one is how a first-order rate constant is usually measured in the laboratory.</p>
+<p>The model also introduces the three objects every OpenHydroQual water-quality model is built from: a <strong>constituent</strong> (what is being tracked), a <strong>reaction parameter</strong> (a named coefficient) and a <strong>reaction</strong> (a rate expression with stoichiometry). Because the exact solution is known, the example doubles as a verification test.</p>
+<h2>How it works</h2>
+<p>The Batch_Reactor is a <code>Reactor</code> block with a fixed volume V = 1 m³ and no inflow or outflow. OpenHydroQual tracks the mass of A in the reactor, M (g), and reports the concentration C = M / V. Each reaction contributes V · ν · r to the mass balance, where ν is the stoichiometric coefficient of the constituent and r is the reaction rate in g/m³/day. With the Decay reaction, ν = −1 and r = k·A, so</p>
+<p>dC/dt = −k · C</p>
+<p>with exact solution</p>
+<p>C(t) = C₀ · e^(−k·t)</p>
+<p>where C₀ = 2 g/m³ and k = 0.7 per day. The half-life is ln 2 / k = 0.99 days. The file <code>exact_solution.csv</code> tabulates this function every 0.1 days and is overlaid on both plots.</p>
+<p><strong>The rate constant.</strong> k is a <code>ReactionParameter</code>. Its value is computed as base_value · θ^(T − T_ref). Here θ (the Arrhenius factor) is 1, so k equals its base value of 0.7 per day at all times. The Temperature-Dependent Kinetics example shows what happens when θ is not 1.</p>
+<p><strong>Time stepping.</strong> OpenHydroQual integrates the equations with a fully implicit (backward Euler) scheme. Here the time step is held at 0.01 days (<code>max_timestep_increase_factor</code> = 1), which keeps the step-to-step change in C below 1%.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Agreement with theory.</strong> The computed curve lies on the exact solution. The difference is less than 1% of the exact value over the whole run (for example 0.0607 against 0.0604 g/m³ at day 5). It comes from the time discretization: backward Euler multiplies C by 1/(1 + k·Δt) each step, slightly less decay per step than e^(−k·Δt), so the error grows slowly with time and shrinks in proportion to Δt.</li>
+<li><strong>Half-life.</strong> C drops to 1 g/m³ at about 1 day, 0.5 g/m³ at 2 days, and 0.25 g/m³ at 3 days.</li>
+<li><strong>Straight line on a log scale.</strong> The second plot shows ln C falling linearly with slope −k. This is the usual test for whether measured data follow first-order kinetics.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The reactor is closed and perfectly mixed. There is no inflow, outflow, sorption or volatilization.</li>
+<li>The rate constant is constant in time. Many real decay processes slow down as conditions change (temperature, microbial population, competing substrates).</li>
+<li>The decay product is not tracked. To follow it, add a second constituent with a positive stoichiometric coefficient in the same reaction (see the Multi-Species Reaction Network example).</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="340 240 320 366" class="ohq-diagram" style="max-width:160px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-node" data-name="Batch_Reactor"><title>Batch_Reactor (Reactor)</title><rect x="400" y="300" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="422" y="322" width="156" height="156"/>
+<text x="500" y="518" font-size="14" text-anchor="middle">Batch_Reactor</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>1</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Batch-Reactor'><summary><span class='cname'>Batch_Reactor</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A closed, well-mixed vessel of 1 m³ with no inflow or outflow. It starts with 2 g/m³ of A.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>A: Concentration</td><td class='v'>2</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Initial Storage</td><td class='v'>1</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>1</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-A'><summary><span class='cname'>A</span><span class='ctype'>Constituent</span><span class='crole'><p>The decaying substance, for example a degradable organic compound, a radionuclide or a pathogen indicator.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/s</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>1</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-k'><summary><span class='cname'>k</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>First-order decay rate constant, 0.7 per day (half-life 0.99 days). Its Arrhenius factor is 1, so it does not depend on temperature.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.7</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reactions <small>1</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-Decay'><summary><span class='cname'>Decay</span><span class='ctype'>Reaction</span><span class='crole'><p>The reaction that removes A, with rate k·A and stoichiometric coefficient −1 for A.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k*A)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>A</td><td class='v'>-1</td></tr></tbody></table></div></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>exact_solution.csv</code></td><td></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>5</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Concentration of A' loading='lazy'><figcaption><b>Concentration of A</b> A halves roughly every day, from 2 g/m³ to 0.06 g/m³ after 5 days, on top of the exact solution.</figcaption></figure><figure><img src='plot_2.png' alt='Concentration of A, logarithmic scale' loading='lazy'><figcaption><b>Concentration of A, logarithmic scale</b> On a log scale first-order decay is a straight line with slope −k.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/first-order-decay">View source on GitHub</a>.</div></footer>
+</body></html>

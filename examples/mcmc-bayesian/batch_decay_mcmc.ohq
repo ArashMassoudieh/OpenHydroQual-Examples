@@ -1,0 +1,37 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = mass_transfer.json
+create constituent;type=Constituent,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],diffusion_coefficient=0[m~^2/s],dispersivity=0[m],external_mass_flow_timeseries=,external_source=,name=Contaminant,stoichiometric_constant=0,time_variable_inflow_concentration=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=1,name=k,reference_temperature=20,temperature=
+create reaction;type=Reaction,Contaminant:stoichiometric_constant=-1,name=Biodegradation,rate_expression=(k*Contaminant)
+create block;type=Reactor,Contaminant:concentration=6[g/m~^3],Contaminant:constant_inflow_concentration=0[g/m~^3],Contaminant:external_mass_flow_timeseries=,Contaminant:external_source=,Contaminant:time_variable_inflow_concentration=,Storage=0.2[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Microcosm,time_variable_inflow=,x=400,y=300
+create observation;type=Observation,name=Concentration,object=Microcosm,expression=Contaminant:concentration,error_structure=log-normal,error_standard_deviation=0.3,comparison_method=Least Squared,observed_data=observed_concentration.csv
+create parameter;type=Parameter,name=p_k,low=0.01,high=10,value=1,prior_distribution=log-normal
+setasparameter; object=k, quantity=base_value, parametername=p_k
+create parameter;type=Parameter,name=p_C0,low=2,high=20,value=6,prior_distribution=normal
+setasparameter; object=Microcosm, quantity=Contaminant:concentration, parametername=p_C0
+create parameter;type=Parameter,name=p_sigma,low=0.01,high=1,value=0.3,prior_distribution=log-normal
+setasparameter; object=Concentration, quantity=error_standard_deviation, parametername=p_sigma
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=observed_outputfile, value=observedoutput.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=15
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=nr_tolerance, value=1e-06
+setvalue; object=system, quantity=write_interval, value=100
+setvalue; object=system, quantity=number_of_chains, value=8
+setvalue; object=system, quantity=number_of_samples, value=8000
+setvalue; object=system, quantity=number_of_burnout_samples, value=2000
+setvalue; object=system, quantity=initual_purturbation_factor, value=0.05
+setvalue; object=system, quantity=initial_purturbation, value=Yes
+setvalue; object=system, quantity=acceptance_rate, value=0.25
+setvalue; object=system, quantity=purturbation_change_scale, value=0.75
+setvalue; object=system, quantity=covariance_proposal, value=Yes
+setvalue; object=system, quantity=covariance_update_interval, value=1000
+setvalue; object=system, quantity=covariance_min_samples, value=500
+setvalue; object=system, quantity=covariance_scale, value=2.38
+setvalue; object=system, quantity=record_interval, value=1
+setvalue; object=system, quantity=number_of_post_estimate_realizations, value=200
+setvalue; object=system, quantity=add_noise_to_realizations, value=No
+setvalue; object=system, quantity=number_of_threads, value=2
+setvalue; object=system, quantity=samples_filename, value=mcmc.txt

@@ -142,6 +142,8 @@ def make_plots(meta, series, out_dir, ex_dir):
                     print(f"    ! plot '{p.get('title')}': column '{col}' not in output", file=sys.stderr)
                     continue
                 t, v = series[col]
+            if "scale" in s:  # unit conversion, e.g. m/day to mm/h
+                v = [x * s["scale"] for x in v]
             style = s.get("style", "line")
             if style == "points":
                 ax.plot(t, v, "o", ms=3.5, color=color, label=label, alpha=.85)
@@ -157,6 +159,15 @@ def make_plots(meta, series, out_dir, ex_dir):
         ax.set_ylabel(p.get("ylabel", ""))
         if p.get("logy"):
             ax.set_yscale("log")
+        for h in p.get("hlines", []) or []:  # reference levels: thresholds, crests, targets
+            ax.axhline(h["y"], color=h.get("color", "#7b8a9c"), lw=1, ls=":")
+            if h.get("label"):
+                ax.annotate(h["label"], xy=(1, h["y"]), xycoords=("axes fraction", "data"),
+                            xytext=(-4, 3), textcoords="offset points", ha="right", fontsize=8, color="#4a5a6d")
+        if p.get("xlim"):
+            ax.set_xlim(*p["xlim"])
+        if p.get("ylim"):
+            ax.set_ylim(*p["ylim"])
         ax.grid(True, color="#e3e8ef", lw=0.8)
         for sp in ("top", "right"):
             ax.spines[sp].set_visible(False)

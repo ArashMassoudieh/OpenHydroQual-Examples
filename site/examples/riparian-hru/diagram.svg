@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1770 876" class="ohq-diagram" style="max-width:885px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Upland_pervious_runoff"><title>Upland_pervious_runoff (Reach_link)</title><path d="M260.0 130.0 L390.0 130.0 L520.0 130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Upland_impervious_runoff"><title>Upland_impervious_runoff (Impervious_Reach_link)</title><path d="M260.0 148.0 L390.0 148.0 L520.0 148.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Upland_baseflow"><title>Upland_baseflow (groundwater_to_stream)</title><path d="M260.0 94.0 L390.0 94.0 L520.0 94.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Stream_reach"><title>Stream_reach (Trapezoidal_Channel_link)</title><path d="M746.7 230.0 L880.0 355.0 L1013.3 480.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Riparian_pervious_runoff"><title>Riparian_pervious_runoff (Reach_link)</title><path d="M760.0 580.0 L880.0 580.0 L1000.0 580.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Riparian_impervious_runoff"><title>Riparian_impervious_runoff (Impervious_Reach_link)</title><path d="M760.0 598.0 L880.0 598.0 L1000.0 598.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Bank_exchange"><title>Bank_exchange (unconfined_groundwater_to_stream)</title><path d="M760.0 544.0 L880.0 544.0 L1000.0 544.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Stream_outlet"><title>Stream_outlet (channel2fixed)</title><path d="M1240.0 580.0 L1345.0 580.0 L1450.0 580.0" marker-mid="url(#arr)"/></g>
+<g class="d-node composite" data-name="Upland"><title>Upland (Mixed_Hydrologic_Response_Unit)</title><rect x="0" y="0" width="260" height="260" rx="21"/>
+<image href="icons/mixed_hydrologic_response_unit.png" x="29" y="29" width="203" height="203"/>
+<text x="130" y="293" font-size="25" text-anchor="middle">Upland</text></g>
+<g class="d-node composite" data-name="Riparian"><title>Riparian (Riparian_Urban_HRU)</title><rect x="500" y="450" width="260" height="260" rx="21"/>
+<image href="icons/urban_hru.png" x="529" y="479" width="203" height="203"/>
+<text x="630" y="743" font-size="25" text-anchor="middle">Riparian</text></g>
+<g class="d-node" data-name="Upper_stream"><title>Upper_stream (Trapezoidal Channel Segment)</title><rect x="520" y="30" width="240" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="562" y="52" width="156" height="156"/>
+<text x="640" y="263" font-size="25" text-anchor="middle">Upper_stream</text></g>
+<g class="d-node" data-name="Lower_stream"><title>Lower_stream (Trapezoidal Channel Segment)</title><rect x="1000" y="480" width="240" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1042" y="502" width="156" height="156"/>
+<text x="1120" y="713" font-size="25" text-anchor="middle">Lower_stream</text></g>
+<g class="d-node" data-name="Outlet"><title>Outlet (fixed_head)</title><rect x="1450" y="480" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1472" y="502" width="156" height="156"/>
+<text x="1550" y="713" font-size="25" text-anchor="middle">Outlet</text></g>
+</svg>

@@ -1,0 +1,16 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = mass_transfer.json
+create block;type=Reactor,Storage=1000[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],time_variable_inflow=,name=Upstream,x=0,y=300
+create block;type=Reactor,Storage=1000[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],time_variable_inflow=,name=Downstream,x=700,y=300
+create block;type=Reactor,Storage=1000[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],time_variable_inflow=,name=Receiving_Tank,x=700,y=900
+create link;from=Upstream,to=Downstream,type=Fixed flow,flow=30[m~^3/day],name=Pipe_A
+create link;from=Upstream,to=Downstream,type=Fixed flow,flow=20[m~^3/day],name=Pipe_B
+create link;from=Downstream,to=Upstream,type=Fixed flow,flow=5[m~^3/day],name=Return_Pump
+create link;from=Downstream,to=Receiving_Tank,type=Fixed flow,flow=10[m~^3/day],name=Outlet_Pipe
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=30
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=max_timestep_increase_factor, value=1
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=10

@@ -1,0 +1,26 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = mass_transfer.json
+create constituent;type=Constituent,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],diffusion_coefficient=0[m~^2/s],dispersivity=0[m],external_mass_flow_timeseries=,external_source=,name=Ammonium,stoichiometric_constant=0,time_variable_inflow_concentration=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=1,name=k_n,reference_temperature=20,temperature=
+create reaction;type=Reaction,Ammonium:stoichiometric_constant=-1,name=Nitrification,rate_expression=(k_n*Ammonium)
+create block;type=Reactor,Ammonium:concentration=6[g/m~^3],Ammonium:constant_inflow_concentration=0[g/m~^3],Ammonium:external_mass_flow_timeseries=,Ammonium:external_source=,Ammonium:time_variable_inflow_concentration=inflow_concentration.txt,Storage=100[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=100[m~^3/day],name=Basin,time_variable_inflow=,x=200,y=300
+create block;type=Reactor,Ammonium:concentration=0[g/m~^3],Ammonium:constant_inflow_concentration=0[g/m~^3],Ammonium:external_mass_flow_timeseries=,Ammonium:external_source=,Ammonium:time_variable_inflow_concentration=,Storage=100000[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Receiving_Water,time_variable_inflow=,x=650,y=300
+create link;from=Basin,to=Receiving_Water,type=Fixed flow,flow=100[m~^3/day],name=Outlet
+create observation;type=Observation,name=Effluent_NH4,object=Basin,expression=Ammonium:concentration,error_structure=normal,error_standard_deviation=0.5,comparison_method=Least Squared,error_autocorrelation=none,observed_data=sensor_effluent_NH4.csv
+create parameter;type=Parameter,name=p_k_n,low=0.1,high=20,value=1,prior_distribution=log-normal
+setasparameter; object=k_n, quantity=base_value, parametername=p_k_n
+create parameter;type=Parameter,name=p_V,low=5,high=500,value=100,prior_distribution=log-normal
+setasparameter; object=Basin, quantity=Storage, parametername=p_V
+create parameter;type=Parameter,name=p_sigma,low=0.001,high=10,value=0.5,prior_distribution=log-normal
+setasparameter; object=Effluent_NH4, quantity=error_standard_deviation, parametername=p_sigma
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=observed_outputfile, value=observedoutput.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=10
+setvalue; object=system, quantity=initial_time_step, value=0.005
+setvalue; object=system, quantity=max_timestep_increase_factor, value=4
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=nr_tolerance, value=1e-08
+setvalue; object=system, quantity=write_interval, value=100
+setvalue; object=LM, quantity=max_iterations, value=40
+setvalue; object=LM, quantity=lm_numthreads, value=2

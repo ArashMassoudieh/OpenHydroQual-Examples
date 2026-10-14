@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Pond: Forecast-Based Release · OpenHydroQual Examples</title>
+<meta name="description" content="Two identical ponds receive runoff from identical 1 ha catchments through a wet summer. The smart pond opens a valve when rain is forecast for the next four days and holds its water otherwise; the passive pond can only spill. Pre-release cuts spillway overflow by almost 80 %.">
+<meta name="keywords" content="real-time control, rtc, smart pond, smart stormwater, forecast, rainfall forecast, predictive control, pre-release, predictive release, active control, valve, flow control, gaussian kernel, overflow, spillway, detention pond, retention pond, rainwater harvesting, cmac, continuous monitoring and adaptive control">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#5b9a2c">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Stormwater &amp; Green Infrastructure</div>
+<h1>Smart Pond: Forecast-Based Release</h1>
+<p class="lede">Two identical ponds receive runoff from identical 1 ha catchments through a wet summer. The smart pond opens a valve when rain is forecast for the next four days and holds its water otherwise; the passive pond can only spill. Pre-release cuts spillway overflow by almost 80 %.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class='f'></b><span>Advanced</span></span><a class='plug' href='../../?plugin=precipitation_forcast'>precipitation_forcast</a><a class='plug' href='../../?plugin=Pond_Plugin'>Pond_Plugin</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/smart-pond-forecast.zip" download>Download model (.zip)</a>
+    <div class="muted">22 KB · 2 files · open <code>smart_pond.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A conventional stormwater pond is passive: its outlet is a fixed orifice or weir, so the pond cannot tell a dry week from the day before a hurricane. If the pond is meant to keep water (for irrigation, for a permanent pool that settles sediment, or to avoid sending water downstream at all), it is usually full when the next storm arrives and the storm runs straight over the spillway.</p>
+<p>A <strong>smart pond</strong> (also called real-time control, or continuous monitoring and adaptive control, CMAC) adds an actuated valve and a rule that uses a rainfall forecast. When rain is expected, the valve opens and the pond releases water slowly, at a rate the receiving stream can take, so that the pond has room when the storm arrives. When no rain is expected, the valve stays closed and the pond keeps its water.</p>
+<p>This example runs two identical 1 ha paved catchments, each draining to an identical 300 m³ pond, through five months of observed hourly rainfall (June to October 2010). The only difference is the valve:</p>
+<ul>
+<li><strong>Smart_Pond</strong> has a forecast-controlled valve plus a spillway.</li>
+<li><strong>Passive_Pond</strong> has only the spillway.</li>
+</ul>
+<p>Comparing the two shows what pre-release buys (less overflow) and what it costs (less water kept in storage).</p>
+<h2>How it works</h2>
+<p><strong>Runoff.</strong> Each catchment is a single paved surface. Rain enters its storage and leaves by kinematic sheet flow (<code>Catchment_link</code>):</p>
+<p>Q = 86400 · (W/n) · S^½ · (d − d_s)₊^(5/3)</p>
+<p>with width W = 100 m, slope S = 0.01, n = 0.015, depth d = storage/area and depression storage d_s = 1 mm. Q is in m³/day.</p>
+<p><strong>Ponds.</strong> Both ponds have the power-law stage-storage relation S = α·d^β with α = 133.3 and β = 2, so</p>
+<p>d ≈ (S/α)^(1/β),  surface area = α·β·d^(β−1)</p>
+<p>(The code evaluates d = (S²/(α(S + 0.1)))^(1/β), which equals (S/α)^(1/β) except for a smoothing below about 0.1 m³.) At the crest depth of 1.5 m each pond holds 300 m³ (30 mm of runoff from its catchment) and has a 400 m² water surface. Rain also falls directly on the pond surface, at a rate equal to intensity × surface area. There is no evaporation or seepage.</p>
+<p><strong>Spillways.</strong> Each pond spills over a weir, Q = α_w · (h − z_c)₊^β_w with α_w = 290,000 m³/day per m^1.5, β_w = 1.5 and crest z_c = 1.5 m. This is a broad-crested weir with a discharge coefficient of about 1.7 m^0.5/s and a length of 2 m.</p>
+<p><strong>Forecast indicator.</strong> The valve reads the rainfall file directly and computes a kernel-weighted rainfall intensity over the coming days (<code>kernel_smoothed_forcast</code>):</p>
+<p>F(t) = ∫ i(τ) · (1/(σ√(2π))) · exp(−(τ − t − μ)² / (2σ²)) dτ,  τ from t + μ − 2σ to t + μ + 2σ</p>
+<p>where i is the rain intensity (m/day), μ is the <code>kernel_delay_parameter</code> (2 days) and σ the <code>kernel_spread_parameter</code> (1 day). The integral is evaluated with the trapezoidal rule on the rainfall series and truncated at ±2σ, so it covers 95 % of the kernel weight. With μ = 2σ the window runs from now to 4 days ahead: F never looks at past rain. F has the units of an intensity. For example, 12.5 mm of rain falling exactly 2 days ahead gives F = 0.0125 m × 0.399 day⁻¹ = 0.005 m/day; the same rain 3.5 days ahead counts for about a third as much.</p>
+<p>Because F is computed from the observed record, this is a <strong>perfect forecast blurred in time</strong>. The kernel spreads each storm over several days, which mimics uncertainty in timing but not in amount. (The plugin also provides <code>Flow_control_device (function uncertain)</code> variants that blend the real record with a corrupted one to represent forecast error.)</p>
+<p><strong>Valve rule.</strong> The release is a piecewise-linear function of F:</p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Release</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F &lt; S_min</td>
+<td>c·Q_min</td>
+</tr>
+<tr>
+<td>S_min &lt; F &lt; S_max</td>
+<td>c·(Q_min + (F − S_min)/(S_max − S_min) · (Q_max − Q_min))</td>
+</tr>
+<tr>
+<td>F &gt; S_max</td>
+<td>c·Q_max</td>
+</tr>
+</tbody>
+</table>
+<p>with S_min = 0, S_max = 0.005 m/day, Q_min = 0, Q_max = 200 m³/day and flow coefficient c = 1. At full opening the valve can empty a full pond in 1.5 days. The conditions are strict inequalities, so a value of F exactly equal to S_min or S_max matches no branch and gives zero release. With Q_min = 0 this has no effect here; with a nonzero Q_min and S_min = 0 the valve would close completely whenever no rain at all is forecast.</p>
+<p>The release does not depend on the water level: the device behaves like a pump or a flow-regulating valve. When the pond runs dry, the solver limits the outflow of the empty pond so its storage cannot become negative, and the reported valve flow drops to whatever is flowing in.</p>
+<p><strong>Time step.</strong> <code>max_timestep_increase_factor = 1</code> keeps every step at 0.01 day (14.4 minutes). With larger steps the pond and catchment water balances in this model failed to close by up to 3 %, so the step is held fixed; the run then takes about 10 seconds.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Pre-release before each storm.</strong> F rises one to three days before each storm. The smart pond is drawn down, and by the start of every large storm in the record it is empty. During the 30 mm storm of day 39 (10 July) the smart pond fills only to 1.31 m and does not spill, while the passive pond, already full, spills its entire inflow.</li>
+<li><strong>Holding water after storms.</strong> After a storm passes, F drops back to zero within a day or two if nothing else is forecast, the valve closes, and the smart pond keeps whatever it caught. Its level then stays flat until the next forecast.</li>
+<li><strong>Overflow reduction.</strong> Over the 152 days, about 4,830 m³ of runoff reaches each pond. The passive pond spills 4,870 m³ (all of the runoff plus the rain on its surface, in about 30 separate spills). The smart pond spills 1,030 m³, about 21 %, and the remaining 3,780 m³ leaves through the valve at no more than 200 m³/day (2.3 L/s).</li>
+<li><strong>Limits of pre-release.</strong> Two events are too large for a 300 m³ pond even when it starts empty: 47 mm on day 42 (13 July), which arrived three days after a 30 mm storm and one day after another 10 mm, and 118 mm on day 121 (30 September). In these the smart pond fills and spills with peaks of 3,770 and 4,450 m³/day, against 4,620 and 4,660 m³/day from the passive pond. Pre-release reduces the overflow volume of large storms but does not attenuate their peak.</li>
+<li><strong>The cost.</strong> The smart pond holds on average 98 m³ (33 % of capacity) and is empty 29 % of the time; the passive pond averages 295 m³. Each opening of the valve trades stored water for capacity, including for forecasts of storms that turn out small. Raising S_max, shortening the forecast window or adding a Q_min changes this trade-off.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The forecast is the observed rainfall, smoothed by the kernel. Real forecasts also miss or overstate storms; this model gives an upper bound on the benefit of forecast-based control.</li>
+<li>The valve release is imposed and independent of head. A real valve or orifice would release less at low water levels.</li>
+<li>No evaporation, infiltration or water withdrawal from the ponds. In a real harvesting or wet pond, evaporation would draw down the passive pond between storms and give it some capacity.</li>
+<li>The catchments are fully paved, with no infiltration, so all rain except depression storage becomes runoff.</li>
+<li>Downstream effects are not modelled: the stream is a fixed head, so the benefit of releasing water at 200 m³/day in place of spilling at over 4,000 m³/day is visible only in the flow rates.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1170 816" class="ohq-diagram" style="max-width:585px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Runoff_A"><title>Runoff_A (Catchment_link)</title><path d="M200.0 100.0 L300.0 100.0 L400.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_B"><title>Runoff_B (Catchment_link)</title><path d="M200.0 550.0 L300.0 550.0 L400.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Forecast_Valve"><title>Forecast_Valve (Flow_control_device_(Gaussian_Kernel))</title><path d="M600.0 150.0 L725.0 212.5 L850.0 275.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Smart_Spillway"><title>Smart_Spillway (wier)</title><path d="M592.0 166.1 L717.0 228.6 L842.0 291.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Passive_Spillway"><title>Passive_Spillway (wier)</title><path d="M600.0 500.0 L725.0 437.5 L850.0 375.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Catchment_A"><title>Catchment_A (Catchment)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="224" font-size="18" text-anchor="middle">Catchment_A</text></g>
+<g class="d-node" data-name="Catchment_B"><title>Catchment_B (Catchment)</title><rect x="0" y="450" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="22" y="472" width="156" height="156"/>
+<text x="100" y="674" font-size="18" text-anchor="middle">Catchment_B</text></g>
+<g class="d-node" data-name="Smart_Pond"><title>Smart_Pond (Pond)</title><rect x="400" y="0" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="422" y="22" width="156" height="156"/>
+<text x="500" y="224" font-size="18" text-anchor="middle">Smart_Pond</text></g>
+<g class="d-node" data-name="Passive_Pond"><title>Passive_Pond (Pond)</title><rect x="400" y="450" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="422" y="472" width="156" height="156"/>
+<text x="500" y="674" font-size="18" text-anchor="middle">Passive_Pond</text></g>
+<g class="d-node" data-name="Stream"><title>Stream (fixed_head)</title><rect x="850" y="225" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="872" y="247" width="156" height="156"/>
+<text x="950" y="449" font-size="18" text-anchor="middle">Stream</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>5</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Catchment-A'><summary><span class='cname'>Catchment_A</span><span class='ctype'>Catchment</span><span class='crole'><p>1 ha paved surface (parking lot or roof) draining to the smart pond: kinematic sheet flow with 100 m flow width, slope 0.01, Manning n = 0.015 and 1 mm of depression storage.</p></span></summary><div class='cbody'><p class=type-help><b>Catchment:</b> Catchment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Catchment area</td><td class='v'>10000</td><td>m<sup>2</sup></td><td>Total horizontal surface area of the catchment. Used to compute initial storage and flow-related parameters.</td></tr><tr><td>The width of the catchment</td><td class='v'>100</td><td>m</td><td>The average width of the catchment perpendicular to the dominant flow direction</td></tr><tr><td>Catchment slope in the direction of flow</td><td class='v'>0.01</td><td></td><td>The average slope of the catchment along the dominant flow direction</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.015</td><td></td><td>The Manning&#x27;s roughness coefficient representing surface resistance to flow. Typical values vary by land cover type.</td></tr><tr><td>Depression storage</td><td class='v'>0.001</td><td>m</td><td>The depth of water that is retained in surface depressions and does not contribute to surface runoff.</td></tr><tr><td>Runoff coefficient</td><td class='v'>1</td><td></td><td>This is the fraction of rain that converts to runoff in case infiltration is not explicitly modeled</td></tr><tr><td>Loss coefficient</td><td class='v'>0</td><td>1/day</td><td>A coefficient representing losses (e.g., infiltration or leakage) as a first-order rate constant. Used in loss expression.</td></tr><tr><td>Mean elevation of the catchment</td><td class='v'>5</td><td>m</td><td>The elevation of the centroid of the catchment based on the model datum.</td></tr><tr><td>Average water depth</td><td class='v'>0</td><td>m</td><td>The initial depth of the standing water before the simulation start time. Most of the times, this value is zero</td></tr><tr><td>Precipitation</td><td class='v'>Rain</td><td>m^3/day</td><td>A precipitation source object must be selected.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Catchment-B'><summary><span class='cname'>Catchment_B</span><span class='ctype'>Catchment</span><span class='crole'><p>Identical to Catchment_A, draining to the passive pond.</p></span></summary><div class='cbody'><p class=type-help><b>Catchment:</b> Catchment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Catchment area</td><td class='v'>10000</td><td>m<sup>2</sup></td><td>Total horizontal surface area of the catchment. Used to compute initial storage and flow-related parameters.</td></tr><tr><td>The width of the catchment</td><td class='v'>100</td><td>m</td><td>The average width of the catchment perpendicular to the dominant flow direction</td></tr><tr><td>Catchment slope in the direction of flow</td><td class='v'>0.01</td><td></td><td>The average slope of the catchment along the dominant flow direction</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.015</td><td></td><td>The Manning&#x27;s roughness coefficient representing surface resistance to flow. Typical values vary by land cover type.</td></tr><tr><td>Depression storage</td><td class='v'>0.001</td><td>m</td><td>The depth of water that is retained in surface depressions and does not contribute to surface runoff.</td></tr><tr><td>Runoff coefficient</td><td class='v'>1</td><td></td><td>This is the fraction of rain that converts to runoff in case infiltration is not explicitly modeled</td></tr><tr><td>Loss coefficient</td><td class='v'>0</td><td>1/day</td><td>A coefficient representing losses (e.g., infiltration or leakage) as a first-order rate constant. Used in loss expression.</td></tr><tr><td>Mean elevation of the catchment</td><td class='v'>5</td><td>m</td><td>The elevation of the centroid of the catchment based on the model datum.</td></tr><tr><td>Average water depth</td><td class='v'>0</td><td>m</td><td>The initial depth of the standing water before the simulation start time. Most of the times, this value is zero</td></tr><tr><td>Precipitation</td><td class='v'>Rain</td><td>m^3/day</td><td>A precipitation source object must be selected.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Smart-Pond'><summary><span class='cname'>Smart_Pond</span><span class='ctype'>Pond · Pond_Plugin</span><span class='crole'><p>Pond with storage S = 133.3·d² (300 m³ and 400 m² at the 1.5 m spillway crest). It drains through the forecast-controlled valve and, when full, over its spillway. Starts at 150 m³.</p></span></summary><div class='cbody'><p class=type-help><b>Pond:</b> Stormwater pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>The coefficient (α) in the rating curve S = α d^β</td><td class='v'>133.3</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>The exponent (β) in the rating curve S = α d^β</td><td class='v'>2</td><td></td><td>The exponent (β) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Bottom elevation of pond</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>150</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the pond at the beginning of the simulation.</td></tr><tr><td>precipitation time series</td><td class='v'>Rain</td><td>m^3/day</td><td>Select a precipitation source object that provides rainfall input to the pond.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Passive-Pond'><summary><span class='cname'>Passive_Pond</span><span class='ctype'>Pond · Pond_Plugin</span><span class='crole'><p>Identical pond with no valve: water leaves only over the spillway. This is the baseline.</p></span></summary><div class='cbody'><p class=type-help><b>Pond:</b> Stormwater pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>The coefficient (α) in the rating curve S = α d^β</td><td class='v'>133.3</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>The exponent (β) in the rating curve S = α d^β</td><td class='v'>2</td><td></td><td>The exponent (β) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Bottom elevation of pond</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>150</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the pond at the beginning of the simulation.</td></tr><tr><td>precipitation time series</td><td class='v'>Rain</td><td>m^3/day</td><td>Select a precipitation source object that provides rainfall input to the pond.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Stream'><summary><span class='cname'>Stream</span><span class='ctype'>fixed_head</span><span class='crole'><p>Fixed-head receiving water at −1 m, below both pond bottoms, so neither outlet is affected by tailwater.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>-1</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>5</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Runoff-A'><summary><span class='cname'>Runoff_A</span><span class='ctype'>Catchment_link</span><span class='crole'><p>Catchment_link: sheet flow from Catchment_A to the smart pond.</p></span></summary><div class='cbody'><p class=type-help><b>Catchment_link:</b> Link from a catchment</p></div></details>
+<details class='comp' id='c-Runoff-B'><summary><span class='cname'>Runoff_B</span><span class='ctype'>Catchment_link</span><span class='crole'><p>Catchment_link: sheet flow from Catchment_B to the passive pond.</p></span></summary><div class='cbody'><p class=type-help><b>Catchment_link:</b> Link from a catchment</p></div></details>
+<details class='comp' id='c-Forecast-Valve'><summary><span class='cname'>Forecast_Valve</span><span class='ctype'>Flow_control_device_(Gaussian_Kernel) · precipitation_forcast</span><span class='crole'><p>Flow_control_device_(Gaussian_Kernel): a controlled outlet whose release is set by a kernel-weighted rainfall forecast for the next 4 days (mean lead 2 days, spread 1 day). Closed when no rain is forecast, fully open (200 m³/day) when the forecast indicator reaches 5 mm/day.</p></span></summary><div class='cbody'><p class=type-help><b>Flow_control_device_(Gaussian_Kernel):</b> Flow control device (Gaussian Kernel)</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Precipitation intensity</td><td class='v'>rainfall.csv</td><td></td><td></td></tr><tr><td>Mean kernel delay time</td><td class='v'>2</td><td>day</td><td>The mean delay time of the gaussian kernel function for precipitation forcast</td></tr><tr><td>Kernel spread parameter</td><td class='v'>1</td><td>day</td><td>The spread parameter of the kernel function for precipitation forcast</td></tr><tr><td>Lower precipitation threshold</td><td class='v'>0</td><td>m/day</td><td></td></tr><tr><td>Upper precipitation threshold</td><td class='v'>0.005</td><td>m/day</td><td></td></tr><tr><td>Minimum flow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr><tr><td>Maximum flow</td><td class='v'>200</td><td>m<sup>3</sup>/day</td><td></td></tr><tr><td>Flow multiplier</td><td class='v'>1</td><td></td><td>This coefficient is multiplied by the Qmin and Qmax for flow control, often to correct for contributing catchment area</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Smart-Spillway'><summary><span class='cname'>Smart_Spillway</span><span class='ctype'>wier · Pond_Plugin</span><span class='crole'><p>Emergency spillway of the smart pond: weir Q = 290,000·(h − 1.5)^1.5 m³/day, crest at 1.5 m.</p></span></summary><div class='cbody'><p class=type-help><b>wier:</b> Weir based on a power-law rating curve</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Crest Elevation</td><td class='v'>1.5</td><td>m</td><td></td></tr><tr><td>Coefficient alpha in Q=alpha*(h-z_0)^beta (SI-day units)</td><td class='v'>290000</td><td></td><td></td></tr><tr><td>Exponent beta in Q=alpha*(h-z_0)^beta</td><td class='v'>1.5</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Passive-Spillway'><summary><span class='cname'>Passive_Spillway</span><span class='ctype'>wier · Pond_Plugin</span><span class='crole'><p>Spillway of the passive pond, identical to Smart_Spillway.</p></span></summary><div class='cbody'><p class=type-help><b>wier:</b> Weir based on a power-law rating curve</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Crest Elevation</td><td class='v'>1.5</td><td>m</td><td></td></tr><tr><td>Coefficient alpha in Q=alpha*(h-z_0)^beta (SI-day units)</td><td class='v'>290000</td><td></td><td></td></tr><tr><td>Exponent beta in Q=alpha*(h-z_0)^beta</td><td class='v'>1.5</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Sources <small>1</small></h3><p class='kind-blurb'>External inputs or sinks applied to blocks: rainfall, evaporation, loads, exchange with the atmosphere.</p><div class='comp-list'>
+<details class='comp' id='c-Rain'><summary><span class='cname'>Rain</span><span class='ctype'>Precipitation</span><span class='crole'><p>Observed hourly rainfall, June to October 2010 (484 mm in 152 days). It falls on both catchments and directly on both pond surfaces.</p></span></summary><div class='cbody'><p class=type-help><b>Precipitation:</b> Precipitation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Precipitation Cumulative</td><td class='v'>rainfall.csv</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>rainfall.csv</code></td><td><p>Hourly rainfall, three columns, no header: interval start (day), interval end (day), rain depth in the interval (m). Day 0 is 1 June 2010 00:00. Observed data from a Baltimore/Washington airport gauge, regridded to complete hourly intervals; it runs to 11 November 2010 so that the 4-day forecast window is filled until the end of the run. The record was distributed with earlier OpenHydroQual examples; its likely origin is the NOAA hourly precipitation archive.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>152</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>1</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Rainfall' loading='lazy'><figcaption><b>Rainfall</b> Observed rainfall from 1 June (day 0) to 31 October 2010 (day 152). The largest events are 47 mm on day 42 (13 July) and 118 mm on day 121 (30 September).</figcaption></figure><figure><img src='plot_2.png' alt='Forecast indicator seen by the valve' loading='lazy'><figcaption><b>Forecast indicator seen by the valve</b> F rises about two days before each storm and falls as the storm arrives. The valve is fully open whenever F exceeds 0.005 m/day.</figcaption></figure><figure><img src='plot_3.png' alt='Pond water depth' loading='lazy'><figcaption><b>Pond water depth</b> The passive pond sits at its 1.5 m crest almost all the time. The smart pond is drawn down before each storm, refills during it and then holds the water until the next forecast.</figcaption></figure><figure><img src='plot_4.png' alt='Controlled release from the smart pond' loading='lazy'><figcaption><b>Controlled release from the smart pond</b> Release follows the forecast indicator, capped at 200 m³/day. When the pond is empty the release is cut back to whatever flows in.</figcaption></figure><figure><img src='plot_5.png' alt='Spillway overflow' loading='lazy'><figcaption><b>Spillway overflow</b> The passive pond spills in every storm (4,870 m³ in total). The smart pond spills only in the two largest events (1,030 m³).</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/smart-pond-forecast">View source on GitHub</a>.</div></footer>
+</body></html>

@@ -1,0 +1,27 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = urban_water_management.json
+create block;type=Groundwater_Supply_wells,name=Well_Field,Storage=5000[m~^3],storage_capacity=10000[m~^3],maximum_production_rate=well_capacity.csv,constant_production_rate=0[m~^3/day],elevation=0[m],x=0,y=250,_width=200,_height=200
+create block;type=desalination_plant,name=Desalination_Plant,Storage=5000[m~^3],storage_capacity=10000[m~^3],maximum_production_rate=desalination_capacity.csv,constant_production_rate=0[m~^3/day],elevation=0[m],x=0,y=650,_width=200,_height=200
+create block;type=Water Storage,name=City_Storage,Storage=330000[m~^3],capacity=400000[m~^3],elevation=0[m],x=350,y=450,_width=200,_height=200
+create block;type=residential_user,name=Residential,Storage=0[m~^3],use_rate=residential_demand.csv,constant_use_rate=0[m~^3/day],x=700,y=0,_width=200,_height=200
+create block;type=commertial_user,name=Commercial,Storage=0[m~^3],use_rate=commercial_demand.csv,constant_use_rate=0[m~^3/day],x=700,y=300,_width=200,_height=200
+create block;type=industrial_user,name=Industrial,Storage=0[m~^3],use_rate=,constant_use_rate=12000[m~^3/day],x=700,y=600,_width=200,_height=200
+create block;type=agricultural_user,name=Urban_Farms,Storage=0[m~^3],use_rate=farm_irrigation_demand.csv,constant_use_rate=0[m~^3/day],x=700,y=900,_width=200,_height=200
+create block;type=Wastewater_Treatment_plant,name=Treatment_Plant,Storage=0[m~^3],capacity=5000[m~^3],maximum_production_rate=,constant_production_rate=10000[m~^3/day],elevation=0[m],x=1050,y=300,_width=200,_height=200
+create block;type=Amenities,name=Parks_Irrigation,Storage=0[m~^3],use_rate=park_irrigation_demand.csv,constant_use_rate=0[m~^3/day],x=1050,y=750,_width=200,_height=200
+create link;from=Well_Field,to=City_Storage,type=Water Transfer,name=Well_Supply
+create link;from=Desalination_Plant,to=City_Storage,type=Water Transfer,name=Desalination_Supply
+create link;from=City_Storage,to=Residential,type=Flow_to_user,name=Residential_Supply
+create link;from=City_Storage,to=Commercial,type=Flow_to_user,name=Commercial_Supply
+create link;from=City_Storage,to=Industrial,type=Flow_to_user,name=Industrial_Supply
+create link;from=City_Storage,to=Urban_Farms,type=Flow_to_user_low_priority,name=Farm_Supply,storage_threshold=100000[m~^3]
+create link;from=Residential,to=Treatment_Plant,type=Wastewater_flow,name=Residential_Sewer,Recycling_coeff=0.8,Treatment_plant_efficiency=0.95
+create link;from=Commercial,to=Treatment_Plant,type=Wastewater_flow,name=Commercial_Sewer,Recycling_coeff=0.85,Treatment_plant_efficiency=0.95
+create link;from=Industrial,to=Treatment_Plant,type=Wastewater_flow,name=Industrial_Sewer,Recycling_coeff=0.7,Treatment_plant_efficiency=0.95
+create link;from=Treatment_Plant,to=Parks_Irrigation,type=Recycled_flow,name=Recycled_Water
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=365
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=1

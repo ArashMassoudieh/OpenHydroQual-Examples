@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Temperature-Dependent Kinetics · OpenHydroQual Examples</title>
+<meta name="description" content="Two identical treatment ponds remove BOD by first-order decay, one following a seasonal water temperature and one held at 20 °C. A block-specific, time-dependent reaction parameter carries each pond&#x27;s temperature into a θ-corrected rate expression.">
+<meta name="keywords" content="temperature, temperature correction, arrhenius, theta, van&#x27;t hoff, seasonal, time-dependent parameter, block-specific parameter, kinetics, forcing, bod, biochemical oxygen demand, first order decay, pond, lagoon, cstr, wastewater treatment, winter performance">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#1f9e89">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Reactions &amp; Water Quality</div>
+<h1>Temperature-Dependent Kinetics</h1>
+<p class="lede">Two identical treatment ponds remove BOD by first-order decay, one following a seasonal water temperature and one held at 20 °C. A block-specific, time-dependent reaction parameter carries each pond&#x27;s temperature into a θ-corrected rate expression.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/temperature-kinetics.zip" download>Download model (.zip)</a>
+    <div class="muted">7 KB · 3 files · open <code>temperature_kinetics.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>Biological and chemical reaction rates in natural and engineered waters change with temperature, typically roughly doubling for every 10 to 15 °C of warming. Treatment ponds and lagoons, which are not heated, therefore perform very differently in winter and summer. Design manuals handle this with the θ (theta) model: a rate measured at 20 °C is corrected to the water temperature T by k(T) = k20 · θ^(T − 20).</p>
+<p>This model runs two identical BOD-removing ponds side by side for one year. One follows a seasonal temperature cycle, the other is held at 20 °C, which is equivalent to using the laboratory rate constant without correction. The difference between them is the error made by ignoring temperature.</p>
+<p>The example also shows a modeling technique that differs from the one in the Multi-Species Reaction Network example. There, the built-in Arrhenius option of a <code>ReactionParameter</code> links a rate constant to one temperature series, which then applies to every block in the model. Here, temperature is a <strong><code>TimeDependent_ReactionParameter</code></strong>, whose value is set separately in each block. One reaction, with one rate expression, therefore runs at a different temperature in each pond.</p>
+<h2>How it works</h2>
+<p><strong>Reaction parameters.</strong> The model has three:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>k20</td>
+<td>ReactionParameter</td>
+<td>0.23 per day</td>
+</tr>
+<tr>
+<td>theta</td>
+<td>ReactionParameter</td>
+<td>1.047</td>
+</tr>
+<tr>
+<td>T_water</td>
+<td>TimeDependent_ReactionParameter</td>
+<td>a time series per block (°C)</td>
+</tr>
+</tbody>
+</table>
+<p>k20 and theta are plain constants: their own Arrhenius factor is set to 1, so their value equals their base value. T_water has no model-wide value. Instead, each block that holds the constituent carries a property <code>T_water:value</code> pointing to a time-series file: <code>water_temperature.csv</code> for Pond_Seasonal and Receiving_Water, <code>temperature_20C.csv</code> for Pond_20C. When a rate expression in a block uses T_water, OpenHydroQual takes the value from that block's own series at the current time.</p>
+<p><strong>Reaction.</strong> BOD_decay has stoichiometric coefficient −1 for BOD and the rate expression</p>
+<p>r = k20 · θ^(T_water − 20) · BOD</p>
+<p>The temperature correction is written directly into the rate expression, so any functional form could be used in its place (for example an Arrhenius expression in absolute temperature, or an optimum curve).</p>
+<p><strong>Pond mass balance.</strong> Each pond is a <code>Reactor</code> block with constant volume V = 10,000 m³ and constant inflow Q = 1,000 m³/day at C_in = 50 g/m³. The outflow link removes Q at the pond concentration. Each pond is therefore a stirred tank:</p>
+<p>dC/dt = (C_in − C) / τ − k(T) · C,  τ = V/Q = 10 days</p>
+<p>When k changes slowly compared with the pond's response time, C stays close to the steady state</p>
+<p>C ≈ C_in / (1 + k(T)·τ)</p>
+<p><strong>Temperature forcing.</strong> The seasonal series is a smooth sinusoid with a mean of 15 °C and an amplitude of 11 °C, so k ranges from 0.11 per day at 4 °C to 0.30 per day at 26 °C.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Seasonal effluent quality.</strong> In mid-January k = 0.11 per day and the steady state is 50 / (1 + 1.1) ≈ 23.8 g/m³. In mid-July k = 0.30 per day and it is 50 / (1 + 3.0) ≈ 12.4 g/m³. The computed effluent follows these values closely, peaking at about 23.7 g/m³ in late January and dropping to 12.4 g/m³ in mid-July.</li>
+<li><strong>A short lag.</strong> The pond responds with a time constant of 1/(1/τ + k), between 2.5 days in summer and 4.8 days in winter. This is short compared with the seasonal cycle, so the effluent lags the temperature only slightly: by about 3 days in summer and 5 days in winter. The first winter peak, in late January, comes later still because the pond is also recovering from its initial condition.</li>
+<li><strong>What the uncorrected model misses.</strong> Pond_20C stays at 50 / (1 + 2.3) = 15.2 g/m³ all year. Averaged over the year, the seasonal pond's effluent is about 17.4 g/m³. The uncorrected model therefore underestimates the annual mean effluent BOD by about 13%, and the winter effluent by about a third (15.2 against 23.7 g/m³). Winter is usually the season that controls compliance.</li>
+<li><strong>Start-up.</strong> Both ponds start at 15 g/m³. The seasonal pond needs about two weeks to reach its winter level, so its first values reflect the initial condition.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>Temperature is prescribed, not computed from a heat balance. The series is synthetic; a measured record or a heat-budget model would introduce day-to-day variability.</li>
+<li>One θ value is applied over the whole range from 4 to 26 °C. In practice θ for biological processes is often higher at low temperatures, and activity can stop near freezing.</li>
+<li>BOD removal is lumped into a single first-order reaction. Oxygen supply, settling and biomass growth are not represented.</li>
+<li>The ponds are perfectly mixed, with constant flow and influent concentration.</li>
+<li>A model-wide time-dependent value (the same series for all blocks) can be obtained with the <code>TimeDependent_ReactionParameter_Global</code> type, which reads one series for the whole model.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 920 866" class="ohq-diagram" style="max-width:460px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Outflow_Seasonal"><title>Outflow_Seasonal (Fixed flow)</title><path d="M200.0 141.7 L400.0 225.0 L600.0 308.3" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outflow_20C"><title>Outflow_20C (Fixed flow)</title><path d="M200.0 558.3 L400.0 475.0 L600.0 391.7" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Pond_Seasonal"><title>Pond_Seasonal (Reactor)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="225" font-size="19" text-anchor="middle">Pond_Seasonal</text></g>
+<g class="d-node" data-name="Pond_20C"><title>Pond_20C (Reactor)</title><rect x="0" y="500" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="22" y="522" width="156" height="156"/>
+<text x="100" y="725" font-size="19" text-anchor="middle">Pond_20C</text></g>
+<g class="d-node" data-name="Receiving_Water"><title>Receiving_Water (Reactor)</title><rect x="600" y="250" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="622" y="272" width="156" height="156"/>
+<text x="700" y="475" font-size="19" text-anchor="middle">Receiving_Water</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>3</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Pond-Seasonal'><summary><span class='cname'>Pond_Seasonal</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A completely mixed treatment pond of 10,000 m³ receiving 1,000 m³/day of water with 50 g/m³ BOD (residence time 10 days). Its water temperature follows the seasonal record in <code>water_temperature.csv</code>.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>BOD: Concentration</td><td class='v'>15</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>BOD: Constant Inflow concentration</td><td class='v'>50</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Initial Storage</td><td class='v'>10000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>1000</td><td>m<sup>3</sup>/day</td><td></td></tr><tr><td>T_water: value</td><td class='v'>water_temperature.csv</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Pond-20C'><summary><span class='cname'>Pond_20C</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>An identical pond whose temperature is held at the 20 °C reference (<code>temperature_20C.csv</code>). It shows what a model with an uncorrected rate constant would predict.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>BOD: Concentration</td><td class='v'>15</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>BOD: Constant Inflow concentration</td><td class='v'>50</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Initial Storage</td><td class='v'>10000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>1000</td><td>m<sup>3</sup>/day</td><td></td></tr><tr><td>T_water: value</td><td class='v'>temperature_20C.csv</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Receiving-Water'><summary><span class='cname'>Receiving_Water</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>An initially empty collection volume that receives the outflow of both ponds. It follows the seasonal temperature. It is only a sink and is not part of the comparison.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>BOD: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr><tr><td>T_water: value</td><td class='v'>water_temperature.csv</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>2</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Outflow-Seasonal'><summary><span class='cname'>Outflow_Seasonal</span><span class='ctype'>Fixed flow · mass_transfer</span><span class='crole'><p>Fixed outflow of 1,000 m³/day from Pond_Seasonal, equal to its inflow, so the pond volume stays constant.</p></span></summary><div class='cbody'><p class=type-help><b>Fixed flow:</b> Fixed flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Flow rate</td><td class='v'>1000</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Outflow-20C'><summary><span class='cname'>Outflow_20C</span><span class='ctype'>Fixed flow · mass_transfer</span><span class='crole'><p>Fixed outflow of 1,000 m³/day from Pond_20C.</p></span></summary><div class='cbody'><p class=type-help><b>Fixed flow:</b> Fixed flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Flow rate</td><td class='v'>1000</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>1</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-BOD'><summary><span class='cname'>BOD</span><span class='ctype'>Constituent</span><span class='crole'><p>Biochemical oxygen demand, a lumped measure of degradable organic matter (g/m³).</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/s</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>3</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-k20'><summary><span class='cname'>k20</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>First-order BOD decay rate at 20 °C, 0.23 per day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.23</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-theta'><summary><span class='cname'>theta</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Temperature correction factor θ = 1.047, the classic value for BOD decay.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.047</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-T-water'><summary><span class='cname'>T_water</span><span class='ctype'>TimeDependent_ReactionParameter</span><span class='crole'><p>Water temperature (°C) as a time-dependent reaction parameter of the block-specific kind: each block reads its own time series.</p></span></summary><div class='cbody'><p class=type-help><b>TimeDependent_ReactionParameter:</b> Time Dependent Reaction Parameter</p></div></details>
+</div>
+<h3>Reactions <small>1</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-BOD-decay'><summary><span class='cname'>BOD_decay</span><span class='ctype'>Reaction</span><span class='crole'><p>First-order decay of BOD with the temperature-corrected rate k20·θ^(T_water − 20)·BOD.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k20*theta^(T_water-20)*BOD)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>BOD</td><td class='v'>-1</td></tr></tbody></table></div></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>water_temperature.csv</code></td><td><p>Daily water temperature (°C) versus time (days from 1 January), two columns, comma separated, no header. Synthetic seasonal cycle T = 15 + 11·sin(2π(t − 105)/365): 4 °C in mid-January, 26 °C in mid-July.</p></td></tr><tr><td><code>temperature_20C.csv</code></td><td><p>Constant 20 °C from day 0 to day 365, used for the reference pond.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>365</td></tr><tr><td>Initial time step</td><td class='v'>0.1</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Water temperature in the two ponds' loading='lazy'><figcaption><b>Water temperature in the two ponds</b> The same parameter, T_water, takes a different time series in each block.</figcaption></figure><figure><img src='plot_2.png' alt='Effluent BOD' loading='lazy'><figcaption><b>Effluent BOD</b> The seasonal pond&#x27;s effluent swings between about 12 g/m³ in summer and 24 g/m³ in winter, while the 20 °C pond stays at 15.2 g/m³ all year.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/temperature-kinetics">View source on GitHub</a>.</div></footer>
+</body></html>

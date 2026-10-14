@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Levenberg-Marquardt Calibration · OpenHydroQual Examples</title>
+<meta name="description" content="Three synthetic calibration problems (a pond with a weir and a decaying contaminant, batch sorption, and a Monod reactor) solved with the Levenberg-Marquardt optimizer, which returns parameter estimates, 95% intervals and the correlation matrix in a few dozen model runs.">
+<meta name="keywords" content="calibration, levenberg marquardt, lm, gauss newton, inverse modeling, parameter estimation, least squares, maximum likelihood, covariance, confidence interval, correlation matrix, jacobian, identifiability, weir rating curve, pond, first order decay, sorption, monod, OHQ-LM">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#b8417e">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Calibration &amp; Uncertainty</div>
+<h1>Levenberg-Marquardt Calibration</h1>
+<p class="lede">Three synthetic calibration problems (a pond with a weir and a decaying contaminant, batch sorption, and a Monod reactor) solved with the Levenberg-Marquardt optimizer, which returns parameter estimates, 95% intervals and the correlation matrix in a few dozen model runs.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=Pond_Plugin'>Pond_Plugin</a><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a><a class='plug' href='../../?plugin=groundwater'>groundwater</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/lm-calibration.zip" download>Download model (.zip)</a>
+    <div class="muted">333 KB · 18 files · open <code>pond_calibration.ohq</code> in OpenHydroQual and press Run</div>
+    <a class='btn ghost' href='../../docs/lm_calibration.pdf' target='_blank' rel='noopener'>Technical guide (PDF)</a>
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>Calibration means choosing parameter values so that a model reproduces measurements, and then saying how well those values are determined. This example contains three small calibration problems that are solved with OpenHydroQual's <strong>Levenberg-Marquardt (LM)</strong> optimizer. In each one the "observed" data were made by running the model at known parameter values and adding noise of a known size. Because the truth is known, each case can answer two questions that a real calibration never can: did the method recover the right values, and are the uncertainties it reports honest?</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Files</th>
+<th>Physics</th>
+<th>Calibrated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (main model)</td>
+<td><code>pond_calibration.ohq</code></td>
+<td>Pond water balance with a weir, first-order decay of a contaminant</td>
+<td>weir α, crest elevation, k_d</td>
+</tr>
+<tr>
+<td>1b</td>
+<td><code>pond_calibration_4param.ohq</code></td>
+<td>Same, plus the pond's stage-storage coefficient</td>
+<td>4 parameters</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>sorption_calibration.ohq</code></td>
+<td>Kinetic sorption of copper in a closed cell</td>
+<td>k_f, KD</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>monod_calibration.ohq</code></td>
+<td>Monod and second-order decay, dilution inflow, temperature pulse</td>
+<td>k_A, K_s, k_B (+ 2 error SDs, profiled)</td>
+</tr>
+</tbody>
+</table>
+<p>Each case also has an <code>*_at_truth.ohq</code> file, identical except that every parameter holds the value used to make the data. The models were built for the OpenHydroQual test suite (<code>Examples/LM_Calibration</code>) and are reproduced here with clearer names. The page shows the pond case; the other files are in the download.</p>
+<h2>How it works</h2>
+<h3>The likelihood</h3>
+<p>Every <strong>Observation</strong> that has observed data contributes a Gaussian negative log-likelihood. For an observation compared at n points, with observed values oᵢ, modeled values mᵢ (interpolated to the observation times) and error standard deviation σ:</p>
+<p>−ln L = n · [ MSE / (2σ²) + ln σ ],  MSE = (1/n) Σ (oᵢ − mᵢ)²</p>
+<p>With <code>error_structure = log-normal</code> the residuals are taken between ln oᵢ and ln mᵢ, so σ is a relative error (0.05 is about 5%). The total objective is the sum over all observations. This is the same number the genetic algorithm (<strong>Inverse Run</strong>) and MCMC use, so values from the three methods on the same model can be compared directly. Lower is better, and the values are often negative.</p>
+<h3>Parameters</h3>
+<p>A <strong>Parameter</strong> object holds a search range (<code>low</code>, <code>high</code>), a starting <code>value</code> and a <code>prior_distribution</code>. A <code>setasparameter</code> line binds it to a model quantity:</p>
+<pre><code>create parameter;type=Parameter,name=p_k_d,low=0.05,high=20,value=0.45,prior_distribution=log-normal
+setasparameter; object=k_d, quantity=base_value, parametername=p_k_d
+</code></pre>
+<p>For LM the prior type only selects the search space: log10 for <code>log-normal</code>, linear for <code>normal</code>. The calibrated parameters are given names different from the quantities they drive (<code>p_k_d</code> drives <code>k_d</code>), so that <code>object=</code> and <code>parametername=</code> never refer to two objects with the same name.</p>
+<h3>What LM computes</h3>
+<p>LM writes the likelihood as a sum of squares of weighted residuals, rᵢ = (oᵢ − mᵢ)/σ, so that −ln L = ½‖r‖² + n ln σ. Each iteration estimates the Jacobian Jᵢⱼ = ∂rᵢ/∂θⱼ by finite differences (one extra model run per parameter, step <code>fd_step</code> = 0.001 of each parameter's range in its search space) and solves the damped normal equations</p>
+<p>(JᵀJ + λ·diag(JᵀJ)) · δ = −Jᵀr</p>
+<p>for the step δ. A small damping λ gives a Gauss-Newton step; a large one gives a short steepest-descent step. λ is divided by 3 after a step that lowers the objective and multiplied by 3 after one that does not. Steps that would leave a parameter's range are projected back onto it. LM is a local method: it converges to the optimum nearest the starting values.</p>
+<p>At the solution LM recomputes J and reports (JᵀJ)⁻¹ as the parameter covariance. Because the residuals already carry 1/σ, this is a covariance and not only a curvature. It is reported in the search space (for a log-normal parameter the standard error is that of log10 of the value) together with a 95% interval converted back to model units and the correlation matrix.</p>
+<p>When a parameter drives an observation's <code>error_standard_deviation</code>, LM does not search for it. At any point the best σ has the closed form σ̂² = MSE, so LM sets it to that value at every iteration ("profiling"). Case 3 uses this.</p>
+<h3>Case 1: the pond</h3>
+<p>The pond's depth follows from its storage, depth = [S²/(α_p·(S + 0.1))]^(1/β_p), which is Storage = α_p·depth^β_p for S ≫ 0.1 m³ (α_p = 4140, β_p = 2.2). The water balance is</p>
+<p>dS/dt = Q_in(t) − 3000 − α·max(h − z₀, 0)^1.5</p>
+<p>with Q_in from <code>pond_inflow.csv</code> and h the depth (the bottom elevation is 0 m). The PCB mass balance is</p>
+<p>d(S·C)/dt = 5·Q_in − (3000 + Q_weir)·C − S·k_d·1.05^(T − 20)·C</p>
+<p>The three observations constrain different parts of the model. The depth record fixes the stage at which the weir passes the inflow minus the withdrawal, which depends on both α and z₀. The weir discharge record adds the shape of the rating curve. The PCB record constrains k_d, given the residence time set by the hydraulics.</p>
+<h3>Case 2: batch sorption</h3>
+<p>A closed groundwater cell (1 m² × 1 m, porosity 0.4, so 0.4 m³ of water) starts with Cu_aq = 1 g/m³ and no sorbed copper. Two reactions exchange copper between the phases:</p>
+<table>
+<thead>
+<tr>
+<th>Reaction</th>
+<th>Rate</th>
+<th>ν for Cu_aq</th>
+<th>ν for Cu_s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sorption</td>
+<td>k_f·Cu_aq</td>
+<td>−1</td>
+<td>+n/ρ</td>
+</tr>
+<tr>
+<td>Desorption</td>
+<td>(k_f/KD)·Cu_s</td>
+<td>+1</td>
+<td>−n/ρ</td>
+</tr>
+</tbody>
+</table>
+<p>with n = 0.4 and ρ = 1400. Reaction rates are multiplied by the water volume (Storage) to give mass rates, while Cu_s is a <code>Sorbed_Constituent</code>, whose concentration is its mass divided by the total cell volume. At equilibrium Cu_s/Cu_aq = KD exactly, so k_f is identified by the early decay of Cu_aq and KD by the height of the final plateau, 2.3×10⁻⁷ g/m³. Both observations use a log-normal error model with σ = 0.05. The case sets <code>nr_tolerance = 1e-10</code>: Cu_aq falls through six decades, and at the default tolerance its plateau, which carries all the information about KD, is lost in solver noise.</p>
+<p>When this case is run with the console, the solver reports <code>property 'Cu_s:inflow_loading' does not exist in 'Batch_Cell'</code>. The sorbed constituent type has no inflow loading and the cell has no inflow, so the results are not affected, but the console exits with code 4.</p>
+<h3>Case 3: Monod reactor</h3>
+<p>A 10 m³ reactor with no outflow holds A and B, both starting at 2 g/m³:</p>
+<p>dA/dt = −k_A·1.05^(T − 20)·A/(K_s + A) − (Q_in/V)·A
+  dB/dt = −k_B·B² − (Q_in/V)·B</p>
+<p>The inflow of clean water (1 m³/day from t = 0.1 to 0.2 days) dilutes both by about 1%, and the 30 °C period from day 0.5 to 1.5 more than doubles the A rate. The error SDs of both observations are calibrated parameters (<code>sigma_A_conc</code>, <code>sigma_B_conc</code>) and are profiled, so the run reports three free parameters although five are declared.</p>
+<h3>Running</h3>
+<p>The downloaded models run unchanged in the interface (press <strong>Levenberg-Marquardt calibration</strong>) or headless:</p>
+<pre><code>OHQ-LM pond_calibration.ohq results/ --threads 4
+OHQ-LM pond_calibration.ohq results/ --verify-residuals
+</code></pre>
+<p>The second command solves the model once and checks that ½‖r‖² + Σ n ln σ reproduces the likelihood; it is worth running on any new model. Each run writes <code>LM_output.txt</code> (one row per attempted step and the stop reason) and <code>LM_covariance.txt</code> (estimates, standard errors, intervals and the correlation matrix). A forward run of a <code>*_calibration.ohq</code> file uses the starting values, which is what the plots further down this page show.</p>
+<h2>What to look for in the results</h2>
+<p>All results below were produced with <code>OHQ-LM</code> (version 2.1.1, two threads) from the files in the download. All runs start well away from the truth.</p>
+<p><img alt="Observed data, the model at the starting guess and the model at the LM estimate for the pond case." src="results/pond_fit.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Parameter</th>
+<th style="text-align: right;">Truth</th>
+<th style="text-align: right;">Start</th>
+<th style="text-align: right;">Estimate</th>
+<th>95% interval</th>
+<th style="text-align: center;">Covers truth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>weir α</td>
+<td style="text-align: right;">794 880</td>
+<td style="text-align: right;">400 000</td>
+<td style="text-align: right;">722 818</td>
+<td>587 109 to 889 895</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td>1</td>
+<td>crest z₀ (m)</td>
+<td style="text-align: right;">1.5</td>
+<td style="text-align: right;">1.35</td>
+<td style="text-align: right;">1.4989</td>
+<td>1.4958 to 1.5020</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td>1</td>
+<td>k_d (1/day)</td>
+<td style="text-align: right;">1.2</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">1.2048</td>
+<td>1.1895 to 1.2204</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td>2</td>
+<td>k_f (1/day)</td>
+<td style="text-align: right;">5.0</td>
+<td style="text-align: right;">1.5</td>
+<td style="text-align: right;">5.012</td>
+<td>4.996 to 5.029</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td>2</td>
+<td>KD</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">511.2</td>
+<td>498.5 to 524.2</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td>3</td>
+<td>k_A</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.980</td>
+<td>0.914 to 1.052</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td>3</td>
+<td>K_s (g/m³)</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">2.5</td>
+<td style="text-align: right;">0.577</td>
+<td>0.479 to 0.696</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td>3</td>
+<td>k_B (m³/g/day)</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">1.6</td>
+<td style="text-align: right;">0.5097</td>
+<td>0.4995 to 0.5201</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td>3</td>
+<td>σ_A (g/m³)</td>
+<td style="text-align: right;">0.0393</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0403</td>
+<td>profiled</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td>3</td>
+<td>σ_B (g/m³)</td>
+<td style="text-align: right;">0.0375</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0355</td>
+<td>profiled</td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th style="text-align: right;">Residuals</th>
+<th style="text-align: right;">Iterations</th>
+<th style="text-align: right;">Model solves</th>
+<th style="text-align: right;">−ln L at truth</th>
+<th style="text-align: right;">−ln L at estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td style="text-align: right;">360</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">−1168.6</td>
+<td style="text-align: right;">−1169.3</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">−296.8</td>
+<td style="text-align: right;">−299.5</td>
+</tr>
+<tr>
+<td>3</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">−441.6</td>
+<td style="text-align: right;">−443.9</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Best objective so far against iteration for the four runs. The vertical axis is shifted so that the final value is 1." src="results/convergence.png" /></p>
+<ul>
+<li><strong>Cost.</strong> Each case converges in 5 to 12 iterations and 29 to 68 model solves, between about 10 and 20 s of wall time each. A genetic algorithm with its default 40 × 40 population would need about 1600 solves and would return no uncertainty.</li>
+<li><strong>The estimate fits slightly better than the truth.</strong> In every case −ln L at the estimate is a little lower than at the true values. That is expected: the optimizer fits one particular noise realization, and the best fit to noisy data is never exactly the truth.</li>
+<li><strong>Correlated pairs.</strong> In the pond case the weir α and the crest elevation are correlated at +0.96. A higher crest and a larger coefficient give nearly the same discharge over the narrow range of stage in the record (1.50 to 1.54 m), so the interval on α is wide (about ±20%) while z₀ is fixed to about ±3 mm. In case 3, k_A and K_s are correlated at +0.985, which is the familiar trade-off in a Monod term; they remain identifiable only because the temperature pulse and the decline of A move the reactor through a range of A/K_s. k_d and k_B are nearly uncorrelated with everything else, because each is constrained by its own observation.</li>
+<li><strong>A failure that looks like a success (case 1b).</strong> <code>pond_calibration_4param.ohq</code> also calibrates the pond's stage-storage coefficient α_p. LM converges in 7 iterations to a lower −ln L than the truth (−1169.7), but returns α_p = 5314 (truth 4140, interval 4977 to 5674) and k_d = 0.938 (truth 1.2, interval 0.878 to 1.003). Both intervals miss the truth. The correlation between α_p and k_d is −0.98: a larger pond holds water longer, and a longer residence time with slower decay produces the same outflow concentration as a smaller pond with faster decay. The standard errors look small; only the correlation matrix shows that the pair is not identified. Fixing α_p at its known value, as the main model does, makes the other three recoverable.</li>
+</ul>
+<p><img alt="Batch sorption case: observed data, starting guess and LM estimate on logarithmic axes." src="results/sorption_fit.png" /></p>
+<p><img alt="Monod reactor case: A (log scale) and B (linear scale)." src="results/monod_fit.png" /></p>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The data are synthetic, made with the same model structure that is calibrated. Real data also contain model-structure error, which no optimizer can remove and which usually makes the reported intervals too narrow.</li>
+<li>The residuals are treated as independent. For densely sampled records whose errors are serially correlated, see the AR1 error model example.</li>
+<li>The covariance is the Gauss-Newton approximation at the optimum. It assumes the likelihood is close to quadratic there; it is not meaningful for a parameter sitting on a bound, and it describes only the neighbourhood of the optimum found. For skewed or multi-modal posteriors use MCMC.</li>
+<li>LM is local. From a poor start on a problem with several optima it will converge to the nearest one. Run the genetic algorithm first in that case: it writes its estimates back into the parameters and LM continues from there.</li>
+<li>The weir is a two-parameter power law (β fixed at 1.5), and the withdrawal is a constant 3000 m³/day regardless of storage.</li>
+<li>The two receiving blocks are plain Reactor blocks with a large storage. A <code>fixed_head</code> block cannot receive flow in a model with constituents in this version, because the solver evaluates each constituent's inflow loading in every block and <code>fixed_head</code> has no inflow property.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="240 -10 720 866" class="ohq-diagram" style="max-width:360px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Withdrawal"><title>Withdrawal (Fixed flow)</title><path d="M500.0 462.5 L600.0 525.0 L700.0 587.5" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Weir"><title>Weir (wier)</title><path d="M500.0 337.5 L600.0 275.0 L700.0 212.5" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Pond"><title>Pond (Pond)</title><rect x="300" y="300" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="322" y="322" width="156" height="156"/>
+<text x="400" y="521" font-size="16" text-anchor="middle">Pond</text></g>
+<g class="d-node" data-name="Withdrawal_Sink"><title>Withdrawal_Sink (Reactor)</title><rect x="700" y="550" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="722" y="572" width="156" height="156"/>
+<text x="800" y="771" font-size="16" text-anchor="middle">Withdrawal_Sink</text></g>
+<g class="d-node" data-name="Downstream"><title>Downstream (Reactor)</title><rect x="700" y="50" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="722" y="72" width="156" height="156"/>
+<text x="800" y="271" font-size="16" text-anchor="middle">Downstream</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>3</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Pond'><summary><span class='cname'>Pond</span><span class='ctype'>Pond · Pond_Plugin</span><span class='crole'><p>A stormwater pond whose volume and depth are related by Storage = α·depth^β (α = 4140, β = 2.2). It receives the inflow record and an inflow PCB concentration of 5 g/m³, and starts at 10 102 m³ (depth 1.50 m).</p></span></summary><div class='cbody'><p class=type-help><b>Pond:</b> Stormwater pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>PCB: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>PCB: Constant Inflow concentration</td><td class='v'>5</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Initial Storage</td><td class='v'>10101.9</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the pond at the beginning of the simulation.</td></tr><tr><td>The coefficient (α) in the rating curve S = α d^β</td><td class='v'>4140</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>The exponent (β) in the rating curve S = α d^β</td><td class='v'>2.2</td><td></td><td>The exponent (β) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Bottom elevation of pond</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Inflow rate time series</td><td class='v'>pond_inflow.csv</td><td>m^3/day</td><td>The time series containing the inflow rate into the pond</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Withdrawal-Sink'><summary><span class='cname'>Withdrawal_Sink</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>Receiving storage for the fixed withdrawal (a 10⁶ m³ Reactor block with no outflow). It only collects water and mass; nothing flows back.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>PCB: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Initial Storage</td><td class='v'>1000000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Downstream'><summary><span class='cname'>Downstream</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>Receiving storage for the weir overflow, built the same way as Withdrawal_Sink.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>PCB: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Initial Storage</td><td class='v'>1000000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>2</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Withdrawal'><summary><span class='cname'>Withdrawal</span><span class='ctype'>Fixed flow · mass_transfer</span><span class='crole'><p>A constant abstraction of 3000 m³/day from the pond (positive from Pond to Withdrawal_Sink).</p></span></summary><div class='cbody'><p class=type-help><b>Fixed flow:</b> Fixed flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Flow rate</td><td class='v'>3000</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Weir'><summary><span class='cname'>Weir</span><span class='ctype'>wier · Pond_Plugin</span><span class='crole'><p>Overflow weir with the power-law rating Q = α·max(h − z₀, 0)^β, β = 1.5. Its coefficient α and crest elevation z₀ are calibrated. Flow is always from Pond to Downstream.</p></span></summary><div class='cbody'><p class=type-help><b>wier:</b> Weir based on a power-law rating curve</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Coefficient alpha in Q=alpha*(h-z_0)^beta (SI-day units)</td><td class='v'>400000</td><td></td><td></td></tr><tr><td>Exponent beta in Q=alpha*(h-z_0)^beta</td><td class='v'>1.5</td><td></td><td></td></tr><tr><td>Crest Elevation</td><td class='v'>1.35</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>1</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-PCB'><summary><span class='cname'>PCB</span><span class='ctype'>Constituent</span><span class='crole'><p>A dissolved contaminant entering with the inflow and lost by first-order decay in the pond.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/s</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>1</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-k-d'><summary><span class='cname'>k_d</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>First-order decay rate of PCB (1/day at 20 °C), corrected with θ = 1.05 using pond_temperature.csv. Its base value is calibrated through p_k_d.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1.05</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.45</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr><tr><td>Temperature time-series (degrees Celsius)</td><td class='v'>pond_temperature.csv</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reactions <small>1</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-Decay'><summary><span class='cname'>Decay</span><span class='ctype'>Reaction</span><span class='crole'><p>First-order removal of PCB, rate k_d·PCB.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_d*PCB)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>PCB</td><td class='v'>-1</td></tr></tbody></table></div></div></details>
+</div>
+<h3>Model parameters <small>3</small></h3><p class='kind-blurb'>Quantities flagged for estimation, with their search ranges or priors.</p><div class='comp-list'>
+<details class='comp' id='c-weir-alpha'><summary><span class='cname'>weir_alpha</span><span class='ctype'>Parameter</span><span class='crole'><p>Calibrated weir coefficient. Range 5×10⁴ to 5×10⁶, searched in log10. Start 400 000; the value used to make the data was 794 880.</p></span></summary><div class='cbody'><p class=type-help><b>Parameter:</b> Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Lower Limit</td><td class='v'>50000</td><td></td><td></td></tr><tr><td>Upper Limit</td><td class='v'>5e+06</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>400000</td><td></td><td></td></tr><tr><td>Prior distribution</td><td class='v'>log-normal</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-crest-elev'><summary><span class='cname'>crest_elev</span><span class='ctype'>Parameter</span><span class='crole'><p>Calibrated weir crest elevation (m). Range 1 to 2 m, searched linearly. Start 1.35 m; truth 1.5 m.</p></span></summary><div class='cbody'><p class=type-help><b>Parameter:</b> Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Lower Limit</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Upper Limit</td><td class='v'>2</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.35</td><td></td><td></td></tr><tr><td>Prior distribution</td><td class='v'>normal</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-p-k-d'><summary><span class='cname'>p_k_d</span><span class='ctype'>Parameter</span><span class='crole'><p>Calibrated base value of k_d (1/day). Range 0.05 to 20, searched in log10. Start 0.45; truth 1.2.</p></span></summary><div class='cbody'><p class=type-help><b>Parameter:</b> Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Lower Limit</td><td class='v'>0.05</td><td></td><td></td></tr><tr><td>Upper Limit</td><td class='v'>20</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.45</td><td></td><td></td></tr><tr><td>Prior distribution</td><td class='v'>log-normal</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Observations <small>3</small></h3><p class='kind-blurb'>Model outputs that are recorded and, when data are supplied, compared with measurements.</p><div class='comp-list'>
+<details class='comp' id='c-pond-depth'><summary><span class='cname'>pond_depth</span><span class='ctype'>Observation</span><span class='crole'><p>Observation of the pond water depth (m), compared with pond_obs_depth.csv under a normal error model with a fixed SD of 0.005 m.</p></span></summary><div class='cbody'><p class=type-help><b>Observation:</b> Observation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>depth</td><td></td><td>Expression evaluated on the chosen object at each output time step. Typically a single state variable (e.g. &#x27;Storage&#x27;) or a derived quantity (e.g. &#x27;Storage/Area&#x27;). The result becomes the modeled value compared against observed data.</td></tr><tr><td>Error probability distribution</td><td class='v'>normal</td><td></td><td>Distribution assumed for the residual between modeled and observed values. &#x27;normal&#x27; compares values directly; &#x27;log-normal&#x27; compares the logs (suitable for strictly positive quantities spanning multiple orders of magnitude, e.g. concentrations or flows).</td></tr><tr><td>Error standard deviation</td><td class='v'>0.005</td><td></td><td>Standard deviation of the residual under the chosen error structure. For &#x27;normal&#x27; errors, units match the observed quantity; for &#x27;log-normal&#x27; errors, this is the standard deviation of log-residuals. May be set per-observation or pushed in at runtime from a Truth Twin metadata sidecar.</td></tr><tr><td>Observed data time series</td><td class='v'>pond_obs_depth.csv</td><td></td><td>Measured time series to compare the modeled output against. Used by all comparison methods. May be loaded from a file or pushed in at runtime by an external assimilation driver.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-weir-outflow'><summary><span class='cname'>weir_outflow</span><span class='ctype'>Observation</span><span class='crole'><p>Observation of the weir discharge (m³/day), compared with pond_obs_weir_flow.csv under a log-normal error model with a fixed SD of 0.05 in natural-log units.</p></span></summary><div class='cbody'><p class=type-help><b>Observation:</b> Observation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>flow</td><td></td><td>Expression evaluated on the chosen object at each output time step. Typically a single state variable (e.g. &#x27;Storage&#x27;) or a derived quantity (e.g. &#x27;Storage/Area&#x27;). The result becomes the modeled value compared against observed data.</td></tr><tr><td>Error probability distribution</td><td class='v'>log-normal</td><td></td><td>Distribution assumed for the residual between modeled and observed values. &#x27;normal&#x27; compares values directly; &#x27;log-normal&#x27; compares the logs (suitable for strictly positive quantities spanning multiple orders of magnitude, e.g. concentrations or flows).</td></tr><tr><td>Error standard deviation</td><td class='v'>0.05</td><td></td><td>Standard deviation of the residual under the chosen error structure. For &#x27;normal&#x27; errors, units match the observed quantity; for &#x27;log-normal&#x27; errors, this is the standard deviation of log-residuals. May be set per-observation or pushed in at runtime from a Truth Twin metadata sidecar.</td></tr><tr><td>Observed data time series</td><td class='v'>pond_obs_weir_flow.csv</td><td></td><td>Measured time series to compare the modeled output against. Used by all comparison methods. May be loaded from a file or pushed in at runtime by an external assimilation driver.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-PCB-conc'><summary><span class='cname'>PCB_conc</span><span class='ctype'>Observation</span><span class='crole'><p>Observation of the PCB concentration in the pond (g/m³), compared with pond_obs_PCB.csv under a log-normal error model with a fixed SD of 0.05.</p></span></summary><div class='cbody'><p class=type-help><b>Observation:</b> Observation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>PCB:concentration</td><td></td><td>Expression evaluated on the chosen object at each output time step. Typically a single state variable (e.g. &#x27;Storage&#x27;) or a derived quantity (e.g. &#x27;Storage/Area&#x27;). The result becomes the modeled value compared against observed data.</td></tr><tr><td>Error probability distribution</td><td class='v'>log-normal</td><td></td><td>Distribution assumed for the residual between modeled and observed values. &#x27;normal&#x27; compares values directly; &#x27;log-normal&#x27; compares the logs (suitable for strictly positive quantities spanning multiple orders of magnitude, e.g. concentrations or flows).</td></tr><tr><td>Error standard deviation</td><td class='v'>0.05</td><td></td><td>Standard deviation of the residual under the chosen error structure. For &#x27;normal&#x27; errors, units match the observed quantity; for &#x27;log-normal&#x27; errors, this is the standard deviation of log-residuals. May be set per-observation or pushed in at runtime from a Truth Twin metadata sidecar.</td></tr><tr><td>Observed data time series</td><td class='v'>pond_obs_PCB.csv</td><td></td><td>Measured time series to compare the modeled output against. Used by all comparison methods. May be loaded from a file or pushed in at runtime by an external assimilation driver.</td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>pond_temperature.csv</code></td><td><p>Daily water temperature (°C) versus time (days), from 5 °C in winter to 35 °C in summer. Drives the temperature correction of k_d.</p></td></tr><tr><td><code>pond_inflow.csv</code></td><td><p>Daily inflow to the pond (m³/day) versus time (days), 3550 to 7250 m³/day over one year. Two columns, no header.</p></td></tr><tr><td><code>pond_obs_depth.csv</code></td><td><p>Synthetic observed pond depth (m), 120 points from day 2 to day 364, with 5 mm Gaussian noise.</p></td></tr><tr><td><code>pond_obs_weir_flow.csv</code></td><td><p>Synthetic observed weir discharge (m³/day), 120 points, with 5% multiplicative (log-normal) noise.</p></td></tr><tr><td><code>pond_obs_PCB.csv</code></td><td><p>Synthetic observed PCB concentration (g/m³), 120 points, with 5% multiplicative noise.</p></td></tr><tr><td><code>pond_at_truth.ohq</code></td><td><p>The pond case with every parameter at the value used to make the data. Scoring it gives the reference likelihood.</p></td></tr><tr><td><code>pond_calibration_4param.ohq</code></td><td><p>The pond case with the stage-storage coefficient α of the pond calibrated as well (start 7000, truth 4140). It shows a correlated, poorly identified pair.</p></td></tr><tr><td><code>sorption_calibration.ohq</code></td><td><p>Case 2. A closed groundwater cell in which dissolved copper (Cu_aq) exchanges with a sorbed phase (Cu_s) by first-order kinetics. Calibrates k_f and KD.</p></td></tr><tr><td><code>sorption_at_truth.ohq</code></td><td><p>Case 2 at the true values (k_f = 5 1/day, KD = 500).</p></td></tr><tr><td><code>sorption_obs_Cu_aq.csv</code></td><td><p>Synthetic Cu_aq observations (g/m³), 60 points log-spaced from 0.02 to 20 days, with 5% multiplicative noise.</p></td></tr><tr><td><code>sorption_obs_Cu_s.csv</code></td><td><p>Synthetic Cu_s observations (model units, see the text), same times and noise model.</p></td></tr><tr><td><code>monod_calibration.ohq</code></td><td><p>Case 3. A 10 m³ batch reactor with Monod decay of A and second-order decay of B, a short dilution inflow and a temperature pulse. Calibrates k_A, K_s and k_B and profiles both error SDs.</p></td></tr><tr><td><code>monod_at_truth.ohq</code></td><td><p>Case 3 at the true values (k_A = 1, K_s = 0.6, k_B = 0.5) with the error SDs set to the noise actually added.</p></td></tr><tr><td><code>monod_inflow.txt</code></td><td><p>Inflow to the reactor (m³/day) versus time (days). 1 m³/day of clean water between t = 0.1 and 0.2 days, zero otherwise.</p></td></tr><tr><td><code>monod_temperature.txt</code></td><td><p>Water temperature (°C) versus time (days). 12 °C, with a 30 °C period from day 0.5 to day 1.5.</p></td></tr><tr><td><code>monod_obs_A.csv</code></td><td><p>Synthetic observations of A (g/m³), 80 points from 0.05 to 5 days, Gaussian noise with SD 2% of the peak (0.0393 g/m³).</p></td></tr><tr><td><code>monod_obs_B.csv</code></td><td><p>Synthetic observations of B (g/m³), same times, Gaussian noise with SD 0.0375 g/m³.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>365</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>100</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>0.001</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Pond depth at the starting guess' loading='lazy'><figcaption><b>Pond depth at the starting guess</b> The downloaded model runs at the starting values (crest 1.35 m, α = 400 000), so the pond sits about 14 cm too low. This is where the optimizer begins; the calibrated fit is shown in the text.</figcaption></figure><figure><img src='plot_2.png' alt='PCB concentration at the starting guess' loading='lazy'><figcaption><b>PCB concentration at the starting guess</b> With k_d started at 0.45 1/day the modeled PCB is far above the data. Its seasonal shape still follows the temperature record, so mainly the level is wrong.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/lm-calibration">View source on GitHub</a>.</div></footer>
+</body></html>

@@ -1,0 +1,56 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = unsaturated_soil.json
+create source;type=Precipitation,name=Storm,timeseries=storm.txt
+create block;type=Catchment,ManningCoeff=0.03,Precipitation=Storm,_height=200,_width=200,area=1.0[m~^2],depth=0[m],elevation=0.0[m],name=Surface_A,x=400,y=0
+create block;type=Soil,K_sat_original=1.061[m/day],_height=200,_width=200,alpha=7.5[1/m],area=1.0[m~^2],bottom_elevation=-0.10[m],depth=0.1[m],n=1.89,name=Soil_A01,specific_storage=0.01[1/m],theta=0.1218,theta_res=0.065,theta_sat=0.41,x=400,y=260
+create block;type=Soil,K_sat_original=1.061[m/day],_height=200,_width=200,alpha=7.5[1/m],area=1.0[m~^2],bottom_elevation=-0.20[m],depth=0.1[m],n=1.89,name=Soil_A02,specific_storage=0.01[1/m],theta=0.1273,theta_res=0.065,theta_sat=0.41,x=400,y=500
+create block;type=Soil,K_sat_original=1.061[m/day],_height=200,_width=200,alpha=7.5[1/m],area=1.0[m~^2],bottom_elevation=-0.30[m],depth=0.1[m],n=1.89,name=Soil_A03,specific_storage=0.01[1/m],theta=0.1339,theta_res=0.065,theta_sat=0.41,x=400,y=740
+create block;type=Soil,K_sat_original=1.061[m/day],_height=200,_width=200,alpha=7.5[1/m],area=1.0[m~^2],bottom_elevation=-0.40[m],depth=0.1[m],n=1.89,name=Soil_A04,specific_storage=0.01[1/m],theta=0.1423,theta_res=0.065,theta_sat=0.41,x=400,y=980
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-0.50[m],depth=0.1[m],n=1.56,name=Soil_A05,specific_storage=0.01[1/m],theta=0.2861,theta_res=0.078,theta_sat=0.43,x=400,y=1220
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-0.60[m],depth=0.1[m],n=1.56,name=Soil_A06,specific_storage=0.01[1/m],theta=0.3025,theta_res=0.078,theta_sat=0.43,x=400,y=1460
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-0.70[m],depth=0.1[m],n=1.56,name=Soil_A07,specific_storage=0.01[1/m],theta=0.3223,theta_res=0.078,theta_sat=0.43,x=400,y=1700
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-0.80[m],depth=0.1[m],n=1.56,name=Soil_A08,specific_storage=0.01[1/m],theta=0.3464,theta_res=0.078,theta_sat=0.43,x=400,y=1940
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-0.90[m],depth=0.1[m],n=1.56,name=Soil_A09,specific_storage=0.01[1/m],theta=0.3754,theta_res=0.078,theta_sat=0.43,x=400,y=2180
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-1.00[m],depth=0.1[m],n=1.56,name=Soil_A10,specific_storage=0.01[1/m],theta=0.4074,theta_res=0.078,theta_sat=0.43,x=400,y=2420
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=-2[m],name=Drainage_outlet,x=400,y=2680
+create block;type=Catchment,ManningCoeff=0.03,Precipitation=Storm,_height=200,_width=200,area=1.0[m~^2],depth=0[m],elevation=0.0[m],name=Surface_B,x=1000,y=0
+create block;type=Soil,K_sat_original=1.061[m/day],_height=200,_width=200,alpha=7.5[1/m],area=1.0[m~^2],bottom_elevation=-0.10[m],depth=0.1[m],n=1.89,name=Soil_B01,specific_storage=0.01[1/m],theta=0.1218,theta_res=0.065,theta_sat=0.41,x=1000,y=260
+create block;type=Soil,K_sat_original=1.061[m/day],_height=200,_width=200,alpha=7.5[1/m],area=1.0[m~^2],bottom_elevation=-0.20[m],depth=0.1[m],n=1.89,name=Soil_B02,specific_storage=0.01[1/m],theta=0.1273,theta_res=0.065,theta_sat=0.41,x=1000,y=500
+create block;type=Soil,K_sat_original=1.061[m/day],_height=200,_width=200,alpha=7.5[1/m],area=1.0[m~^2],bottom_elevation=-0.30[m],depth=0.1[m],n=1.89,name=Soil_B03,specific_storage=0.01[1/m],theta=0.1339,theta_res=0.065,theta_sat=0.41,x=1000,y=740
+create block;type=Soil,K_sat_original=1.061[m/day],_height=200,_width=200,alpha=7.5[1/m],area=1.0[m~^2],bottom_elevation=-0.40[m],depth=0.1[m],n=1.89,name=Soil_B04,specific_storage=0.01[1/m],theta=0.1423,theta_res=0.065,theta_sat=0.41,x=1000,y=980
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-0.50[m],depth=0.1[m],n=1.56,name=Soil_B05,specific_storage=0.01[1/m],theta=0.2861,theta_res=0.078,theta_sat=0.43,x=1000,y=1220
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-0.60[m],depth=0.1[m],n=1.56,name=Soil_B06,specific_storage=0.01[1/m],theta=0.3025,theta_res=0.078,theta_sat=0.43,x=1000,y=1460
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-0.70[m],depth=0.1[m],n=1.56,name=Soil_B07,specific_storage=0.01[1/m],theta=0.3223,theta_res=0.078,theta_sat=0.43,x=1000,y=1700
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-0.80[m],depth=0.1[m],n=1.56,name=Soil_B08,specific_storage=0.01[1/m],theta=0.3464,theta_res=0.078,theta_sat=0.43,x=1000,y=1940
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-0.90[m],depth=0.1[m],n=1.56,name=Soil_B09,specific_storage=0.01[1/m],theta=0.3754,theta_res=0.078,theta_sat=0.43,x=1000,y=2180
+create block;type=Soil,K_sat_original=0.2496[m/day],_height=200,_width=200,alpha=3.6[1/m],area=1.0[m~^2],bottom_elevation=-1.00[m],depth=0.1[m],n=1.56,name=Soil_B10,specific_storage=0.01[1/m],theta=0.4074,theta_res=0.078,theta_sat=0.43,x=1000,y=2420
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=-1.0[m],name=Water_table,x=1000,y=2680
+create link;from=Surface_A,to=Soil_A01,type=surfacewater_to_soil_link,name=Infiltration_A
+create link;from=Soil_A01,to=Soil_A02,type=soil_to_soil_link,name=Flow_A01_A02
+create link;from=Soil_A02,to=Soil_A03,type=soil_to_soil_link,name=Flow_A02_A03
+create link;from=Soil_A03,to=Soil_A04,type=soil_to_soil_link,name=Flow_A03_A04
+create link;from=Soil_A04,to=Soil_A05,type=soil_to_soil_link,name=Flow_A04_A05
+create link;from=Soil_A05,to=Soil_A06,type=soil_to_soil_link,name=Flow_A05_A06
+create link;from=Soil_A06,to=Soil_A07,type=soil_to_soil_link,name=Flow_A06_A07
+create link;from=Soil_A07,to=Soil_A08,type=soil_to_soil_link,name=Flow_A07_A08
+create link;from=Soil_A08,to=Soil_A09,type=soil_to_soil_link,name=Flow_A08_A09
+create link;from=Soil_A09,to=Soil_A10,type=soil_to_soil_link,name=Flow_A09_A10
+create link;from=Soil_A10,to=Drainage_outlet,type=fixed_hydraulic_gradient_link,Hydraulic_Gradient=1,area=1.0[m~^2],name=Free_drainage
+create link;from=Surface_B,to=Soil_B01,type=surfacewater_to_soil_link,name=Infiltration_B
+create link;from=Soil_B01,to=Soil_B02,type=soil_to_soil_link,name=Flow_B01_B02
+create link;from=Soil_B02,to=Soil_B03,type=soil_to_soil_link,name=Flow_B02_B03
+create link;from=Soil_B03,to=Soil_B04,type=soil_to_soil_link,name=Flow_B03_B04
+create link;from=Soil_B04,to=Soil_B05,type=soil_to_soil_link,name=Flow_B04_B05
+create link;from=Soil_B05,to=Soil_B06,type=soil_to_soil_link,name=Flow_B05_B06
+create link;from=Soil_B06,to=Soil_B07,type=soil_to_soil_link,name=Flow_B06_B07
+create link;from=Soil_B07,to=Soil_B08,type=soil_to_soil_link,name=Flow_B07_B08
+create link;from=Soil_B08,to=Soil_B09,type=soil_to_soil_link,name=Flow_B08_B09
+create link;from=Soil_B09,to=Soil_B10,type=soil_to_soil_link,name=Flow_B09_B10
+create link;from=Soil_B10,to=Water_table,type=soil_to_fixedhead_link,name=Water_table_exchange
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=10
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-07
+setvalue; object=system, quantity=nr_tolerance, value=0.0001
+setvalue; object=system, quantity=write_interval, value=5

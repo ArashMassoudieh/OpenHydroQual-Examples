@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1420 426" class="ohq-diagram" style="max-width:710px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Pervious_outlet"><title>Pervious_outlet (Reach_link)</title><path d="M260.0 130.0 L430.0 130.0 L600.0 130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Impervious_outlet"><title>Impervious_outlet (Impervious_Reach_link)</title><path d="M260.0 148.0 L430.0 148.0 L600.0 148.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Baseflow"><title>Baseflow (unconfined_groundwater_to_stream)</title><path d="M260.0 94.0 L430.0 94.0 L600.0 94.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Stream_outlet"><title>Stream_outlet (channel2fixed)</title><path d="M840.0 130.0 L970.0 130.0 L1100.0 130.0" marker-mid="url(#arr)"/></g>
+<g class="d-node composite" data-name="Neighborhood"><title>Neighborhood (Urban_HRU)</title><rect x="0" y="0" width="260" height="260" rx="21"/>
+<image href="icons/urban_hru.png" x="29" y="29" width="203" height="203"/>
+<text x="130" y="286" font-size="20" text-anchor="middle">Neighborhood</text></g>
+<g class="d-node" data-name="Stream"><title>Stream (Trapezoidal Channel Segment)</title><rect x="600" y="30" width="240" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="642" y="52" width="156" height="156"/>
+<text x="720" y="256" font-size="20" text-anchor="middle">Stream</text></g>
+<g class="d-node" data-name="Outlet"><title>Outlet (fixed_head)</title><rect x="1100" y="30" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1122" y="52" width="156" height="156"/>
+<text x="1200" y="256" font-size="20" text-anchor="middle">Outlet</text></g>
+</svg>

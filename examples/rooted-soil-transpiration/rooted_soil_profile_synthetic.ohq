@@ -1,0 +1,23 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = unsaturated_soil.json
+addtemplate; filename = plants.json
+create source;type=Precipitation,name=Rain,timeseries=rainfall_synthetic.txt
+create source;type=Transpiration_Time_Series (Soil),Kcb=1.05,name=Crop_upper,root_fraction=0.5,timeseries=et0_synthetic.csv
+create source;type=Transpiration_Time_Series (Soil),Kcb=1.05,name=Crop_middle,root_fraction=0.3,timeseries=et0_synthetic.csv
+create source;type=Transpiration_Time_Series (Soil),Kcb=1.05,name=Crop_lower,root_fraction=0.2,timeseries=et0_synthetic.csv
+create block;type=Catchment,ManningCoeff=0.15,Precipitation=Rain,_height=200,_width=200,area=10000[m~^2],depth=0[m],elevation=10[m],name=Field_surface,x=0,y=0
+create block;type=Soil,Evapotranspiration=Crop_upper,K_sat_original=0.6[m/day],alpha=1.5[1/m],n=1.4,theta_res=0.06,theta_sat=0.42,specific_storage=0.01[1/m],theta=0.3,area=10000[m~^2],_height=200,_width=200,bottom_elevation=9.7[m],depth=0.3[m],name=Root_zone_upper,x=0,y=250
+create block;type=Soil,Evapotranspiration=Crop_middle,K_sat_original=0.6[m/day],alpha=1.5[1/m],n=1.4,theta_res=0.06,theta_sat=0.42,specific_storage=0.01[1/m],theta=0.3,area=10000[m~^2],_height=200,_width=200,bottom_elevation=9.3[m],depth=0.4[m],name=Root_zone_middle,x=0,y=500
+create block;type=Soil,Evapotranspiration=Crop_lower,K_sat_original=0.6[m/day],alpha=1.5[1/m],n=1.4,theta_res=0.06,theta_sat=0.42,specific_storage=0.01[1/m],theta=0.3,area=10000[m~^2],_height=200,_width=200,bottom_elevation=8.5[m],depth=0.8[m],name=Root_zone_lower,x=0,y=750
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=7.5[m],name=Water_table,x=0,y=1000
+create link;from=Field_surface,to=Root_zone_upper,type=surfacewater_to_soil_link,name=Infiltration
+create link;from=Root_zone_upper,to=Root_zone_middle,type=soil_to_soil_link,name=Percolation_upper
+create link;from=Root_zone_middle,to=Root_zone_lower,type=soil_to_soil_link,name=Percolation_lower
+create link;from=Root_zone_lower,to=Water_table,type=soil_to_fixedhead_link,name=Deep_drainage
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=36526
+setvalue; object=system, quantity=simulation_end_time, value=36646
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-08
+setvalue; object=system, quantity=nr_tolerance, value=1e-06
+setvalue; object=system, quantity=write_interval, value=50

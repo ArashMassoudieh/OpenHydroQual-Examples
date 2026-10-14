@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parallel Links · OpenHydroQual Examples</title>
+<meta name="description" content="Three tanks joined by four fixed-flow links, two of them in parallel and one running backwards. Shows how block balances add up link flows, and how outflows are scaled back proportionally when a tank runs dry.">
+<meta name="keywords" content="links, parallel, connections, flow split, partition, network topology, fixed flow, pump, return flow, recirculation, tank, reactor, water balance, mass conservation, outflow limit, dry block">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#2f7dd1">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Getting Started</div>
+<h1>Parallel Links</h1>
+<p class="lede">Three tanks joined by four fixed-flow links, two of them in parallel and one running backwards. Shows how block balances add up link flows, and how outflows are scaled back proportionally when a tank runs dry.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class=''></b><b class=''></b><span>Beginner</span></span><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/parallel-links.zip" download>Download model (.zip)</a>
+    <div class="muted">4 KB · 1 files · open <code>parallel_links.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A small network of tanks connected by pipes and a pump, for example the basins of a treatment train, compartments of a storage facility, or any system where water moves between storages along prescribed routes. The point of the example is network topology. Any number of links may join the same two blocks, in either direction, and each block's water balance is simply the sum of all the links attached to it.</p>
+<h2>How it works</h2>
+<p><strong>Blocks.</strong> All three tanks are <code>Reactor</code> blocks from the mass transfer plugin. A Reactor stores a volume S (m³) and has an optional external inflow (constant or time series), which is zero here. Its balance is</p>
+<p>dS/dt = inflow + Σ (flows of links ending at the block) − Σ (flows of links starting at the block)</p>
+<p><strong>Links.</strong> Each link has a direction, from its <code>from</code> block to its <code>to</code> block, and positive flow follows that direction. All four links are <code>Fixed flow</code> links: their flow is set by the user and does not depend on water levels. Two links (Pipe_A and Pipe_B) connect the same pair of blocks in the same direction, and one (Return_Pump) connects them in the opposite direction. OpenHydroQual treats them as independent connections, so the balances become</p>
+<p>dS_Upstream/dt = −Q_A − Q_B + Q_pump = −30 − 20 + 5 = −45 m³/day
+  dS_Downstream/dt = Q_A + Q_B − Q_pump − Q_out = 50 − 5 − 10 = +35 m³/day
+  dS_Receiving/dt = Q_out = +10 m³/day</p>
+<p>The three rates sum to zero, so the total volume is conserved.</p>
+<p><strong>Outflow limiting.</strong> The flow of a Fixed flow link is marked in the plugin as subject to the outflow limit (<code>applylimit</code>). A block cannot hold negative storage. When the outflows of a block would drain it below zero, OpenHydroQual multiplies all of that block's limited outflows by a common factor between 0 and 1, chosen so that storage stays at zero. Because the same factor applies to every outflow, the outflows keep their original proportions.</p>
+<p><strong>Time stepping.</strong> The run uses a fixed time step of 0.01 days (<code>max_timestep_increase_factor</code> = 1), so the moment at which Upstream runs dry is resolved precisely.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Straight lines.</strong> With constant flows, every storage changes linearly: Upstream falls by 45 m³/day, Downstream rises by 35 m³/day and the Receiving_Tank rises by 10 m³/day.</li>
+<li><strong>Upstream runs dry at day 22.2</strong> (1,000 m³ / 45 m³/day). From then on Upstream can only pass on what it receives, which is the 5 m³/day from the Return_Pump.</li>
+<li><strong>Proportional cut-back.</strong> After day 22.2, Pipe_A and Pipe_B carry 3 and 2 m³/day: their set values of 30 and 20 m³/day, both multiplied by the same limit factor of 0.1. Water now circulates between Upstream and Downstream at 5 m³/day while Downstream drains to the Receiving_Tank at 10 m³/day.</li>
+<li><strong>Conservation.</strong> The sum of the three storages is 3,000 m³ at all times.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>Fixed flow links impose their flow regardless of water levels, so this model says nothing about how a real network would share flow between parallel pipes. For flows that respond to head differences, use links such as orifices, weirs or pipes from the hydraulic plugins (see the Draining Tank example).</li>
+<li>Tanks are treated as volumes only: they have no geometry or water level, and they never overflow.</li>
+<li>The outflow limit protects against negative storage but redistributes nothing: a block that runs dry simply passes on what it receives.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 240 1020 966" class="ohq-diagram" style="max-width:510px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Pipe_A"><title>Pipe_A (Fixed flow)</title><path d="M200.0 400.0 L450.0 400.0 L700.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_B"><title>Pipe_B (Fixed flow)</title><path d="M200.0 418.0 L450.0 418.0 L700.0 418.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Return_Pump"><title>Return_Pump (Fixed flow)</title><path d="M700.0 436.0 L450.0 436.0 L200.0 436.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outlet_Pipe"><title>Outlet_Pipe (Fixed flow)</title><path d="M800.0 500.0 L800.0 700.0 L800.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Upstream"><title>Upstream (Reactor)</title><rect x="0" y="300" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="22" y="322" width="156" height="156"/>
+<text x="100" y="528" font-size="21" text-anchor="middle">Upstream</text></g>
+<g class="d-node" data-name="Downstream"><title>Downstream (Reactor)</title><rect x="700" y="300" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="722" y="322" width="156" height="156"/>
+<text x="800" y="528" font-size="21" text-anchor="middle">Downstream</text></g>
+<g class="d-node" data-name="Receiving_Tank"><title>Receiving_Tank (Reactor)</title><rect x="700" y="900" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="722" y="922" width="156" height="156"/>
+<text x="800" y="1128" font-size="21" text-anchor="middle">Receiving_Tank</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>3</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Upstream'><summary><span class='cname'>Upstream</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A 1,000 m³ tank (a Reactor block) with no external inflow. It drains into Downstream through two pipes and receives a small return flow.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>1000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Downstream'><summary><span class='cname'>Downstream</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A 1,000 m³ tank that receives both pipes, pumps a little water back upstream and discharges to the Receiving_Tank.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>1000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Receiving-Tank'><summary><span class='cname'>Receiving_Tank</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A 1,000 m³ tank at the end of the system. It only receives water.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>1000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>4</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Pipe-A'><summary><span class='cname'>Pipe_A</span><span class='ctype'>Fixed flow · mass_transfer</span><span class='crole'><p>Fixed flow of 30 m³/day from Upstream to Downstream.</p></span></summary><div class='cbody'><p class=type-help><b>Fixed flow:</b> Fixed flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Flow rate</td><td class='v'>30</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Pipe-B'><summary><span class='cname'>Pipe_B</span><span class='ctype'>Fixed flow · mass_transfer</span><span class='crole'><p>Fixed flow of 20 m³/day from Upstream to Downstream, in parallel with Pipe_A.</p></span></summary><div class='cbody'><p class=type-help><b>Fixed flow:</b> Fixed flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Flow rate</td><td class='v'>20</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Return-Pump'><summary><span class='cname'>Return_Pump</span><span class='ctype'>Fixed flow · mass_transfer</span><span class='crole'><p>Fixed flow of 5 m³/day from Downstream back to Upstream, for example a recirculation pump.</p></span></summary><div class='cbody'><p class=type-help><b>Fixed flow:</b> Fixed flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Flow rate</td><td class='v'>5</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Outlet-Pipe'><summary><span class='cname'>Outlet_Pipe</span><span class='ctype'>Fixed flow · mass_transfer</span><span class='crole'><p>Fixed flow of 10 m³/day from Downstream to the Receiving_Tank.</p></span></summary><div class='cbody'><p class=type-help><b>Fixed flow:</b> Fixed flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Flow rate</td><td class='v'>10</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div></section>
+
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>30</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Storage in the three tanks' loading='lazy'><figcaption><b>Storage in the three tanks</b> Upstream empties at a net 45 m³/day and runs dry at day 22.2. The total of the three storages stays at 3,000 m³ throughout.</figcaption></figure><figure><img src='plot_2.png' alt='Link flows' loading='lazy'><figcaption><b>Link flows</b> Once Upstream is empty, Pipe_A and Pipe_B are cut back to 3 and 2 m³/day, which together pass on exactly the 5 m³/day that the Return_Pump delivers.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/parallel-links">View source on GitHub</a>.</div></footer>
+</body></html>

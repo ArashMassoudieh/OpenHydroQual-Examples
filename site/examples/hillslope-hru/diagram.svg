@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1320 676" class="ohq-diagram" style="max-width:660px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Overland_flow"><title>Overland_flow (Catchment_link)</title><path d="M260.0 195.0 L380.0 255.0 L500.0 315.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_to_stream"><title>Runoff_to_stream (Catchment_link)</title><path d="M760.0 380.0 L880.0 380.0 L1000.0 380.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Groundwater_throughflow"><title>Groundwater_throughflow (groundwater_link)</title><path d="M252.0 211.1 L372.0 271.1 L492.0 331.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Baseflow_to_stream"><title>Baseflow_to_stream (groundwater_to_fixedhead)</title><path d="M760.0 398.0 L880.0 398.0 L1000.0 398.0" marker-mid="url(#arr)"/></g>
+<g class="d-node composite" data-name="Upslope"><title>Upslope (Hydrologic_Response_Unit)</title><rect x="0" y="0" width="260" height="260" rx="21"/>
+<image href="icons/hydrologic_response_unit.png" x="29" y="29" width="203" height="203"/>
+<text x="130" y="285" font-size="19" text-anchor="middle">Upslope</text></g>
+<g class="d-node composite" data-name="Downslope"><title>Downslope (Hydrologic_Response_Unit)</title><rect x="500" y="250" width="260" height="260" rx="21"/>
+<image href="icons/hydrologic_response_unit.png" x="529" y="279" width="203" height="203"/>
+<text x="630" y="535" font-size="19" text-anchor="middle">Downslope</text></g>
+<g class="d-node" data-name="Stream"><title>Stream (fixed_head)</title><rect x="1000" y="280" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1022" y="302" width="156" height="156"/>
+<text x="1100" y="505" font-size="19" text-anchor="middle">Stream</text></g>
+</svg>

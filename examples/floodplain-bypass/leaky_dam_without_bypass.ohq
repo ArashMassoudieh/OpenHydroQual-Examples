@@ -1,0 +1,17 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = open_channel.json
+addtemplate; filename = compound_channel.json
+create block;type=Compound Channel Segment,name=Upstream_Reach,channel_coeff=3.65,channel_exponent=1.5,bank_depth=1.2[m],floodplain_width=40[m],floodplain_side_slope=10,pool_depth=0[m],ManningCoeff=0.04,bottom_elevation=1.2[m],length=200[m],depth=0.32[m],inflow=flood_hydrograph.csv,x=0,y=200,_width=200,_height=200
+create block;type=Compound Channel Segment,name=Dam_Pool,channel_coeff=3.65,channel_exponent=1.5,bank_depth=1.2[m],floodplain_width=40[m],floodplain_side_slope=10,pool_depth=0[m],ManningCoeff=0.04,bottom_elevation=0.8[m],length=200[m],depth=0.17[m],inflow=,x=350,y=200,_width=200,_height=200
+create block;type=Compound Channel Segment,name=Downstream_Reach,channel_coeff=3.65,channel_exponent=1.5,bank_depth=1.2[m],floodplain_width=0[m],floodplain_side_slope=10,pool_depth=0[m],ManningCoeff=0.04,bottom_elevation=0.4[m],length=200[m],depth=0.35[m],inflow=,x=700,y=200,_width=200,_height=200
+create block;type=fixed_head,name=Outlet,head=0.3[m],Storage=100000[m~^3],x=1050,y=200,_width=200,_height=200
+create link;from=Upstream_Reach,to=Dam_Pool,type=Compound_Channel_link,name=Upstream_Flow
+create link;from=Dam_Pool,to=Downstream_Reach,type=Leaky Dam,name=Leaky_Dam,Width=6[m],Dam_Height=1.0[m],Hydraulic_Conductivity=20000[m/day],Length=1[m],Weir_coefficient=0.85
+create link;from=Downstream_Reach,to=Outlet,type=channel2fixed,name=Outlet_Flow
+setvalue; object=system, quantity=alloutputfile, value=output_without_bypass.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=3
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-07
+setvalue; object=system, quantity=max_timestep_increase_factor, value=5
+setvalue; object=system, quantity=write_interval, value=1

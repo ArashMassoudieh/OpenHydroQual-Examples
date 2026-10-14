@@ -1,0 +1,16 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = snowmelt.json
+create source;type=Air_Temperature,name=Air_temperature,timeseries=air_temperature.csv
+create source;type=Snowfall,name=Snowfall,timeseries=precipitation.csv,Temperature=air_temperature.csv,snowfall_temperature=-1,rainfall_temperature=1,temperature_offset=0
+create source;type=Liquid_Precipitation,name=Rainfall,timeseries=precipitation.csv,Temperature=air_temperature.csv,snowfall_temperature=-1,rainfall_temperature=1,temperature_offset=0
+create block;type=Snowpack,name=Snowpack,area=1000000[m^2],initial_swe=0[m],Snowfall=Snowfall,Temperature=Air_temperature,degree_day_factor=0.003,melt_temperature=0,temperature_offset=0,_width=200,_height=200,x=0,y=0
+create block;type=Catchment,name=Land_surface,area=1000000[m^2],Slope=0.02,Width=1000[m],ManningCoeff=0.1,depression_storage=0[m],Runoff_coeff=1,elevation=0[m],Storage=0[m~^3],Precipitation=Rainfall,_width=200,_height=200,x=0,y=400
+create block;type=fixed_head,name=Outlet,head=-1[m],Storage=0[m~^3],_width=200,_height=200,x=450,y=400
+create link;type=Snowmelt_link,name=Snowmelt,from=Snowpack,to=Land_surface
+create link;type=Catchment_link,name=Runoff,from=Land_surface,to=Outlet
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=181
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=10

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snowpack Accumulation and Melt · OpenHydroQual Examples</title>
+<meta name="description" content="A 1 km² catchment through a cold-region winter, from 1 November to 30 April. Precipitation is split into rain and snow by air temperature, snow accumulates as snow water equivalent, and a degree-day model releases it as spring melt runoff.">
+<meta name="keywords" content="snow, snowmelt, snowpack, degree day, temperature index, swe, snow water equivalent, rain snow partition, phase transition, air temperature, cold region, winter, spring melt, freshet, rain on snow, runoff timing, mountain hydrology">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#3a6fb0">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Watershed Hydrology</div>
+<h1>Snowpack Accumulation and Melt</h1>
+<p class="lede">A 1 km² catchment through a cold-region winter, from 1 November to 30 April. Precipitation is split into rain and snow by air temperature, snow accumulates as snow water equivalent, and a degree-day model releases it as spring melt runoff.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class=''></b><b class=''></b><span>Beginner</span></span><a class='plug' href='../../?plugin=snowmelt'>snowmelt</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/snowmelt.zip" download>Download model (.zip)</a>
+    <div class="muted">7 KB · 3 files · open <code>snowmelt.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>In cold regions much of the winter precipitation does not run off when it falls. It is stored as snow and released weeks or months later, when the air warms in spring. The timing of runoff is therefore controlled by temperature as much as by precipitation. This model follows one winter (1 November to 30 April, days 0 to 181) on a 1 km² catchment with synthetic but realistic weather for a cold continental site: monthly mean temperatures of −1, −8, −10, −5, 0 and +10 °C from November to April, and 334 mm of precipitation.</p>
+<p>The model is a minimal temperature-index (degree-day) snow model, the approach used in most operational and conceptual watershed models (for example HBV, SWAT and SRM). It shows the three steps that every such model has: partition precipitation into rain and snow, store the snow as water equivalent, and melt it at a rate set by air temperature.</p>
+<h2>How it works</h2>
+<p><strong>Rain and snow.</strong> Both precipitation sources read the same file. Each computes an effective temperature T = T_air + temperature_offset (offset 0 here) and splits the precipitation with a linear transition between T_s = −1 °C and T_r = +1 °C:</p>
+<p>f_rain = min(max((T − T_s)/(T_r − T_s), 0), 1),  f_snow = 1 − f_rain</p>
+<p>A source delivers coefficient × series value × rate, where the coefficient is the area of the receiving block and the rate is f_rain or f_snow. <code>Rainfall</code> is assigned to the land surface and <code>Snowfall</code> to the snowpack, so the snowpack receives P·f_snow·A and the land surface P·f_rain·A, where P is the precipitation intensity (m/day) and A = 10⁶ m².</p>
+<p><strong>Snowpack.</strong> The snowpack stores snow as a water-equivalent volume V_snow, with SWE = V_snow/A. Its balance is</p>
+<p>dV_snow/dt = P·f_snow·A − Q_melt</p>
+<p><strong>Melt.</strong> The <code>Snowmelt</code> link moves water from the snowpack to the land surface at the degree-day rate</p>
+<p>Q_melt = A · DDF · max(T − T_m, 0)</p>
+<p>with DDF = 0.003 m/day/°C and T_m = 0 °C. Every degree above freezing melts 3 mm of SWE per day. The link is storage limited: once the pack is empty, melt stops even if it is warm.</p>
+<p><strong>Land surface and outlet.</strong> The land surface is a <code>Catchment</code> block. It receives rain and melt and drains to the outlet with Manning's equation for sheet flow,</p>
+<p>Q = 86400 · (W/n) · S^0.5 · max(d − d_s, 0)^(5/3)  (m³/day)</p>
+<p>where d is the water depth on the surface (Storage/area), W the width, S the slope, n the roughness and d_s the depression storage (0 here). With a runoff coefficient of 1 every drop reaching the surface becomes runoff. The outlet is a fixed-head block whose storage starts at zero, so it records the cumulative yield.</p>
+<p>Because the area is 1 km², a flow of 1000 m³/day equals 1 mm/day of water depth over the catchment.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Partition.</strong> Of the 334 mm of precipitation, 228 mm falls as snow and 106 mm as rain. November and late-April storms are rain; December to March storms are almost all snow.</li>
+<li><strong>Accumulation.</strong> A first thin snow cover (days 5 to 10) melts during a warm rain storm on day 11. The lasting pack starts around day 18. SWE then grows in steps, one per storm, and reaches its maximum of 189 mm around day 131 (mid-March). Short thaws melt only 9 mm of snow before day 120.</li>
+<li><strong>Delayed runoff.</strong> About 52 mm runs off in November, mainly from a rain storm on day 10. From early December to early March almost no water leaves the catchment, even though about 190 mm of precipitation falls between days 30 and 130.</li>
+<li><strong>Spring freshet.</strong> Once temperatures stay above 0 °C, melt rates reach 23 mm/day (day 150) and the pack is gone by day 155 (early April). Between days 130 and 155 about 225 mm leaves the catchment, two thirds of the season's yield.</li>
+<li><strong>Water balance.</strong> At the end of the run the snowpack is empty, 0.5 mm is still on the land surface, and the outlet has received 333.5 mm. Snowfall plus rainfall is 334.0 mm, so the balance closes.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The weather is synthetic. Temperature and precipitation are uniform over the catchment.</li>
+<li>This is a temperature-index model. It does not represent the energy balance (radiation, wind, humidity), cold content, refreezing, liquid water held in the pack, sublimation, canopy interception or wind redistribution of snow.</li>
+<li>The degree-day factor and transition temperatures are typical values, not calibrated. In practice the degree-day factor varies from about 2 to 6 mm/day/°C and often increases through the melt season.</li>
+<li>Snow covers the whole catchment whenever SWE is above zero. There is no snow-covered-area depletion curve.</li>
+<li>The land surface does not infiltrate or evaporate water, so all precipitation eventually becomes runoff. To study infiltration and soil storage, connect the melt to a soil-based unit such as a hydrologic response unit; the <code>snowmelt</code> plugin has pervious and impervious melt links for that purpose.</li>
+<li><code>temperature_offset</code> can shift the temperature of a higher or lower surface (lapse-rate correction). Apply the same offset to the snowpack and both precipitation sources.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 770 766" class="ohq-diagram" style="max-width:385px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Snowmelt"><title>Snowmelt (Snowmelt_link)</title><path d="M100.0 200.0 L100.0 300.0 L100.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff"><title>Runoff (Catchment_link)</title><path d="M200.0 500.0 L325.0 500.0 L450.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Snowpack"><title>Snowpack (Snowpack)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/snowmelt.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="222" font-size="17" text-anchor="middle">Snowpack</text></g>
+<g class="d-node" data-name="Land_surface"><title>Land_surface (Catchment)</title><rect x="0" y="400" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="22" y="422" width="156" height="156"/>
+<text x="100" y="622" font-size="17" text-anchor="middle">Land_surface</text></g>
+<g class="d-node" data-name="Outlet"><title>Outlet (fixed_head)</title><rect x="450" y="400" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="472" y="422" width="156" height="156"/>
+<text x="550" y="622" font-size="17" text-anchor="middle">Outlet</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>3</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Snowpack'><summary><span class='cname'>Snowpack</span><span class='ctype'>Snowpack · snowmelt</span><span class='crole'><p>Snow water equivalent (SWE) store over the whole 1 km² catchment. Gains snowfall and loses melt. Degree-day factor 3 mm/day/°C, melt threshold 0 °C, no snow at the start.</p></span></summary><div class='cbody'><p class=type-help><b>Snowpack:</b> Stores solid precipitation as snow water equivalent and releases degree-day snowmelt through a Snowmelt_link.</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Snow-covered plan area</td><td class='v'>1000000</td><td>m^2</td><td></td></tr><tr><td>Initial snow water equivalent</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Solid precipitation input</td><td class='v'>Snowfall</td><td>m^3/day</td><td></td></tr><tr><td>Air-temperature forcing</td><td class='v'>Air_temperature</td><td>degC</td><td></td></tr><tr><td>Degree-day melt factor in water-depth per day per degree Celsius</td><td class='v'>0.003</td><td></td><td></td></tr><tr><td>Temperature above which snow melts</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Additive air-temperature adjustment for this snowpack</td><td class='v'>0</td><td>degC</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Land-surface'><summary><span class='cname'>Land_surface</span><span class='ctype'>Catchment</span><span class='crole'><p>The 1 km² ground surface that collects rain and melt water. Every drop that reaches it runs off (runoff coefficient 1, no infiltration, no depression storage). Sheet flow toward the outlet follows Manning's equation (width 1000 m, slope 0.02, n = 0.1).</p></span></summary><div class='cbody'><p class=type-help><b>Catchment:</b> Catchment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Catchment area</td><td class='v'>1000000</td><td>m^2</td><td>Total horizontal surface area of the catchment. Used to compute initial storage and flow-related parameters.</td></tr><tr><td>Catchment slope in the direction of flow</td><td class='v'>0.02</td><td></td><td>The average slope of the catchment along the dominant flow direction</td></tr><tr><td>The width of the catchment</td><td class='v'>1000</td><td>m</td><td>The average width of the catchment perpendicular to the dominant flow direction</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.1</td><td></td><td>The Manning&#x27;s roughness coefficient representing surface resistance to flow. Typical values vary by land cover type.</td></tr><tr><td>Depression storage</td><td class='v'>0</td><td>m</td><td>The depth of water that is retained in surface depressions and does not contribute to surface runoff.</td></tr><tr><td>Runoff coefficient</td><td class='v'>1</td><td></td><td>This is the fraction of rain that converts to runoff in case infiltration is not explicitly modeled</td></tr><tr><td>Mean elevation of the catchment</td><td class='v'>0</td><td>m</td><td>The elevation of the centroid of the catchment based on the model datum.</td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Precipitation</td><td class='v'>Rainfall</td><td>m^3/day</td><td>A precipitation source object must be selected.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Outlet'><summary><span class='cname'>Outlet</span><span class='ctype'>fixed_head</span><span class='crole'><p>Fixed-head boundary at the catchment outlet. Its storage starts at zero and accumulates all runoff, so it is a running total of water yield.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>-1</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>2</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Snowmelt'><summary><span class='cname'>Snowmelt</span><span class='ctype'>Snowmelt_link · snowmelt</span><span class='crole'><p>Degree-day melt from the snowpack to the land surface. Limited by the water stored in the pack.</p></span></summary><div class='cbody'><p class=type-help><b>Snowmelt_link:</b> Degree-day snowmelt release to a catchment</p></div></details>
+<details class='comp' id='c-Runoff'><summary><span class='cname'>Runoff</span><span class='ctype'>Catchment_link</span><span class='crole'><p>Overland flow from the land surface to the outlet.</p></span></summary><div class='cbody'><p class=type-help><b>Catchment_link:</b> Link from a catchment</p></div></details>
+</div>
+<h3>Sources <small>3</small></h3><p class='kind-blurb'>External inputs or sinks applied to blocks: rainfall, evaporation, loads, exchange with the atmosphere.</p><div class='comp-list'>
+<details class='comp' id='c-Air-temperature'><summary><span class='cname'>Air_temperature</span><span class='ctype'>Air_Temperature · snowmelt</span><span class='crole'><p>Daily air temperature (°C) read from <code>air_temperature.csv</code>. Drives melt in the snowpack.</p></span></summary><div class='cbody'><p class=type-help><b>Air_Temperature:</b> Air-temperature forcing</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Air temperature time series</td><td class='v'>air_temperature.csv</td><td>degC</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Snowfall'><summary><span class='cname'>Snowfall</span><span class='ctype'>Snowfall · snowmelt</span><span class='crole'><p>The solid share of the precipitation in <code>precipitation.csv</code>. All of it is snow at or below −1 °C, none above 1 °C, with a linear transition in between. Delivered to the snowpack as a volume rate over the snowpack area.</p></span></summary><div class='cbody'><p class=type-help><b>Snowfall:</b> Solid portion of precipitation from a temperature transition</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cumulative total precipitation</td><td class='v'>precipitation.csv</td><td>m</td><td></td></tr><tr><td>Air temperature</td><td class='v'>air_temperature.csv</td><td>degC</td><td></td></tr><tr><td>Temperature at or below which all precipitation is snow</td><td class='v'>-1</td><td></td><td></td></tr><tr><td>Temperature at or above which all precipitation is rain</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Additive air-temperature adjustment for this modeled surface</td><td class='v'>0</td><td>degC</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Rainfall'><summary><span class='cname'>Rainfall</span><span class='ctype'>Liquid_Precipitation · snowmelt</span><span class='crole'><p>The liquid share of the same precipitation series, using the same temperature transition. Delivered directly to the land surface. Rain and snow fractions always add to one, so no precipitation is lost or double counted.</p></span></summary><div class='cbody'><p class=type-help><b>Liquid_Precipitation:</b> Liquid portion of precipitation from a temperature transition</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cumulative total precipitation</td><td class='v'>precipitation.csv</td><td>m</td><td></td></tr><tr><td>Air temperature</td><td class='v'>air_temperature.csv</td><td>degC</td><td></td></tr><tr><td>Temperature at or below which all precipitation is snow</td><td class='v'>-1</td><td></td><td></td></tr><tr><td>Temperature at or above which all precipitation is rain</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Additive air-temperature adjustment for this modeled surface</td><td class='v'>0</td><td>degC</td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>air_temperature.csv</code></td><td><p>Synthetic daily mean air temperature (°C) versus time (days since 1 November). A seasonal cycle with a mid-January minimum near −10 °C plus random day-to-day weather anomalies. Two columns, no header.</p></td></tr><tr><td><code>precipitation.csv</code></td><td><p>Synthetic daily precipitation. Three columns, no header: interval start (days), interval end (days), water-equivalent depth in the interval (m). 64 wet days and 334 mm in 181 days.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>181</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Air temperature' loading='lazy'><figcaption><b>Air temperature</b> Below freezing for most of December to early March, with brief thaws. Spring warming starts in mid-March (around day 130).</figcaption></figure><figure><img src='plot_2.png' alt='Rain and snow' loading='lazy'><figcaption><b>Rain and snow</b> The same precipitation record split by temperature. Autumn and late-spring storms fall as rain; winter storms fall as snow.</figcaption></figure><figure><img src='plot_3.png' alt='Snow water equivalent' loading='lazy'><figcaption><b>Snow water equivalent</b> The snowpack builds from mid-November to a peak of 189 mm in mid-March, then melts out in about three and a half weeks.</figcaption></figure><figure><img src='plot_4.png' alt='Melt and runoff' loading='lazy'><figcaption><b>Melt and runoff</b> Autumn rain produces short runoff events. In winter runoff almost stops. Most of the season&#x27;s water leaves in the spring melt pulse between days 130 and 155.</figcaption></figure><figure><img src='plot_5.png' alt='Cumulative water yield' loading='lazy'><figcaption><b>Cumulative water yield</b> Water yield stays flat through the winter while precipitation is stored as snow, then rises steeply during the melt. The final value equals the total precipitation (334,000 m³ = 334 mm).</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/snowmelt">View source on GitHub</a>.</div></footer>
+</body></html>

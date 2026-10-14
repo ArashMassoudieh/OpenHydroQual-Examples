@@ -1,0 +1,12 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = Reservoir_operation.json
+create block;type=Reservoir,name=Reservoir,Storage=6000000[m~^3],inflow=reservoir_inflow.csv,x=0,y=0,_width=200,_height=200
+create block;type=fixed_head,name=Downstream_River,head=0[m],Storage=0[m~^3],x=500,y=0,_width=200,_height=200
+create link;from=Reservoir,to=Downstream_River,type=Reservoir_link_rule,name=Outlet_Works,S_min=4000000[m~^3],S_max=16000000[m~^3],Q_min=86400[m~^3/day],Q_max=1296000[m~^3/day]
+create link;from=Reservoir,to=Downstream_River,type=Spillway,name=Spillway,reservoir_coeff=8.44e-82,reservoir_power=12
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=365
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=1

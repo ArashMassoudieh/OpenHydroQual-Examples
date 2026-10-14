@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="340 -60 920 3046" class="ohq-diagram" style="max-width:460px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Infiltration_A"><title>Infiltration_A (surfacewater_to_soil_link)</title><path d="M500.0 200.0 L500.0 230.0 L500.0 260.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A01_A02"><title>Flow_A01_A02 (soil_to_soil_link)</title><path d="M500.0 460.0 L500.0 480.0 L500.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A02_A03"><title>Flow_A02_A03 (soil_to_soil_link)</title><path d="M500.0 700.0 L500.0 720.0 L500.0 740.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A03_A04"><title>Flow_A03_A04 (soil_to_soil_link)</title><path d="M500.0 940.0 L500.0 960.0 L500.0 980.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A04_A05"><title>Flow_A04_A05 (soil_to_soil_link)</title><path d="M500.0 1180.0 L500.0 1200.0 L500.0 1220.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A05_A06"><title>Flow_A05_A06 (soil_to_soil_link)</title><path d="M500.0 1420.0 L500.0 1440.0 L500.0 1460.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A06_A07"><title>Flow_A06_A07 (soil_to_soil_link)</title><path d="M500.0 1660.0 L500.0 1680.0 L500.0 1700.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A07_A08"><title>Flow_A07_A08 (soil_to_soil_link)</title><path d="M500.0 1900.0 L500.0 1920.0 L500.0 1940.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A08_A09"><title>Flow_A08_A09 (soil_to_soil_link)</title><path d="M500.0 2140.0 L500.0 2160.0 L500.0 2180.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A09_A10"><title>Flow_A09_A10 (soil_to_soil_link)</title><path d="M500.0 2380.0 L500.0 2400.0 L500.0 2420.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Free_drainage"><title>Free_drainage (fixed_hydraulic_gradient_link)</title><path d="M500.0 2620.0 L500.0 2650.0 L500.0 2680.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Infiltration_B"><title>Infiltration_B (surfacewater_to_soil_link)</title><path d="M1100.0 200.0 L1100.0 230.0 L1100.0 260.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B01_B02"><title>Flow_B01_B02 (soil_to_soil_link)</title><path d="M1100.0 460.0 L1100.0 480.0 L1100.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B02_B03"><title>Flow_B02_B03 (soil_to_soil_link)</title><path d="M1100.0 700.0 L1100.0 720.0 L1100.0 740.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B03_B04"><title>Flow_B03_B04 (soil_to_soil_link)</title><path d="M1100.0 940.0 L1100.0 960.0 L1100.0 980.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B04_B05"><title>Flow_B04_B05 (soil_to_soil_link)</title><path d="M1100.0 1180.0 L1100.0 1200.0 L1100.0 1220.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B05_B06"><title>Flow_B05_B06 (soil_to_soil_link)</title><path d="M1100.0 1420.0 L1100.0 1440.0 L1100.0 1460.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B06_B07"><title>Flow_B06_B07 (soil_to_soil_link)</title><path d="M1100.0 1660.0 L1100.0 1680.0 L1100.0 1700.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B07_B08"><title>Flow_B07_B08 (soil_to_soil_link)</title><path d="M1100.0 1900.0 L1100.0 1920.0 L1100.0 1940.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B08_B09"><title>Flow_B08_B09 (soil_to_soil_link)</title><path d="M1100.0 2140.0 L1100.0 2160.0 L1100.0 2180.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B09_B10"><title>Flow_B09_B10 (soil_to_soil_link)</title><path d="M1100.0 2380.0 L1100.0 2400.0 L1100.0 2420.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Water_table_exchange"><title>Water_table_exchange (soil_to_fixedhead_link)</title><path d="M1100.0 2620.0 L1100.0 2650.0 L1100.0 2680.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Surface_A"><title>Surface_A (Catchment)</title><rect x="400" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="422" y="22" width="156" height="156"/>
+<text x="500" y="227" font-size="20" text-anchor="middle">Surface_A</text></g>
+<g class="d-node" data-name="Soil_A01"><title>Soil_A01 (Soil)</title><rect x="400" y="260" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="282" width="156" height="156"/>
+<text x="500" y="487" font-size="20" text-anchor="middle">Soil_A01</text></g>
+<g class="d-node" data-name="Soil_A02"><title>Soil_A02 (Soil)</title><rect x="400" y="500" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="522" width="156" height="156"/>
+<text x="500" y="727" font-size="20" text-anchor="middle">Soil_A02</text></g>
+<g class="d-node" data-name="Soil_A03"><title>Soil_A03 (Soil)</title><rect x="400" y="740" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="762" width="156" height="156"/>
+<text x="500" y="967" font-size="20" text-anchor="middle">Soil_A03</text></g>
+<g class="d-node" data-name="Soil_A04"><title>Soil_A04 (Soil)</title><rect x="400" y="980" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="1002" width="156" height="156"/>
+<text x="500" y="1207" font-size="20" text-anchor="middle">Soil_A04</text></g>
+<g class="d-node" data-name="Soil_A05"><title>Soil_A05 (Soil)</title><rect x="400" y="1220" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="1242" width="156" height="156"/>
+<text x="500" y="1447" font-size="20" text-anchor="middle">Soil_A05</text></g>
+<g class="d-node" data-name="Soil_A06"><title>Soil_A06 (Soil)</title><rect x="400" y="1460" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="1482" width="156" height="156"/>
+<text x="500" y="1687" font-size="20" text-anchor="middle">Soil_A06</text></g>
+<g class="d-node" data-name="Soil_A07"><title>Soil_A07 (Soil)</title><rect x="400" y="1700" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="1722" width="156" height="156"/>
+<text x="500" y="1927" font-size="20" text-anchor="middle">Soil_A07</text></g>
+<g class="d-node" data-name="Soil_A08"><title>Soil_A08 (Soil)</title><rect x="400" y="1940" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="1962" width="156" height="156"/>
+<text x="500" y="2167" font-size="20" text-anchor="middle">Soil_A08</text></g>
+<g class="d-node" data-name="Soil_A09"><title>Soil_A09 (Soil)</title><rect x="400" y="2180" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="2202" width="156" height="156"/>
+<text x="500" y="2407" font-size="20" text-anchor="middle">Soil_A09</text></g>
+<g class="d-node" data-name="Soil_A10"><title>Soil_A10 (Soil)</title><rect x="400" y="2420" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="2442" width="156" height="156"/>
+<text x="500" y="2647" font-size="20" text-anchor="middle">Soil_A10</text></g>
+<g class="d-node" data-name="Drainage_outlet"><title>Drainage_outlet (fixed_head)</title><rect x="400" y="2680" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="422" y="2702" width="156" height="156"/>
+<text x="500" y="2907" font-size="20" text-anchor="middle">Drainage_outlet</text></g>
+<g class="d-node" data-name="Surface_B"><title>Surface_B (Catchment)</title><rect x="1000" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="1022" y="22" width="156" height="156"/>
+<text x="1100" y="227" font-size="20" text-anchor="middle">Surface_B</text></g>
+<g class="d-node" data-name="Soil_B01"><title>Soil_B01 (Soil)</title><rect x="1000" y="260" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="282" width="156" height="156"/>
+<text x="1100" y="487" font-size="20" text-anchor="middle">Soil_B01</text></g>
+<g class="d-node" data-name="Soil_B02"><title>Soil_B02 (Soil)</title><rect x="1000" y="500" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="522" width="156" height="156"/>
+<text x="1100" y="727" font-size="20" text-anchor="middle">Soil_B02</text></g>
+<g class="d-node" data-name="Soil_B03"><title>Soil_B03 (Soil)</title><rect x="1000" y="740" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="762" width="156" height="156"/>
+<text x="1100" y="967" font-size="20" text-anchor="middle">Soil_B03</text></g>
+<g class="d-node" data-name="Soil_B04"><title>Soil_B04 (Soil)</title><rect x="1000" y="980" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1002" width="156" height="156"/>
+<text x="1100" y="1207" font-size="20" text-anchor="middle">Soil_B04</text></g>
+<g class="d-node" data-name="Soil_B05"><title>Soil_B05 (Soil)</title><rect x="1000" y="1220" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1242" width="156" height="156"/>
+<text x="1100" y="1447" font-size="20" text-anchor="middle">Soil_B05</text></g>
+<g class="d-node" data-name="Soil_B06"><title>Soil_B06 (Soil)</title><rect x="1000" y="1460" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1482" width="156" height="156"/>
+<text x="1100" y="1687" font-size="20" text-anchor="middle">Soil_B06</text></g>
+<g class="d-node" data-name="Soil_B07"><title>Soil_B07 (Soil)</title><rect x="1000" y="1700" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1722" width="156" height="156"/>
+<text x="1100" y="1927" font-size="20" text-anchor="middle">Soil_B07</text></g>
+<g class="d-node" data-name="Soil_B08"><title>Soil_B08 (Soil)</title><rect x="1000" y="1940" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1962" width="156" height="156"/>
+<text x="1100" y="2167" font-size="20" text-anchor="middle">Soil_B08</text></g>
+<g class="d-node" data-name="Soil_B09"><title>Soil_B09 (Soil)</title><rect x="1000" y="2180" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="2202" width="156" height="156"/>
+<text x="1100" y="2407" font-size="20" text-anchor="middle">Soil_B09</text></g>
+<g class="d-node" data-name="Soil_B10"><title>Soil_B10 (Soil)</title><rect x="1000" y="2420" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="2442" width="156" height="156"/>
+<text x="1100" y="2647" font-size="20" text-anchor="middle">Soil_B10</text></g>
+<g class="d-node" data-name="Water_table"><title>Water_table (fixed_head)</title><rect x="1000" y="2680" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1022" y="2702" width="156" height="156"/>
+<text x="1100" y="2907" font-size="20" text-anchor="middle">Water_table</text></g>
+</svg>

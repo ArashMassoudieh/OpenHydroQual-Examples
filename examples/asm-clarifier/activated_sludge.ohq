@@ -1,0 +1,31 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = mass_transfer.json
+addtemplate; filename = wastewater.json
+create constituent;type=Constituent,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],diffusion_coefficient=0[m~^2/day],dispersivity=0[m],external_mass_flow_timeseries=,external_source=,name=S_s,stoichiometric_constant=0,time_variable_inflow_concentration=
+create constituent;type=Particle,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],external_mass_flow_timeseries=,external_source=,name=X_bh,settling_velocity=1500[m/day],stoichiometric_constant=0,time_variable_inflow_concentration=,turbidity_coefficient=0,turbidity_exponent=0
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=4,name=mu_max,reference_temperature=20,temperature=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=20,name=K_s,reference_temperature=20,temperature=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=0.6,name=Y,reference_temperature=20,temperature=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=0.1,name=b,reference_temperature=20,temperature=
+create reaction;type=Reaction,S_s:stoichiometric_constant=(0-1/Y),X_bh:stoichiometric_constant=1,name=Growth,rate_expression=(mu_max*S_s/(S_s+K_s)*X_bh)
+create reaction;type=Reaction,S_s:stoichiometric_constant=1,X_bh:stoichiometric_constant=-1,name=Decay,rate_expression=(b*X_bh)
+create block;type=Reactor,S_s:concentration=20[g/m~^3],S_s:constant_inflow_concentration=200[g/m~^3],X_bh:concentration=1000[g/m~^3],Storage=75[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=1000[m~^3/day],name=Aeration_1,time_variable_inflow=,x=100,y=200
+create block;type=Reactor,S_s:concentration=5[g/m~^3],X_bh:concentration=1000[g/m~^3],Storage=75[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Aeration_2,time_variable_inflow=,x=400,y=200
+create block;type=Reactor,S_s:concentration=2[g/m~^3],X_bh:concentration=1000[g/m~^3],Storage=75[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Aeration_3,time_variable_inflow=,x=700,y=200
+create block;type=Reactor,S_s:concentration=1[g/m~^3],X_bh:concentration=1000[g/m~^3],Storage=75[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Aeration_4,time_variable_inflow=,x=1000,y=200
+create composite;type=Clarifier,S_s:concentration=1[g/m~^3],X_bh:concentration=10[g/m~^3],_height=200,_width=200,floor_elevation=-1[m],inflow=,interface_elevation=0[m],lower_storage=30[m~^3],name=Clarifier,surface_area=100[m~^2],underflow=510[m~^3/day],underflow_timeseries=,upper_storage=200[m~^3],x=1300,y=200
+create block;type=Reactor,S_s:concentration=0[g/m~^3],X_bh:concentration=0[g/m~^3],Storage=1[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Effluent,time_variable_inflow=,x=1650,y=200
+create block;type=Reactor,S_s:concentration=0[g/m~^3],X_bh:concentration=0[g/m~^3],Storage=1[m~^3],_height=200,_width=200,bottom_elevation=-2[m],constant_inflow=0[m~^3/day],name=Waste_sludge,time_variable_inflow=,x=1650,y=500
+create link;from=Aeration_1,to=Aeration_2,type=Fixed flow,flow=1500[m~^3/day],name=Mixed_liquor_1
+create link;from=Aeration_2,to=Aeration_3,type=Fixed flow,flow=1500[m~^3/day],name=Mixed_liquor_2
+create link;from=Aeration_3,to=Aeration_4,type=Fixed flow,flow=1500[m~^3/day],name=Mixed_liquor_3
+create link;from=Aeration_4,to=Clarifier,type=Fixed flow,flow=1500[m~^3/day],name=To_clarifier
+create link;from=Clarifier,to=Effluent,type=Effluent flow,flow=990[m~^3/day],name=Clarified_effluent
+create link;from=Clarifier,to=Aeration_1,type=Sludge flow,flow=500[m~^3/day],name=Return_sludge
+create link;from=Clarifier,to=Waste_sludge,type=Sludge flow,flow=10[m~^3/day],name=Waste_sludge_pump
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=40
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=10

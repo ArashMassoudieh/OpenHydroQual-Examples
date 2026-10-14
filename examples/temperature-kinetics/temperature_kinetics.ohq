@@ -1,0 +1,19 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = mass_transfer.json
+create constituent;type=Constituent,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],diffusion_coefficient=0[m~^2/s],dispersivity=0[m],external_mass_flow_timeseries=,external_source=,name=BOD,stoichiometric_constant=0,time_variable_inflow_concentration=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=0.23,name=k20,reference_temperature=20,temperature=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=1.047,name=theta,reference_temperature=20,temperature=
+create reaction_parameter;type=TimeDependent_ReactionParameter,name=T_water,value=
+create reaction;type=Reaction,BOD:stoichiometric_constant=-1,name=BOD_decay,rate_expression=(k20*theta^(T_water-20)*BOD)
+create block;type=Reactor,BOD:concentration=15[g/m~^3],BOD:constant_inflow_concentration=50[g/m~^3],BOD:external_mass_flow_timeseries=,BOD:external_source=,BOD:time_variable_inflow_concentration=,Storage=10000[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=1000[m~^3/day],time_variable_inflow=,T_water:value=water_temperature.csv,name=Pond_Seasonal,x=0,y=0
+create block;type=Reactor,BOD:concentration=15[g/m~^3],BOD:constant_inflow_concentration=50[g/m~^3],BOD:external_mass_flow_timeseries=,BOD:external_source=,BOD:time_variable_inflow_concentration=,Storage=10000[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=1000[m~^3/day],time_variable_inflow=,T_water:value=temperature_20C.csv,name=Pond_20C,x=0,y=500
+create block;type=Reactor,BOD:concentration=0[g/m~^3],BOD:constant_inflow_concentration=0[g/m~^3],BOD:external_mass_flow_timeseries=,BOD:external_source=,BOD:time_variable_inflow_concentration=,Storage=0[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],time_variable_inflow=,T_water:value=water_temperature.csv,name=Receiving_Water,x=600,y=250
+create link;from=Pond_Seasonal,to=Receiving_Water,type=Fixed flow,flow=1000[m~^3/day],name=Outflow_Seasonal
+create link;from=Pond_20C,to=Receiving_Water,type=Fixed flow,flow=1000[m~^3/day],name=Outflow_20C
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=365
+setvalue; object=system, quantity=initial_time_step, value=0.1
+setvalue; object=system, quantity=max_timestep_increase_factor, value=1
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=10

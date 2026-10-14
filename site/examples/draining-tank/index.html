@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draining Tank · OpenHydroQual Examples</title>
+<meta name="description" content="A vertical-walled tank empties through an orifice in its floor. The head-dependent outflow gives Torricelli&#x27;s law, and the computed water level is checked against the exact solution.">
+<meta name="keywords" content="tank, reservoir, drain, outflow, orifice, torricelli, draining time, recession, storage, water level, head, discharge coefficient, water balance, verification, analytical solution">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#2f7dd1">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Getting Started</div>
+<h1>Draining Tank</h1>
+<p class="lede">A vertical-walled tank empties through an orifice in its floor. The head-dependent outflow gives Torricelli&#x27;s law, and the computed water level is checked against the exact solution.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class=''></b><b class=''></b><span>Beginner</span></span><a class='plug' href='../../?plugin=Pond_Plugin'>Pond_Plugin</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/draining-tank.zip" download>Download model (.zip)</a>
+    <div class="muted">4 KB · 2 files · open <code>draining_tank.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A tank of water draining through a small opening in its floor: a water storage tank being emptied, a detention basin with a bottom outlet, or the classic laboratory experiment used to introduce Torricelli's law. It is the simplest model in which the outflow depends on the state of the system. As the tank empties, the head over the orifice falls, so the outflow slows down.</p>
+<p>Because this problem has an exact solution, the example also shows how to check a model against theory.</p>
+<h2>How it works</h2>
+<p><strong>The tank.</strong> The Tank is a <code>Pond</code> block. A Pond relates stored volume S (m³) to water depth d (m) through a rating curve S = α·d^β. With β = 1 the walls are vertical and α is the plan area A, so this Pond is a prismatic tank with A = 100 m². OpenHydroQual evaluates the depth as</p>
+<p>d = [S² / (α·(S + 0.1))]^(1/β)</p>
+<p>The 0.1 m³ term keeps the expression smooth as the tank empties. For S much larger than 0.1 m³ it reduces to d = S / A. The water balance is</p>
+<p>dS/dt = −Q</p>
+<p>since the precipitation, evapotranspiration and inflow inputs of the Pond are left empty.</p>
+<p><strong>The orifice.</strong> The Orifice link computes</p>
+<p>Q = 86400 · C_d · a · √(19.6 · (h_tank − h_outlet))</p>
+<p>where C_d = 0.6 is the discharge coefficient (called <code>head_loss_coefficient</code> in the plugin), a = 0.002 m² is the orifice area, 19.6 m/s² approximates 2g, and the heads are measured in metres. The factor 86400 converts m³/s to m³/day. The tank head is d plus the floor elevation (0 m), and the Outlet is a <code>fixed_head</code> boundary at 0 m, so the driving head is simply the water depth d. If the outlet head were higher than the tank level, the flow would be set to zero (it cannot reverse through this link).</p>
+<p><strong>Exact solution.</strong> Combining the two relations gives</p>
+<p>dd/dt = −(86400 · C_d · a · √19.6 / A) · √d</p>
+<p>which integrates to</p>
+<p>√d(t) = √d₀ − c·t,  with c = 86400 · C_d · a · √19.6 / (2A) = 2.295 m^0.5/day</p>
+<p>The tank empties at T = √d₀ / c = 0.616 days (14.8 hours). The file <code>analytical_depth.csv</code> tabulates d(t) from this formula every 0.02 days.</p>
+<p><strong>Time stepping.</strong> The run uses a fixed time step of 0.001 days (about 1.4 minutes), set by <code>initial_time_step</code> with <code>max_timestep_increase_factor</code> = 1, so that the comparison with the exact solution is not blurred by the time discretization.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Agreement with theory.</strong> The computed depth follows the exact parabola to within about 0.01 m. Half of the depth (1 m) is lost in the first 0.18 days, but the remaining metre takes another 0.44 days, because the outflow weakens as the head falls.</li>
+<li><strong>Linear decline of the outflow.</strong> Since Q ∝ √d and √d falls linearly in time, the outflow falls on a straight line, from about 650 m³/day at the start to zero at 0.62 days. Compare this with a linear reservoir (Q ∝ S), whose outflow decays exponentially and never quite reaches zero.</li>
+<li><strong>A finite emptying time.</strong> A tank draining through an orifice empties completely in finite time, and the last few centimetres drain at a finite rate. Near the end the model departs slightly from the exact solution because of the smoothing term in the depth formula, which matters only when less than a few cubic metres (a few centimetres of depth) remain.</li>
+<li><strong>Mass balance.</strong> The volume lost by the tank equals the time integral of the orifice flow. The Outlet's storage stays at 100,000 m³ because a fixed-head boundary is held constant.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The tank has vertical walls. A tapered tank, a pond with sloping sides or a natural basin would use β &gt; 1, and the exact solution above would no longer apply.</li>
+<li>The orifice discharge coefficient is constant. Real orifices show some dependence of C_d on head and Reynolds number, and very low heads are affected by surface tension and vortex formation.</li>
+<li>The outlet discharges freely. A submerged outlet would need a time-varying downstream head.</li>
+<li>The tank is assumed to be well mixed and at rest: velocity head in the tank, wall friction and sloshing are ignored.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 340 920 366" class="ohq-diagram" style="max-width:460px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Orifice"><title>Orifice (orifice)</title><path d="M200.0 500.0 L400.0 500.0 L600.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Tank"><title>Tank (Pond)</title><rect x="0" y="400" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="22" y="422" width="156" height="156"/>
+<text x="100" y="618" font-size="14" text-anchor="middle">Tank</text></g>
+<g class="d-node" data-name="Outlet"><title>Outlet (fixed_head)</title><rect x="600" y="400" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="622" y="422" width="156" height="156"/>
+<text x="700" y="618" font-size="14" text-anchor="middle">Outlet</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>2</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Tank'><summary><span class='cname'>Tank</span><span class='ctype'>Pond · Pond_Plugin</span><span class='crole'><p>A cylindrical or rectangular tank with a plan area of 100 m² (for example a cylinder 11.3 m in diameter), initially holding 200 m³ (2 m of water). Its floor is at elevation 0 m.</p></span></summary><div class='cbody'><p class=type-help><b>Pond:</b> Stormwater pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>200</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the pond at the beginning of the simulation.</td></tr><tr><td>The coefficient (α) in the rating curve S = α d^β</td><td class='v'>100</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Alpha multiplier - This number is multiplied by alpha parameter (for calibration of multiple ponds)</td><td class='v'>1</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>The exponent (β) in the rating curve S = α d^β</td><td class='v'>1</td><td></td><td>The exponent (β) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Bottom elevation of pond</td><td class='v'>0</td><td>m</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Outlet'><summary><span class='cname'>Outlet</span><span class='ctype'>fixed_head</span><span class='crole'><p>The free discharge point below the orifice. A fixed-head boundary at 0 m, the same elevation as the tank floor, so the driving head is the full water depth in the tank.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Head</td><td class='v'>0</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>1</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Orifice'><summary><span class='cname'>Orifice</span><span class='ctype'>orifice · Pond_Plugin</span><span class='crole'><p>A sharp-edged opening in the tank floor with an area of 0.002 m² (about 5 cm in diameter) and a discharge coefficient of 0.6. Flow is always from Tank to Outlet.</p></span></summary><div class='cbody'><p class=type-help><b>orifice:</b> Orifice</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head-loss coefficient</td><td class='v'>0.6</td><td></td><td></td></tr><tr><td>orifice_area</td><td class='v'>0.002</td><td>m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>analytical_depth.csv</code></td><td></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>1</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Water depth in the tank' loading='lazy'><figcaption><b>Water depth in the tank</b> The depth falls along a parabola and the tank is empty after about 0.62 days (14.8 hours), as the exact solution predicts.</figcaption></figure><figure><img src='plot_2.png' alt='Outflow through the orifice' loading='lazy'><figcaption><b>Outflow through the orifice</b> The outflow starts at about 650 m³/day and declines linearly in time to zero.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/draining-tank">View source on GitHub</a>.</div></footer>
+</body></html>

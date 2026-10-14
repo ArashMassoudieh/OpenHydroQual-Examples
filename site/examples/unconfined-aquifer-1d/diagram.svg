@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 240 3620 366" class="ohq-diagram" style="max-width:1810px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="West_exchange"><title>West_exchange (unconfined_groundwater_to_fixedhead)</title><path d="M300.0 400.0 L250.0 400.0 L200.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_01_02"><title>Flow_01_02 (UC_groundwater_link)</title><path d="M500.0 400.0 L550.0 400.0 L600.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_02_03"><title>Flow_02_03 (UC_groundwater_link)</title><path d="M800.0 400.0 L850.0 400.0 L900.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_03_04"><title>Flow_03_04 (UC_groundwater_link)</title><path d="M1100.0 400.0 L1150.0 400.0 L1200.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_04_05"><title>Flow_04_05 (UC_groundwater_link)</title><path d="M1400.0 400.0 L1450.0 400.0 L1500.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_05_06"><title>Flow_05_06 (UC_groundwater_link)</title><path d="M1700.0 400.0 L1750.0 400.0 L1800.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_06_07"><title>Flow_06_07 (UC_groundwater_link)</title><path d="M2000.0 400.0 L2050.0 400.0 L2100.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_07_08"><title>Flow_07_08 (UC_groundwater_link)</title><path d="M2300.0 400.0 L2350.0 400.0 L2400.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_08_09"><title>Flow_08_09 (UC_groundwater_link)</title><path d="M2600.0 400.0 L2650.0 400.0 L2700.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_09_10"><title>Flow_09_10 (UC_groundwater_link)</title><path d="M2900.0 400.0 L2950.0 400.0 L3000.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="East_exchange"><title>East_exchange (unconfined_groundwater_to_fixedhead)</title><path d="M3200.0 400.0 L3250.0 400.0 L3300.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="River_West"><title>River_West (fixed_head)</title><rect x="0" y="300" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="22" y="322" width="156" height="156"/>
+<text x="100" y="567" font-size="52" text-anchor="middle">River_West</text></g>
+<g class="d-node" data-name="Cell_01"><title>Cell_01 (Unconfined Groundwater cell)</title><rect x="300" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="322" width="156" height="156"/>
+<text x="400" y="567" font-size="52" text-anchor="middle">Cell_01</text></g>
+<g class="d-node" data-name="Cell_02"><title>Cell_02 (Unconfined Groundwater cell)</title><rect x="600" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="622" y="322" width="156" height="156"/>
+<text x="700" y="567" font-size="52" text-anchor="middle">Cell_02</text></g>
+<g class="d-node" data-name="Cell_03"><title>Cell_03 (Unconfined Groundwater cell)</title><rect x="900" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="922" y="322" width="156" height="156"/>
+<text x="1000" y="567" font-size="52" text-anchor="middle">Cell_03</text></g>
+<g class="d-node" data-name="Cell_04"><title>Cell_04 (Unconfined Groundwater cell)</title><rect x="1200" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1222" y="322" width="156" height="156"/>
+<text x="1300" y="567" font-size="52" text-anchor="middle">Cell_04</text></g>
+<g class="d-node" data-name="Cell_05"><title>Cell_05 (Unconfined Groundwater cell)</title><rect x="1500" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1522" y="322" width="156" height="156"/>
+<text x="1600" y="567" font-size="52" text-anchor="middle">Cell_05</text></g>
+<g class="d-node" data-name="Cell_06"><title>Cell_06 (Unconfined Groundwater cell)</title><rect x="1800" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1822" y="322" width="156" height="156"/>
+<text x="1900" y="567" font-size="52" text-anchor="middle">Cell_06</text></g>
+<g class="d-node" data-name="Cell_07"><title>Cell_07 (Unconfined Groundwater cell)</title><rect x="2100" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="2122" y="322" width="156" height="156"/>
+<text x="2200" y="567" font-size="52" text-anchor="middle">Cell_07</text></g>
+<g class="d-node" data-name="Cell_08"><title>Cell_08 (Unconfined Groundwater cell)</title><rect x="2400" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="2422" y="322" width="156" height="156"/>
+<text x="2500" y="567" font-size="52" text-anchor="middle">Cell_08</text></g>
+<g class="d-node" data-name="Cell_09"><title>Cell_09 (Unconfined Groundwater cell)</title><rect x="2700" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="2722" y="322" width="156" height="156"/>
+<text x="2800" y="567" font-size="52" text-anchor="middle">Cell_09</text></g>
+<g class="d-node" data-name="Cell_10"><title>Cell_10 (Unconfined Groundwater cell)</title><rect x="3000" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="3022" y="322" width="156" height="156"/>
+<text x="3100" y="567" font-size="52" text-anchor="middle">Cell_10</text></g>
+<g class="d-node" data-name="River_East"><title>River_East (fixed_head)</title><rect x="3300" y="300" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="3322" y="322" width="156" height="156"/>
+<text x="3400" y="567" font-size="52" text-anchor="middle">River_East</text></g>
+</svg>

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1D Infiltration and Soil Boundary Conditions · OpenHydroQual Examples</title>
+<meta name="description" content="Two identical layered soil columns receive the same intense 100 mm application. Richards&#x27; equation with van Genuchten properties shows ponding, a perched wetting front at the layer contact, and how a free-drainage bottom and a water-table bottom change what happens next.">
+<meta name="keywords" content="infiltration, richards equation, van genuchten, mualem, unsaturated flow, vadose zone, soil moisture, wetting front, ponding, layered soil, perched water, hydraulic conductivity, free drainage, unit gradient, water table, lower boundary condition, redistribution, soil column, lysimeter">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#a0702a">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Soil, Plants &amp; Groundwater</div>
+<h1>1D Infiltration and Soil Boundary Conditions</h1>
+<p class="lede">Two identical layered soil columns receive the same intense 100 mm application. Richards&#x27; equation with van Genuchten properties shows ponding, a perched wetting front at the layer contact, and how a free-drainage bottom and a water-table bottom change what happens next.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class=''></b><b class=''></b><span>Beginner</span></span><a class='plug' href='../../?plugin=unsaturated_soil'>unsaturated_soil</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/soil-infiltration-1d.zip" download>Download model (.zip)</a>
+    <div class="muted">8 KB · 2 files · open <code>soil_columns_1d.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A soil column is the simplest setting in which to see variably saturated flow. Water applied at the top first fills the pores near the surface, then moves downward as a wetting front, and finally redistributes or drains, depending on what sits below the column. The upper boundary decides how much water gets in. The lower boundary decides where it goes.</p>
+<p>This model places two identical 1.0 m columns side by side and gives both the same intense water application (100 mm in 2 hours). They differ only in their lower boundary:</p>
+<ul>
+<li><strong>Column A</strong> ends in <strong>free drainage</strong> (a unit hydraulic gradient), the usual assumption for a deep vadose zone or a lysimeter that drains freely.</li>
+<li><strong>Column B</strong> sits on a <strong>water table</strong> at its base, the situation in a shallow groundwater area.</li>
+</ul>
+<p>Each column is layered: 0.4 m of sandy loam over 0.6 m of loam. A coarser soil over a finer one is common in alluvial and constructed soils, and it creates a perched, nearly saturated zone at the contact while the wetting front passes. The same setup can be used to examine stormwater infiltration practices, irrigation, or the sensitivity of recharge to the depth of the water table.</p>
+<h2>How it works</h2>
+<p><strong>Soil cells.</strong> Each column is a stack of ten <code>Soil</code> blocks, 0.1 m thick with a 1 m² plan area. Each cell stores water and computes its state from that storage. The expressions below are from <code>unsaturated_soil.json</code>, the current soil plugin (the older variants in the resources folder are not used). With storage S, area A and thickness d:</p>
+<p>θ = S / (A·d)
+  Sₑ = (θ − θᵣ) / (θₛ − θᵣ), limited to the range 0.001 to 0.999
+  ψ_suction = −(1/α)·(Sₑ^(−1/m) − 1)^(1/n), with m = 1 − 1/n (van Genuchten)</p>
+<p>When θ is pushed above the 0.999 saturation limit, the cell becomes pressurized through the specific storage Sₛ (0.01 1/m here):</p>
+<p>ψ_excess = θₛ · max((θ − θᵣ)/(θₛ − θᵣ) − 0.999, 0) / Sₛ
+  ψ = ψ_suction + ψ_excess</p>
+<p>and the total head is</p>
+<p>H = z_bottom + d + ψ</p>
+<p>The plugin refers ψ to the <strong>top</strong> of the cell (z_bottom + d), not its midpoint. Because every cell uses the same convention, gradients between cells are unaffected, but the initial condition has to respect it (see below).</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Cells</th>
+<th>Depth (m)</th>
+<th>θₛ</th>
+<th>θᵣ</th>
+<th>α (1/m)</th>
+<th>n</th>
+<th>K_sat (m/day)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sandy loam</td>
+<td>01 to 04</td>
+<td>0.0 to 0.4</td>
+<td>0.41</td>
+<td>0.065</td>
+<td>7.5</td>
+<td>1.89</td>
+<td>1.061</td>
+</tr>
+<tr>
+<td>Loam</td>
+<td>05 to 10</td>
+<td>0.4 to 1.0</td>
+<td>0.43</td>
+<td>0.078</td>
+<td>3.6</td>
+<td>1.56</td>
+<td>0.250</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Flow between cells</strong> (<code>soil_to_soil_link</code>) is Darcy-Buckingham flow:</p>
+<p>Q = K_eff · (H_upper − H_lower) / L · A
+  K_eff = K_sat · [1 − (1 − Sₑ^(1/m))^m]²</p>
+<p>with L the mean of the two thicknesses, K_sat the <strong>smaller</strong> of the two cells' saturated conductivities, m the mean of the two cells' m, and Sₑ the <strong>larger</strong> of the two effective saturations (capped at 0.999), so the wetter cell controls the relative conductivity. This is the Mualem-van Genuchten relative conductivity without the Sₑ^0.5 pore-connectivity factor. Positive Q is downward.</p>
+<p><strong>Surface ponding.</strong> Each surface is a <code>Catchment</code> block with no outlet. Rain from <code>Storm</code> is added to its storage, and its ponded depth is h_p = S/A. The <code>surfacewater_to_soil_link</code> moves ponded water into the top cell:</p>
+<p>Q_inf = K_sat,top · (H_surface − H_top) / (d_top/2) · A · h_p/(h_p + 0.001 m)</p>
+<p>where H_surface = elevation + h_p. The last factor switches infiltration off smoothly when less than about 1 mm of water is present, so the ponded depth cannot go negative. Rain is first added to the surface and infiltrates from there: the ponded depth stays near zero while the soil can accept the rain, and grows when it cannot.</p>
+<p><strong>Lower boundaries.</strong></p>
+<ul>
+<li><em>Free drainage</em> (<code>fixed_hydraulic_gradient_link</code>, gradient i = 1): Q = i · K_eff · A, where K_eff uses the bottom cell's Sₑ. Outflow is simply the unsaturated conductivity of the bottom cell.</li>
+<li><em>Water table</em> (<code>soil_to_fixedhead_link</code>): Q = (H_bottom − H_wt) · K_eff / (d/2) · A, again with K_eff from the bottom cell. The flux can reverse, which would represent capillary rise from the water table.</li>
+</ul>
+<p><strong>Initial condition.</strong> Every cell starts at the moisture content that puts it in hydrostatic equilibrium with a water table at −1.0 m: ψ = −1.0 m − (z_bottom + d), so H = −1.0 m everywhere. Moisture therefore increases with depth, from θ = 0.122 in the top cell to θ = 0.407 in the bottom cell. Column B is exactly at rest until the storm. Column A starts from the same profile but begins draining at once, because its lower boundary does not hold water up.</p>
+<p><strong>Rainfall input.</strong> OpenHydroQual converts each row of a precipitation file into a rate (depth divided by duration) at the interval midpoint and interpolates linearly between midpoints. The storm is therefore written as short intervals with dry rows before and after it, and the dry rows extend to the end of the simulation so that the rate is exactly zero outside the storm.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Time to ponding.</strong> For the first few minutes the dry sandy loam takes almost all the rain: infiltration peaks at about 1.17 m/day against a rain rate of 1.2 m/day, then declines as the top cells approach saturation. Ponding begins about 4 minutes into the storm, and water stands on the surface for about 3 hours (day 0.503 to 0.623). The deepest ponding, 18 mm, occurs when the rain stops.</li>
+<li><strong>Infiltration capacity.</strong> During ponding, infiltration settles near 0.83 m/day. This is below the sandy loam's K_sat (1.06 m/day) because the loam below, with a K_sat of 0.25 m/day, cannot carry water away as fast as the upper layer receives it.</li>
+<li><strong>Perching at the layer contact.</strong> The wetting front reaches the contact at 0.4 m by the end of the storm. Cells 04 and 05 peak at θ = 0.39 and 0.41 (close to saturation) between days 0.73 and 0.82, while the soil at 0.7 m is still at its initial moisture. Water piles up above the slower loam before it can move on.</li>
+<li><strong>The lower boundary decides the fate of the water.</strong> The two columns are identical at the surface and in the upper layer, and differ only in the deeper loam.</li>
+<li><em>Column A</em> (free drainage) loses 10 mm before the storm even starts and 120 mm in all over 10 days, more than the 100 mm applied. It ends drier than it started (0.236 m of stored water against 0.257 m). Its outflow peaks at 0.036 m/day around day 1.5.</li>
+<li><em>Column B</em> (water table) releases nothing until the wetting front arrives at about day 0.75. Because its bottom cell stays nearly saturated (θ never below 0.407), the boundary conducts well and the outflow peaks earlier and higher, at 0.050 m/day near day 1.2. Over the 10 days it passes 91 mm to the water table and ends with 9 mm more water than it started with, still draining slowly towards equilibrium.</li>
+<li><strong>Water balance.</strong> For each column, storage change = applied rain − bottom outflow, to the precision of the output sampling. For column B: 0.2565 m + 0.100 m − 0.0909 m = 0.2656 m, the final storage.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>Flow is strictly vertical and one dimensional. There is no lateral flow, no evaporation from the surface and no root uptake (see the plant examples for transpiration).</li>
+<li>Each cell is 0.1 m thick, which smears the wetting front over two or three cells. Thinner cells sharpen it at the cost of run time.</li>
+<li>The relative conductivity omits the Mualem Sₑ^0.5 factor, and the conductivity between cells uses the wetter cell's saturation and the smaller K_sat. This upstream-like weighting is robust, but it differs from the arithmetic or geometric means used in some other codes.</li>
+<li>Air entrapment, hysteresis and macropore flow are not represented.</li>
+<li>The ponded surface has no outlet. In a real field the excess would run off once it exceeds depression storage.</li>
+<li>The storm (100 mm in 2 hours) is deliberately extreme so that ponding is clear. It is closer to a flood-irrigation event than to most natural rainfall.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="340 -60 920 3046" class="ohq-diagram" style="max-width:460px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Infiltration_A"><title>Infiltration_A (surfacewater_to_soil_link)</title><path d="M500.0 200.0 L500.0 230.0 L500.0 260.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A01_A02"><title>Flow_A01_A02 (soil_to_soil_link)</title><path d="M500.0 460.0 L500.0 480.0 L500.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A02_A03"><title>Flow_A02_A03 (soil_to_soil_link)</title><path d="M500.0 700.0 L500.0 720.0 L500.0 740.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A03_A04"><title>Flow_A03_A04 (soil_to_soil_link)</title><path d="M500.0 940.0 L500.0 960.0 L500.0 980.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A04_A05"><title>Flow_A04_A05 (soil_to_soil_link)</title><path d="M500.0 1180.0 L500.0 1200.0 L500.0 1220.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A05_A06"><title>Flow_A05_A06 (soil_to_soil_link)</title><path d="M500.0 1420.0 L500.0 1440.0 L500.0 1460.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A06_A07"><title>Flow_A06_A07 (soil_to_soil_link)</title><path d="M500.0 1660.0 L500.0 1680.0 L500.0 1700.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A07_A08"><title>Flow_A07_A08 (soil_to_soil_link)</title><path d="M500.0 1900.0 L500.0 1920.0 L500.0 1940.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A08_A09"><title>Flow_A08_A09 (soil_to_soil_link)</title><path d="M500.0 2140.0 L500.0 2160.0 L500.0 2180.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_A09_A10"><title>Flow_A09_A10 (soil_to_soil_link)</title><path d="M500.0 2380.0 L500.0 2400.0 L500.0 2420.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Free_drainage"><title>Free_drainage (fixed_hydraulic_gradient_link)</title><path d="M500.0 2620.0 L500.0 2650.0 L500.0 2680.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Infiltration_B"><title>Infiltration_B (surfacewater_to_soil_link)</title><path d="M1100.0 200.0 L1100.0 230.0 L1100.0 260.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B01_B02"><title>Flow_B01_B02 (soil_to_soil_link)</title><path d="M1100.0 460.0 L1100.0 480.0 L1100.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B02_B03"><title>Flow_B02_B03 (soil_to_soil_link)</title><path d="M1100.0 700.0 L1100.0 720.0 L1100.0 740.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B03_B04"><title>Flow_B03_B04 (soil_to_soil_link)</title><path d="M1100.0 940.0 L1100.0 960.0 L1100.0 980.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B04_B05"><title>Flow_B04_B05 (soil_to_soil_link)</title><path d="M1100.0 1180.0 L1100.0 1200.0 L1100.0 1220.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B05_B06"><title>Flow_B05_B06 (soil_to_soil_link)</title><path d="M1100.0 1420.0 L1100.0 1440.0 L1100.0 1460.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B06_B07"><title>Flow_B06_B07 (soil_to_soil_link)</title><path d="M1100.0 1660.0 L1100.0 1680.0 L1100.0 1700.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B07_B08"><title>Flow_B07_B08 (soil_to_soil_link)</title><path d="M1100.0 1900.0 L1100.0 1920.0 L1100.0 1940.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B08_B09"><title>Flow_B08_B09 (soil_to_soil_link)</title><path d="M1100.0 2140.0 L1100.0 2160.0 L1100.0 2180.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_B09_B10"><title>Flow_B09_B10 (soil_to_soil_link)</title><path d="M1100.0 2380.0 L1100.0 2400.0 L1100.0 2420.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Water_table_exchange"><title>Water_table_exchange (soil_to_fixedhead_link)</title><path d="M1100.0 2620.0 L1100.0 2650.0 L1100.0 2680.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Surface_A"><title>Surface_A (Catchment)</title><rect x="400" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="422" y="22" width="156" height="156"/>
+<text x="500" y="227" font-size="20" text-anchor="middle">Surface_A</text></g>
+<g class="d-node" data-name="Soil_A01"><title>Soil_A01 (Soil)</title><rect x="400" y="260" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="282" width="156" height="156"/>
+<text x="500" y="487" font-size="20" text-anchor="middle">Soil_A01</text></g>
+<g class="d-node" data-name="Soil_A02"><title>Soil_A02 (Soil)</title><rect x="400" y="500" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="522" width="156" height="156"/>
+<text x="500" y="727" font-size="20" text-anchor="middle">Soil_A02</text></g>
+<g class="d-node" data-name="Soil_A03"><title>Soil_A03 (Soil)</title><rect x="400" y="740" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="762" width="156" height="156"/>
+<text x="500" y="967" font-size="20" text-anchor="middle">Soil_A03</text></g>
+<g class="d-node" data-name="Soil_A04"><title>Soil_A04 (Soil)</title><rect x="400" y="980" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="1002" width="156" height="156"/>
+<text x="500" y="1207" font-size="20" text-anchor="middle">Soil_A04</text></g>
+<g class="d-node" data-name="Soil_A05"><title>Soil_A05 (Soil)</title><rect x="400" y="1220" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="1242" width="156" height="156"/>
+<text x="500" y="1447" font-size="20" text-anchor="middle">Soil_A05</text></g>
+<g class="d-node" data-name="Soil_A06"><title>Soil_A06 (Soil)</title><rect x="400" y="1460" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="1482" width="156" height="156"/>
+<text x="500" y="1687" font-size="20" text-anchor="middle">Soil_A06</text></g>
+<g class="d-node" data-name="Soil_A07"><title>Soil_A07 (Soil)</title><rect x="400" y="1700" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="1722" width="156" height="156"/>
+<text x="500" y="1927" font-size="20" text-anchor="middle">Soil_A07</text></g>
+<g class="d-node" data-name="Soil_A08"><title>Soil_A08 (Soil)</title><rect x="400" y="1940" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="1962" width="156" height="156"/>
+<text x="500" y="2167" font-size="20" text-anchor="middle">Soil_A08</text></g>
+<g class="d-node" data-name="Soil_A09"><title>Soil_A09 (Soil)</title><rect x="400" y="2180" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="2202" width="156" height="156"/>
+<text x="500" y="2407" font-size="20" text-anchor="middle">Soil_A09</text></g>
+<g class="d-node" data-name="Soil_A10"><title>Soil_A10 (Soil)</title><rect x="400" y="2420" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="422" y="2442" width="156" height="156"/>
+<text x="500" y="2647" font-size="20" text-anchor="middle">Soil_A10</text></g>
+<g class="d-node" data-name="Drainage_outlet"><title>Drainage_outlet (fixed_head)</title><rect x="400" y="2680" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="422" y="2702" width="156" height="156"/>
+<text x="500" y="2907" font-size="20" text-anchor="middle">Drainage_outlet</text></g>
+<g class="d-node" data-name="Surface_B"><title>Surface_B (Catchment)</title><rect x="1000" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="1022" y="22" width="156" height="156"/>
+<text x="1100" y="227" font-size="20" text-anchor="middle">Surface_B</text></g>
+<g class="d-node" data-name="Soil_B01"><title>Soil_B01 (Soil)</title><rect x="1000" y="260" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="282" width="156" height="156"/>
+<text x="1100" y="487" font-size="20" text-anchor="middle">Soil_B01</text></g>
+<g class="d-node" data-name="Soil_B02"><title>Soil_B02 (Soil)</title><rect x="1000" y="500" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="522" width="156" height="156"/>
+<text x="1100" y="727" font-size="20" text-anchor="middle">Soil_B02</text></g>
+<g class="d-node" data-name="Soil_B03"><title>Soil_B03 (Soil)</title><rect x="1000" y="740" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="762" width="156" height="156"/>
+<text x="1100" y="967" font-size="20" text-anchor="middle">Soil_B03</text></g>
+<g class="d-node" data-name="Soil_B04"><title>Soil_B04 (Soil)</title><rect x="1000" y="980" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1002" width="156" height="156"/>
+<text x="1100" y="1207" font-size="20" text-anchor="middle">Soil_B04</text></g>
+<g class="d-node" data-name="Soil_B05"><title>Soil_B05 (Soil)</title><rect x="1000" y="1220" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1242" width="156" height="156"/>
+<text x="1100" y="1447" font-size="20" text-anchor="middle">Soil_B05</text></g>
+<g class="d-node" data-name="Soil_B06"><title>Soil_B06 (Soil)</title><rect x="1000" y="1460" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1482" width="156" height="156"/>
+<text x="1100" y="1687" font-size="20" text-anchor="middle">Soil_B06</text></g>
+<g class="d-node" data-name="Soil_B07"><title>Soil_B07 (Soil)</title><rect x="1000" y="1700" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1722" width="156" height="156"/>
+<text x="1100" y="1927" font-size="20" text-anchor="middle">Soil_B07</text></g>
+<g class="d-node" data-name="Soil_B08"><title>Soil_B08 (Soil)</title><rect x="1000" y="1940" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1962" width="156" height="156"/>
+<text x="1100" y="2167" font-size="20" text-anchor="middle">Soil_B08</text></g>
+<g class="d-node" data-name="Soil_B09"><title>Soil_B09 (Soil)</title><rect x="1000" y="2180" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="2202" width="156" height="156"/>
+<text x="1100" y="2407" font-size="20" text-anchor="middle">Soil_B09</text></g>
+<g class="d-node" data-name="Soil_B10"><title>Soil_B10 (Soil)</title><rect x="1000" y="2420" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="2442" width="156" height="156"/>
+<text x="1100" y="2647" font-size="20" text-anchor="middle">Soil_B10</text></g>
+<g class="d-node" data-name="Water_table"><title>Water_table (fixed_head)</title><rect x="1000" y="2680" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1022" y="2702" width="156" height="156"/>
+<text x="1100" y="2907" font-size="20" text-anchor="middle">Water_table</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>24</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Surface-A'><summary><span class='cname'>Surface_A</span><span class='ctype'>Catchment</span><span class='crole'><p>The 1 m² ground surface above column A. It is a Catchment block with no outlet, so rain that cannot infiltrate collects on it as ponded water. Its surface elevation is 0 m. The Manning coefficient is required by the block but unused, because no runoff link is attached.</p></span></summary><div class='cbody'><p class=type-help><b>Catchment:</b> Catchment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.03</td><td></td><td>The Manning&#x27;s roughness coefficient representing surface resistance to flow. Typical values vary by land cover type.</td></tr><tr><td>Precipitation</td><td class='v'>Storm</td><td>m^3/day</td><td>A precipitation source object must be selected.</td></tr><tr><td>Catchment area</td><td class='v'>1.0</td><td>m<sup>2</sup></td><td>Total horizontal surface area of the catchment. Used to compute initial storage and flow-related parameters.</td></tr><tr><td>Average water depth</td><td class='v'>0</td><td>m</td><td>The initial depth of the standing water before the simulation start time. Most of the times, this value is zero</td></tr><tr><td>Mean elevation of the catchment</td><td class='v'>0.0</td><td>m</td><td>The elevation of the centroid of the catchment based on the model datum.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Soil-A01'><summary><span class='cname'>20 × Soil</span><span class='ctype'>Soil · unsaturated_soil</span><span class='crole'><p>Twenty 0.1 m soil cells, ten per column (Soil_A01 to Soil_A10 and Soil_B01 to Soil_B10, numbered from the top). Cells 01 to 04 (0 to 0.4 m depth) are a sandy loam and cells 05 to 10 (0.4 to 1.0 m) are a loam, using the Carsel and Parrish (1988) class-average van Genuchten parameters. Both columns start from the same moisture profile, in hydrostatic equilibrium with a water table at −1.0 m.</p></span></summary><div class='cbody'><p class='members'>Soil_A01, Soil_A02, Soil_A03, Soil_A04, Soil_A05, Soil_A06, Soil_A07, Soil_A08 …</p><p class='muted'>Showing properties of <b>Soil_A01</b>.</p><p class=type-help><b>Soil:</b> Variably Saturated Soil Block</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Saturated Hydraulic Conductivity</td><td class='v'>1.061</td><td>m/day</td><td>Saturated Hydraulc Conductivity</td></tr><tr><td>Van Genuchten&#x27;s alpha parameter</td><td class='v'>7.5</td><td>1/m</td><td>Van Genuchten&#x27;s alpha parameter</td></tr><tr><td>Bottom Area of the soil block</td><td class='v'>1.0</td><td>m<sup>2</sup></td><td>Bottom Area of the soil block</td></tr><tr><td>Bottom Elevation of the soil block</td><td class='v'>-0.10</td><td>m</td><td>Bottom Elevation of the soil block</td></tr><tr><td>Depth of the soil block</td><td class='v'>0.1</td><td>m</td><td>Depth of the soil block</td></tr><tr><td>Van Genuchten&#x27;s n parameter</td><td class='v'>1.89</td><td></td><td>Van Genuchten&#x27;s n parameter</td></tr><tr><td>Specific storage</td><td class='v'>0.01</td><td>1/m</td><td>Specific storage</td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.1218</td><td></td><td>Initial Moisture Content; Moisture Content</td></tr><tr><td>Residual Moisture Content</td><td class='v'>0.065</td><td></td><td>Residual Moisture Content</td></tr><tr><td>Saturated Moisture Content</td><td class='v'>0.41</td><td></td><td>Saturated Moisture Content</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Drainage-outlet'><summary><span class='cname'>Drainage_outlet</span><span class='ctype'>fixed_head</span><span class='crole'><p>A sink below column A. Because the link into it imposes a fixed hydraulic gradient, its head (−2 m) does not affect the flow.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Head</td><td class='v'>-2</td><td>m</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Surface-B'><summary><span class='cname'>Surface_B</span><span class='ctype'>Catchment</span><span class='crole'><p>The same surface over column B.</p></span></summary><div class='cbody'><p class=type-help><b>Catchment:</b> Catchment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.03</td><td></td><td>The Manning&#x27;s roughness coefficient representing surface resistance to flow. Typical values vary by land cover type.</td></tr><tr><td>Precipitation</td><td class='v'>Storm</td><td>m^3/day</td><td>A precipitation source object must be selected.</td></tr><tr><td>Catchment area</td><td class='v'>1.0</td><td>m<sup>2</sup></td><td>Total horizontal surface area of the catchment. Used to compute initial storage and flow-related parameters.</td></tr><tr><td>Average water depth</td><td class='v'>0</td><td>m</td><td>The initial depth of the standing water before the simulation start time. Most of the times, this value is zero</td></tr><tr><td>Mean elevation of the catchment</td><td class='v'>0.0</td><td>m</td><td>The elevation of the centroid of the catchment based on the model datum.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Water-table'><summary><span class='cname'>Water_table</span><span class='ctype'>fixed_head</span><span class='crole'><p>A fixed water table at −1.0 m elevation, the base of column B.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Head</td><td class='v'>-1.0</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>22</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Infiltration-A'><summary><span class='cname'>Infiltration_A</span><span class='ctype'>surfacewater_to_soil_link · unsaturated_soil</span><span class='crole'><p>Moves ponded water from Surface_A into the top soil cell. Positive downward.</p></span></summary><div class='cbody'><p class=type-help><b>surfacewater_to_soil_link:</b> Surfacewater to soil connector</p></div></details>
+<details class='comp' id='c-Flow-A01-A02'><summary><span class='cname'>18 × soil_to_soil_link</span><span class='ctype'>soil_to_soil_link · unsaturated_soil</span><span class='crole'><p>Vertical Darcy-Buckingham flow between neighbouring cells of the same column (nine links per column, named Flow_A01_A02 and so on). Positive downward, negative when water moves up by capillary rise.</p></span></summary><div class='cbody'><p class='members'>Flow_A01_A02, Flow_A02_A03, Flow_A03_A04, Flow_A04_A05, Flow_A05_A06, Flow_A06_A07, Flow_A07_A08, Flow_A08_A09 …</p><p class='muted'>Showing properties of <b>Flow_A01_A02</b>.</p><p class=type-help><b>soil_to_soil_link:</b> Vertical soil to soil connector</p></div></details>
+<details class='comp' id='c-Free-drainage'><summary><span class='cname'>Free_drainage</span><span class='ctype'>fixed_hydraulic_gradient_link · unsaturated_soil</span><span class='crole'><p>Unit-gradient (free drainage) lower boundary of column A: outflow equals the unsaturated hydraulic conductivity of the bottom cell. Water can only leave.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_hydraulic_gradient_link:</b> Fixed Hydraulic Gradient link</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Hydraulic Gradient</td><td class='v'>1</td><td></td><td>Hydraulic Gradient</td></tr><tr><td>Interface area</td><td class='v'>1.0</td><td>m<sup>2</sup></td><td>Interface area</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Infiltration-B'><summary><span class='cname'>Infiltration_B</span><span class='ctype'>surfacewater_to_soil_link · unsaturated_soil</span><span class='crole'><p>The same for column B.</p></span></summary><div class='cbody'><p class=type-help><b>surfacewater_to_soil_link:</b> Surfacewater to soil connector</p></div></details>
+<details class='comp' id='c-Water-table-exchange'><summary><span class='cname'>Water_table_exchange</span><span class='ctype'>soil_to_fixedhead_link · unsaturated_soil</span><span class='crole'><p>Lower boundary of column B: Darcy flow between the bottom cell and the water table. Positive downward (recharge); negative values would mean capillary supply from the water table.</p></span></summary><div class='cbody'><p class=type-help><b>soil_to_fixedhead_link:</b> Soil to fixed head connector</p></div></details>
+</div>
+<h3>Sources <small>1</small></h3><p class='kind-blurb'>External inputs or sinks applied to blocks: rainfall, evaporation, loads, exchange with the atmosphere.</p><div class='comp-list'>
+<details class='comp' id='c-Storm'><summary><span class='cname'>Storm</span><span class='ctype'>Precipitation</span><span class='crole'><p>A short, intense water application: 100 mm in 2 hours (50 mm/h) starting at day 0.5, read from <code>storm.txt</code>. Both columns receive it. The rate is chosen to exceed the infiltration capacity of the soil so that water ponds at the surface.</p></span></summary><div class='cbody'><p class=type-help><b>Precipitation:</b> Precipitation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Precipitation Cumulative</td><td class='v'>storm.txt</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>storm.txt</code></td><td><p>Rainfall in the OpenHydroQual precipitation format: start time (day), end time (day), depth (m) per row. Twelve 10-minute intervals of 8.33 mm between day 0.5 and day 0.5833, padded with dry intervals that cover the whole simulation.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>10</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>5</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>0.0001</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Infiltration during the storm' loading='lazy'><figcaption><b>Infiltration during the storm</b> Rain arrives at 1.2 m/day. Infiltration first nearly matches it, then falls to about 0.83 m/day as the top layer fills, and the excess ponds. The two columns behave identically at the surface, so their infiltration lines overlap.</figcaption></figure><figure><img src='plot_2.png' alt='Ponded water depth' loading='lazy'><figcaption><b>Ponded water depth</b> Water stands on the surface for about 3 hours and peaks at 18 mm when the storm stops.</figcaption></figure><figure><img src='plot_3.png' alt='Moisture content, column A (free drainage)' loading='lazy'><figcaption><b>Moisture content, column A (free drainage)</b> The wetting front passes each depth in turn. The bottom cell drains before the storm and after it, because nothing holds water up at the base.</figcaption></figure><figure><img src='plot_4.png' alt='Moisture content, column B (water table)' loading='lazy'><figcaption><b>Moisture content, column B (water table)</b> Nothing moves until the storm, because the profile starts at equilibrium. Afterwards the deep cells return towards their equilibrium moisture and the bottom cell stays close to saturation.</figcaption></figure><figure><img src='plot_5.png' alt='Flux out of the bottom' loading='lazy'><figcaption><b>Flux out of the bottom</b> Column A drains from the first moment. Column B releases nothing until the wetting front reaches the water table, then returns the storm water over the next few days.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/soil-infiltration-1d">View source on GitHub</a>.</div></footer>
+</body></html>

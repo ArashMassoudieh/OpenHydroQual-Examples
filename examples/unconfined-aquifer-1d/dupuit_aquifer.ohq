@@ -1,0 +1,32 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = unconfined_groundwater.json
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=10.0[m],name=River_West,x=0,y=300
+create block;type=Unconfined Groundwater cell,_height=200,_width=200,area=5000[m~^2],base_elevation=0[m],hydraulic_conductivity=5.0[m/day],name=Cell_01,piezometric_head=9.9524[m],recharge_per_area=recharge.csv,specific_yield=0.2,x=300,y=300
+create block;type=Unconfined Groundwater cell,_height=200,_width=200,area=5000[m~^2],base_elevation=0[m],hydraulic_conductivity=5.0[m/day],name=Cell_02,piezometric_head=9.8565[m],recharge_per_area=recharge.csv,specific_yield=0.2,x=600,y=300
+create block;type=Unconfined Groundwater cell,_height=200,_width=200,area=5000[m~^2],base_elevation=0[m],hydraulic_conductivity=5.0[m/day],name=Cell_03,piezometric_head=9.7596[m],recharge_per_area=recharge.csv,specific_yield=0.2,x=900,y=300
+create block;type=Unconfined Groundwater cell,_height=200,_width=200,area=5000[m~^2],base_elevation=0[m],hydraulic_conductivity=5.0[m/day],name=Cell_04,piezometric_head=9.6618[m],recharge_per_area=recharge.csv,specific_yield=0.2,x=1200,y=300
+create block;type=Unconfined Groundwater cell,_height=200,_width=200,area=5000[m~^2],base_elevation=0[m],hydraulic_conductivity=5.0[m/day],name=Cell_05,piezometric_head=9.5629[m],recharge_per_area=recharge.csv,specific_yield=0.2,x=1500,y=300
+create block;type=Unconfined Groundwater cell,_height=200,_width=200,area=5000[m~^2],base_elevation=0[m],hydraulic_conductivity=5.0[m/day],name=Cell_06,piezometric_head=9.4631[m],recharge_per_area=recharge.csv,specific_yield=0.2,x=1800,y=300
+create block;type=Unconfined Groundwater cell,_height=200,_width=200,area=5000[m~^2],base_elevation=0[m],hydraulic_conductivity=5.0[m/day],name=Cell_07,piezometric_head=9.3622[m],recharge_per_area=recharge.csv,specific_yield=0.2,x=2100,y=300
+create block;type=Unconfined Groundwater cell,_height=200,_width=200,area=5000[m~^2],base_elevation=0[m],hydraulic_conductivity=5.0[m/day],name=Cell_08,piezometric_head=9.2601[m],recharge_per_area=recharge.csv,specific_yield=0.2,x=2400,y=300
+create block;type=Unconfined Groundwater cell,_height=200,_width=200,area=5000[m~^2],base_elevation=0[m],hydraulic_conductivity=5.0[m/day],name=Cell_09,piezometric_head=9.1570[m],recharge_per_area=recharge.csv,specific_yield=0.2,x=2700,y=300
+create block;type=Unconfined Groundwater cell,_height=200,_width=200,area=5000[m~^2],base_elevation=0[m],hydraulic_conductivity=5.0[m/day],name=Cell_10,piezometric_head=9.0526[m],recharge_per_area=recharge.csv,specific_yield=0.2,x=3000,y=300
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=9.0[m],name=River_East,x=3300,y=300
+create link;from=Cell_01,to=River_West,type=unconfined_groundwater_to_fixedhead,length=25.0[m],name=West_exchange,width=100.0[m]
+create link;from=Cell_01,to=Cell_02,type=UC_groundwater_link,length=50.0[m],name=Flow_01_02,width=100.0[m]
+create link;from=Cell_02,to=Cell_03,type=UC_groundwater_link,length=50.0[m],name=Flow_02_03,width=100.0[m]
+create link;from=Cell_03,to=Cell_04,type=UC_groundwater_link,length=50.0[m],name=Flow_03_04,width=100.0[m]
+create link;from=Cell_04,to=Cell_05,type=UC_groundwater_link,length=50.0[m],name=Flow_04_05,width=100.0[m]
+create link;from=Cell_05,to=Cell_06,type=UC_groundwater_link,length=50.0[m],name=Flow_05_06,width=100.0[m]
+create link;from=Cell_06,to=Cell_07,type=UC_groundwater_link,length=50.0[m],name=Flow_06_07,width=100.0[m]
+create link;from=Cell_07,to=Cell_08,type=UC_groundwater_link,length=50.0[m],name=Flow_07_08,width=100.0[m]
+create link;from=Cell_08,to=Cell_09,type=UC_groundwater_link,length=50.0[m],name=Flow_08_09,width=100.0[m]
+create link;from=Cell_09,to=Cell_10,type=UC_groundwater_link,length=50.0[m],name=Flow_09_10,width=100.0[m]
+create link;from=Cell_10,to=River_East,type=unconfined_groundwater_to_fixedhead,length=25.0[m],name=East_exchange,width=100.0[m]
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=1095
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=nr_tolerance, value=0.001
+setvalue; object=system, quantity=write_interval, value=10

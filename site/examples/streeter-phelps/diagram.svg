@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="90 90 3020 1566" class="ohq-diagram" style="max-width:1510px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Channel_01"><title>Channel_01 (Trapezoidal_Channel_link)</title><path d="M350.0 250.0 L400.0 250.0 L450.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_02"><title>Channel_02 (Trapezoidal_Channel_link)</title><path d="M650.0 250.0 L700.0 250.0 L750.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_03"><title>Channel_03 (Trapezoidal_Channel_link)</title><path d="M950.0 250.0 L1000.0 250.0 L1050.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_04"><title>Channel_04 (Trapezoidal_Channel_link)</title><path d="M1250.0 250.0 L1300.0 250.0 L1350.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_05"><title>Channel_05 (Trapezoidal_Channel_link)</title><path d="M1550.0 250.0 L1600.0 250.0 L1650.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_06"><title>Channel_06 (Trapezoidal_Channel_link)</title><path d="M1850.0 250.0 L1900.0 250.0 L1950.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_07"><title>Channel_07 (Trapezoidal_Channel_link)</title><path d="M2150.0 250.0 L2200.0 250.0 L2250.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_08"><title>Channel_08 (Trapezoidal_Channel_link)</title><path d="M2450.0 250.0 L2500.0 250.0 L2550.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_09"><title>Channel_09 (Trapezoidal_Channel_link)</title><path d="M2750.0 250.0 L2800.0 250.0 L2850.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_10"><title>Channel_10 (Trapezoidal_Channel_link)</title><path d="M2950.0 350.0 L2950.0 400.0 L2950.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_11"><title>Channel_11 (Trapezoidal_Channel_link)</title><path d="M2850.0 550.0 L2800.0 550.0 L2750.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_12"><title>Channel_12 (Trapezoidal_Channel_link)</title><path d="M2550.0 550.0 L2500.0 550.0 L2450.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_13"><title>Channel_13 (Trapezoidal_Channel_link)</title><path d="M2250.0 550.0 L2200.0 550.0 L2150.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_14"><title>Channel_14 (Trapezoidal_Channel_link)</title><path d="M1950.0 550.0 L1900.0 550.0 L1850.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_15"><title>Channel_15 (Trapezoidal_Channel_link)</title><path d="M1650.0 550.0 L1600.0 550.0 L1550.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_16"><title>Channel_16 (Trapezoidal_Channel_link)</title><path d="M1350.0 550.0 L1300.0 550.0 L1250.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_17"><title>Channel_17 (Trapezoidal_Channel_link)</title><path d="M1050.0 550.0 L1000.0 550.0 L950.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_18"><title>Channel_18 (Trapezoidal_Channel_link)</title><path d="M750.0 550.0 L700.0 550.0 L650.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_19"><title>Channel_19 (Trapezoidal_Channel_link)</title><path d="M450.0 550.0 L400.0 550.0 L350.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_20"><title>Channel_20 (Trapezoidal_Channel_link)</title><path d="M250.0 650.0 L250.0 700.0 L250.0 750.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_21"><title>Channel_21 (Trapezoidal_Channel_link)</title><path d="M350.0 850.0 L400.0 850.0 L450.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_22"><title>Channel_22 (Trapezoidal_Channel_link)</title><path d="M650.0 850.0 L700.0 850.0 L750.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_23"><title>Channel_23 (Trapezoidal_Channel_link)</title><path d="M950.0 850.0 L1000.0 850.0 L1050.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_24"><title>Channel_24 (Trapezoidal_Channel_link)</title><path d="M1250.0 850.0 L1300.0 850.0 L1350.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_25"><title>Channel_25 (Trapezoidal_Channel_link)</title><path d="M1550.0 850.0 L1600.0 850.0 L1650.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_26"><title>Channel_26 (Trapezoidal_Channel_link)</title><path d="M1850.0 850.0 L1900.0 850.0 L1950.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_27"><title>Channel_27 (Trapezoidal_Channel_link)</title><path d="M2150.0 850.0 L2200.0 850.0 L2250.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_28"><title>Channel_28 (Trapezoidal_Channel_link)</title><path d="M2450.0 850.0 L2500.0 850.0 L2550.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_29"><title>Channel_29 (Trapezoidal_Channel_link)</title><path d="M2750.0 850.0 L2800.0 850.0 L2850.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_30"><title>Channel_30 (Trapezoidal_Channel_link)</title><path d="M2950.0 950.0 L2950.0 1000.0 L2950.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_31"><title>Channel_31 (Trapezoidal_Channel_link)</title><path d="M2850.0 1150.0 L2800.0 1150.0 L2750.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_32"><title>Channel_32 (Trapezoidal_Channel_link)</title><path d="M2550.0 1150.0 L2500.0 1150.0 L2450.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_33"><title>Channel_33 (Trapezoidal_Channel_link)</title><path d="M2250.0 1150.0 L2200.0 1150.0 L2150.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_34"><title>Channel_34 (Trapezoidal_Channel_link)</title><path d="M1950.0 1150.0 L1900.0 1150.0 L1850.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_35"><title>Channel_35 (Trapezoidal_Channel_link)</title><path d="M1650.0 1150.0 L1600.0 1150.0 L1550.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_36"><title>Channel_36 (Trapezoidal_Channel_link)</title><path d="M1350.0 1150.0 L1300.0 1150.0 L1250.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_37"><title>Channel_37 (Trapezoidal_Channel_link)</title><path d="M1050.0 1150.0 L1000.0 1150.0 L950.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_38"><title>Channel_38 (Trapezoidal_Channel_link)</title><path d="M750.0 1150.0 L700.0 1150.0 L650.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_39"><title>Channel_39 (Trapezoidal_Channel_link)</title><path d="M450.0 1150.0 L400.0 1150.0 L350.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_40"><title>Channel_40 (Trapezoidal_Channel_link)</title><path d="M250.0 1250.0 L250.0 1300.0 L250.0 1350.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Reach_01"><title>Reach_01 (Trapezoidal Channel Segment)</title><rect x="150" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="172" y="172" width="156" height="156"/>
+<text x="250" y="406" font-size="43" text-anchor="middle">Reach_01</text></g>
+<g class="d-node" data-name="Reach_02"><title>Reach_02 (Trapezoidal Channel Segment)</title><rect x="450" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="472" y="172" width="156" height="156"/>
+<text x="550" y="406" font-size="43" text-anchor="middle">Reach_02</text></g>
+<g class="d-node" data-name="Reach_03"><title>Reach_03 (Trapezoidal Channel Segment)</title><rect x="750" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="772" y="172" width="156" height="156"/>
+<text x="850" y="406" font-size="43" text-anchor="middle">Reach_03</text></g>
+<g class="d-node" data-name="Reach_04"><title>Reach_04 (Trapezoidal Channel Segment)</title><rect x="1050" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1072" y="172" width="156" height="156"/>
+<text x="1150" y="406" font-size="43" text-anchor="middle">Reach_04</text></g>
+<g class="d-node" data-name="Reach_05"><title>Reach_05 (Trapezoidal Channel Segment)</title><rect x="1350" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1372" y="172" width="156" height="156"/>
+<text x="1450" y="406" font-size="43" text-anchor="middle">Reach_05</text></g>
+<g class="d-node" data-name="Reach_06"><title>Reach_06 (Trapezoidal Channel Segment)</title><rect x="1650" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1672" y="172" width="156" height="156"/>
+<text x="1750" y="406" font-size="43" text-anchor="middle">Reach_06</text></g>
+<g class="d-node" data-name="Reach_07"><title>Reach_07 (Trapezoidal Channel Segment)</title><rect x="1950" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1972" y="172" width="156" height="156"/>
+<text x="2050" y="406" font-size="43" text-anchor="middle">Reach_07</text></g>
+<g class="d-node" data-name="Reach_08"><title>Reach_08 (Trapezoidal Channel Segment)</title><rect x="2250" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2272" y="172" width="156" height="156"/>
+<text x="2350" y="406" font-size="43" text-anchor="middle">Reach_08</text></g>
+<g class="d-node" data-name="Reach_09"><title>Reach_09 (Trapezoidal Channel Segment)</title><rect x="2550" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2572" y="172" width="156" height="156"/>
+<text x="2650" y="406" font-size="43" text-anchor="middle">Reach_09</text></g>
+<g class="d-node" data-name="Reach_10"><title>Reach_10 (Trapezoidal Channel Segment)</title><rect x="2850" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2872" y="172" width="156" height="156"/>
+<text x="2950" y="406" font-size="43" text-anchor="middle">Reach_10</text></g>
+<g class="d-node" data-name="Reach_11"><title>Reach_11 (Trapezoidal Channel Segment)</title><rect x="2850" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2872" y="472" width="156" height="156"/>
+<text x="2950" y="706" font-size="43" text-anchor="middle">Reach_11</text></g>
+<g class="d-node" data-name="Reach_12"><title>Reach_12 (Trapezoidal Channel Segment)</title><rect x="2550" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2572" y="472" width="156" height="156"/>
+<text x="2650" y="706" font-size="43" text-anchor="middle">Reach_12</text></g>
+<g class="d-node" data-name="Reach_13"><title>Reach_13 (Trapezoidal Channel Segment)</title><rect x="2250" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2272" y="472" width="156" height="156"/>
+<text x="2350" y="706" font-size="43" text-anchor="middle">Reach_13</text></g>
+<g class="d-node" data-name="Reach_14"><title>Reach_14 (Trapezoidal Channel Segment)</title><rect x="1950" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1972" y="472" width="156" height="156"/>
+<text x="2050" y="706" font-size="43" text-anchor="middle">Reach_14</text></g>
+<g class="d-node" data-name="Reach_15"><title>Reach_15 (Trapezoidal Channel Segment)</title><rect x="1650" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1672" y="472" width="156" height="156"/>
+<text x="1750" y="706" font-size="43" text-anchor="middle">Reach_15</text></g>
+<g class="d-node" data-name="Reach_16"><title>Reach_16 (Trapezoidal Channel Segment)</title><rect x="1350" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1372" y="472" width="156" height="156"/>
+<text x="1450" y="706" font-size="43" text-anchor="middle">Reach_16</text></g>
+<g class="d-node" data-name="Reach_17"><title>Reach_17 (Trapezoidal Channel Segment)</title><rect x="1050" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1072" y="472" width="156" height="156"/>
+<text x="1150" y="706" font-size="43" text-anchor="middle">Reach_17</text></g>
+<g class="d-node" data-name="Reach_18"><title>Reach_18 (Trapezoidal Channel Segment)</title><rect x="750" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="772" y="472" width="156" height="156"/>
+<text x="850" y="706" font-size="43" text-anchor="middle">Reach_18</text></g>
+<g class="d-node" data-name="Reach_19"><title>Reach_19 (Trapezoidal Channel Segment)</title><rect x="450" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="472" y="472" width="156" height="156"/>
+<text x="550" y="706" font-size="43" text-anchor="middle">Reach_19</text></g>
+<g class="d-node" data-name="Reach_20"><title>Reach_20 (Trapezoidal Channel Segment)</title><rect x="150" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="172" y="472" width="156" height="156"/>
+<text x="250" y="706" font-size="43" text-anchor="middle">Reach_20</text></g>
+<g class="d-node" data-name="Reach_21"><title>Reach_21 (Trapezoidal Channel Segment)</title><rect x="150" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="172" y="772" width="156" height="156"/>
+<text x="250" y="1006" font-size="43" text-anchor="middle">Reach_21</text></g>
+<g class="d-node" data-name="Reach_22"><title>Reach_22 (Trapezoidal Channel Segment)</title><rect x="450" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="472" y="772" width="156" height="156"/>
+<text x="550" y="1006" font-size="43" text-anchor="middle">Reach_22</text></g>
+<g class="d-node" data-name="Reach_23"><title>Reach_23 (Trapezoidal Channel Segment)</title><rect x="750" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="772" y="772" width="156" height="156"/>
+<text x="850" y="1006" font-size="43" text-anchor="middle">Reach_23</text></g>
+<g class="d-node" data-name="Reach_24"><title>Reach_24 (Trapezoidal Channel Segment)</title><rect x="1050" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1072" y="772" width="156" height="156"/>
+<text x="1150" y="1006" font-size="43" text-anchor="middle">Reach_24</text></g>
+<g class="d-node" data-name="Reach_25"><title>Reach_25 (Trapezoidal Channel Segment)</title><rect x="1350" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1372" y="772" width="156" height="156"/>
+<text x="1450" y="1006" font-size="43" text-anchor="middle">Reach_25</text></g>
+<g class="d-node" data-name="Reach_26"><title>Reach_26 (Trapezoidal Channel Segment)</title><rect x="1650" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1672" y="772" width="156" height="156"/>
+<text x="1750" y="1006" font-size="43" text-anchor="middle">Reach_26</text></g>
+<g class="d-node" data-name="Reach_27"><title>Reach_27 (Trapezoidal Channel Segment)</title><rect x="1950" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1972" y="772" width="156" height="156"/>
+<text x="2050" y="1006" font-size="43" text-anchor="middle">Reach_27</text></g>
+<g class="d-node" data-name="Reach_28"><title>Reach_28 (Trapezoidal Channel Segment)</title><rect x="2250" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2272" y="772" width="156" height="156"/>
+<text x="2350" y="1006" font-size="43" text-anchor="middle">Reach_28</text></g>
+<g class="d-node" data-name="Reach_29"><title>Reach_29 (Trapezoidal Channel Segment)</title><rect x="2550" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2572" y="772" width="156" height="156"/>
+<text x="2650" y="1006" font-size="43" text-anchor="middle">Reach_29</text></g>
+<g class="d-node" data-name="Reach_30"><title>Reach_30 (Trapezoidal Channel Segment)</title><rect x="2850" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2872" y="772" width="156" height="156"/>
+<text x="2950" y="1006" font-size="43" text-anchor="middle">Reach_30</text></g>
+<g class="d-node" data-name="Reach_31"><title>Reach_31 (Trapezoidal Channel Segment)</title><rect x="2850" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2872" y="1072" width="156" height="156"/>
+<text x="2950" y="1306" font-size="43" text-anchor="middle">Reach_31</text></g>
+<g class="d-node" data-name="Reach_32"><title>Reach_32 (Trapezoidal Channel Segment)</title><rect x="2550" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2572" y="1072" width="156" height="156"/>
+<text x="2650" y="1306" font-size="43" text-anchor="middle">Reach_32</text></g>
+<g class="d-node" data-name="Reach_33"><title>Reach_33 (Trapezoidal Channel Segment)</title><rect x="2250" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2272" y="1072" width="156" height="156"/>
+<text x="2350" y="1306" font-size="43" text-anchor="middle">Reach_33</text></g>
+<g class="d-node" data-name="Reach_34"><title>Reach_34 (Trapezoidal Channel Segment)</title><rect x="1950" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1972" y="1072" width="156" height="156"/>
+<text x="2050" y="1306" font-size="43" text-anchor="middle">Reach_34</text></g>
+<g class="d-node" data-name="Reach_35"><title>Reach_35 (Trapezoidal Channel Segment)</title><rect x="1650" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1672" y="1072" width="156" height="156"/>
+<text x="1750" y="1306" font-size="43" text-anchor="middle">Reach_35</text></g>
+<g class="d-node" data-name="Reach_36"><title>Reach_36 (Trapezoidal Channel Segment)</title><rect x="1350" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1372" y="1072" width="156" height="156"/>
+<text x="1450" y="1306" font-size="43" text-anchor="middle">Reach_36</text></g>
+<g class="d-node" data-name="Reach_37"><title>Reach_37 (Trapezoidal Channel Segment)</title><rect x="1050" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1072" y="1072" width="156" height="156"/>
+<text x="1150" y="1306" font-size="43" text-anchor="middle">Reach_37</text></g>
+<g class="d-node" data-name="Reach_38"><title>Reach_38 (Trapezoidal Channel Segment)</title><rect x="750" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="772" y="1072" width="156" height="156"/>
+<text x="850" y="1306" font-size="43" text-anchor="middle">Reach_38</text></g>
+<g class="d-node" data-name="Reach_39"><title>Reach_39 (Trapezoidal Channel Segment)</title><rect x="450" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="472" y="1072" width="156" height="156"/>
+<text x="550" y="1306" font-size="43" text-anchor="middle">Reach_39</text></g>
+<g class="d-node" data-name="Reach_40"><title>Reach_40 (Trapezoidal Channel Segment)</title><rect x="150" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="172" y="1072" width="156" height="156"/>
+<text x="250" y="1306" font-size="43" text-anchor="middle">Reach_40</text></g>
+<g class="d-node" data-name="Downstream"><title>Downstream (Trapezoidal Channel Segment (Imposed depth))</title><rect x="150" y="1350" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="172" y="1372" width="156" height="156"/>
+<text x="250" y="1606" font-size="43" text-anchor="middle">Downstream</text></g>
+</svg>

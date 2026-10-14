@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 240 1020 966" class="ohq-diagram" style="max-width:510px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Pipe_A"><title>Pipe_A (Fixed flow)</title><path d="M200.0 400.0 L450.0 400.0 L700.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_B"><title>Pipe_B (Fixed flow)</title><path d="M200.0 418.0 L450.0 418.0 L700.0 418.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Return_Pump"><title>Return_Pump (Fixed flow)</title><path d="M700.0 436.0 L450.0 436.0 L200.0 436.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outlet_Pipe"><title>Outlet_Pipe (Fixed flow)</title><path d="M800.0 500.0 L800.0 700.0 L800.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Upstream"><title>Upstream (Reactor)</title><rect x="0" y="300" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="22" y="322" width="156" height="156"/>
+<text x="100" y="528" font-size="21" text-anchor="middle">Upstream</text></g>
+<g class="d-node" data-name="Downstream"><title>Downstream (Reactor)</title><rect x="700" y="300" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="722" y="322" width="156" height="156"/>
+<text x="800" y="528" font-size="21" text-anchor="middle">Downstream</text></g>
+<g class="d-node" data-name="Receiving_Tank"><title>Receiving_Tank (Reactor)</title><rect x="700" y="900" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="722" y="922" width="156" height="156"/>
+<text x="800" y="1128" font-size="21" text-anchor="middle">Receiving_Tank</text></g>
+</svg>

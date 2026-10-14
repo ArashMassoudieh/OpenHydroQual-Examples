@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1370 1266" class="ohq-diagram" style="max-width:685px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Well_Supply"><title>Well_Supply (Water Transfer)</title><path d="M200.0 407.1 L275.0 450.0 L350.0 492.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Desalination_Supply"><title>Desalination_Supply (Water Transfer)</title><path d="M200.0 692.9 L275.0 650.0 L350.0 607.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Residential_Supply"><title>Residential_Supply (Flow_to_user)</title><path d="M527.8 450.0 L625.0 325.0 L722.2 200.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Commercial_Supply"><title>Commercial_Supply (Flow_to_user)</title><path d="M550.0 507.1 L625.0 475.0 L700.0 442.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Industrial_Supply"><title>Industrial_Supply (Flow_to_user)</title><path d="M550.0 592.9 L625.0 625.0 L700.0 657.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Farm_Supply"><title>Farm_Supply (Flow_to_user_low_priority)</title><path d="M527.8 650.0 L625.0 775.0 L722.2 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Residential_Sewer"><title>Residential_Sewer (Wastewater_flow)</title><path d="M900.0 185.7 L975.0 250.0 L1050.0 314.3" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Commercial_Sewer"><title>Commercial_Sewer (Wastewater_flow)</title><path d="M900.0 400.0 L975.0 400.0 L1050.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Industrial_Sewer"><title>Industrial_Sewer (Wastewater_flow)</title><path d="M900.0 614.3 L975.0 550.0 L1050.0 485.7" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Recycled_Water"><title>Recycled_Water (Recycled_flow)</title><path d="M1150.0 500.0 L1150.0 625.0 L1150.0 750.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Well_Field"><title>Well_Field (Groundwater_Supply_wells)</title><rect x="0" y="250" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater_Supply_Wells.png" x="22" y="272" width="156" height="156"/>
+<text x="100" y="487" font-size="28" text-anchor="middle">Well_Field</text></g>
+<g class="d-node" data-name="Desalination_Plant"><title>Desalination_Plant (desalination_plant)</title><rect x="0" y="650" width="200" height="200" rx="16"/>
+<image href="icons/desalination_plant.png" x="22" y="672" width="156" height="156"/>
+<text x="100" y="887" font-size="28" text-anchor="middle">Desalination_Plant</text></g>
+<g class="d-node" data-name="City_Storage"><title>City_Storage (Water Storage)</title><rect x="350" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Storage.png" x="372" y="472" width="156" height="156"/>
+<text x="450" y="687" font-size="28" text-anchor="middle">City_Storage</text></g>
+<g class="d-node" data-name="Residential"><title>Residential (residential_user)</title><rect x="700" y="0" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="722" y="22" width="156" height="156"/>
+<text x="800" y="237" font-size="28" text-anchor="middle">Residential</text></g>
+<g class="d-node" data-name="Commercial"><title>Commercial (commertial_user)</title><rect x="700" y="300" width="200" height="200" rx="16"/>
+<image href="icons/commertial.png" x="722" y="322" width="156" height="156"/>
+<text x="800" y="537" font-size="28" text-anchor="middle">Commercial</text></g>
+<g class="d-node" data-name="Industrial"><title>Industrial (industrial_user)</title><rect x="700" y="600" width="200" height="200" rx="16"/>
+<image href="icons/industrial.png" x="722" y="622" width="156" height="156"/>
+<text x="800" y="837" font-size="28" text-anchor="middle">Industrial</text></g>
+<g class="d-node" data-name="Urban_Farms"><title>Urban_Farms (agricultural_user)</title><rect x="700" y="900" width="200" height="200" rx="16"/>
+<image href="icons/agriculture.png" x="722" y="922" width="156" height="156"/>
+<text x="800" y="1137" font-size="28" text-anchor="middle">Urban_Farms</text></g>
+<g class="d-node" data-name="Treatment_Plant"><title>Treatment_Plant (Wastewater_Treatment_plant)</title><rect x="1050" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Wastewater_Treatment_plant.png" x="1072" y="322" width="156" height="156"/>
+<text x="1150" y="537" font-size="28" text-anchor="middle">Treatment_Plant</text></g>
+<g class="d-node" data-name="Parks_Irrigation"><title>Parks_Irrigation (Amenities)</title><rect x="1050" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Amenities.png" x="1072" y="772" width="156" height="156"/>
+<text x="1150" y="987" font-size="28" text-anchor="middle">Parks_Irrigation</text></g>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 920 866" class="ohq-diagram" style="max-width:460px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Outflow_Seasonal"><title>Outflow_Seasonal (Fixed flow)</title><path d="M200.0 141.7 L400.0 225.0 L600.0 308.3" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outflow_20C"><title>Outflow_20C (Fixed flow)</title><path d="M200.0 558.3 L400.0 475.0 L600.0 391.7" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Pond_Seasonal"><title>Pond_Seasonal (Reactor)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="225" font-size="19" text-anchor="middle">Pond_Seasonal</text></g>
+<g class="d-node" data-name="Pond_20C"><title>Pond_20C (Reactor)</title><rect x="0" y="500" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="22" y="522" width="156" height="156"/>
+<text x="100" y="725" font-size="19" text-anchor="middle">Pond_20C</text></g>
+<g class="d-node" data-name="Receiving_Water"><title>Receiving_Water (Reactor)</title><rect x="600" y="250" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="622" y="272" width="156" height="156"/>
+<text x="700" y="475" font-size="19" text-anchor="middle">Receiving_Water</text></g>
+</svg>

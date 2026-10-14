@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>River BOD and Dissolved Oxygen (Streeter-Phelps) · OpenHydroQual Examples</title>
+<meta name="description" content="A 40 km river receives a wastewater discharge. BOD decays and settles as it travels downstream, oxygen is consumed and replenished by reaeration, and the dissolved oxygen develops the classic sag. The steady profile is checked against the analytical Streeter-Phelps solution.">
+<meta name="keywords" content="streeter phelps, bod, biochemical oxygen demand, dissolved oxygen, do sag, oxygen deficit, critical point, reaeration, deoxygenation, settling, river, stream, wastewater discharge, point source, manning, trapezoidal channel, waste load allocation">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#1f9e89">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Reactions &amp; Water Quality</div>
+<h1>River BOD and Dissolved Oxygen (Streeter-Phelps)</h1>
+<p class="lede">A 40 km river receives a wastewater discharge. BOD decays and settles as it travels downstream, oxygen is consumed and replenished by reaeration, and the dissolved oxygen develops the classic sag. The steady profile is checked against the analytical Streeter-Phelps solution.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=open_channel'>open_channel</a><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/streeter-phelps.zip" download>Download model (.zip)</a>
+    <div class="muted">66 KB · 6 files · open <code>streeter_phelps.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A wastewater treatment plant discharges into a river. Just below the outfall the effluent and the river water are fully mixed: the mixture carries 16.66 g/m³ of ultimate BOD and 7.09 g/m³ of dissolved oxygen, against a saturation value of 9.09 g/m³. As the water travels downstream, bacteria oxidize the BOD and draw down the oxygen, while oxygen enters from the atmosphere at a rate proportional to the deficit. Early on, consumption wins and DO falls; further downstream the BOD is depleted, reaeration wins and DO recovers. The low point is the <strong>critical point</strong>, and its DO is what water-quality standards are checked against.</p>
+<p>Streeter and Phelps (1925) solved this problem analytically for steady, plug-flow conditions. This model solves the same processes with OpenHydroQual's channel hydraulics and reaction engine, and the README compares the two. The same setup can be extended to what the analytical solution cannot handle: varying flow, several outfalls, tributaries, or temperature-dependent rates.</p>
+<h2>How it works</h2>
+<p><strong>Hydraulics.</strong> Each reach is a <code>Trapezoidal Channel Segment</code>. Its depth follows from its stored volume S and length ℓ:</p>
+<p>depth = (−b + √(b² + 4·z·S/ℓ)) / (2·z)</p>
+<p>with base width b = 10 m and side slope z = 2. The links between reaches compute Manning flow from the water-surface slope:</p>
+<p>Q = (1/n) · A · R^(2/3) · sqt((h_up − h_down)/ℓ)</p>
+<p>where A is the cross-sectional area of the upstream reach, R = A/P is the hydraulic radius using the mean wetted perimeter of the two reaches, and h is the water-surface elevation. OpenHydroQual's <code>_sqt</code> is a regularized square root, sqt(x) = √(x²/(|x| + 0.0001)), which keeps the derivative finite as the slope approaches zero. At this river's slope of 0.0002 it returns 82% of the exact square root, so the flowing depth is 1.39 m (the unregularized Manning equation would give 1.24 m). At 6.25 m³/s the mean velocity is U = 0.351 m/s, or 30.3 km/day, and water takes 1.3 days to travel the 40 km.</p>
+<p><strong>Water quality.</strong> Three reactions act in every reach. OpenHydroQual multiplies each rate by the reach volume and by the stoichiometric coefficients:</p>
+<table>
+<thead>
+<tr>
+<th>Reaction</th>
+<th>Rate</th>
+<th>ν for BOD</th>
+<th>ν for DO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BOD_oxidation</td>
+<td>k_d·BOD</td>
+<td>−1</td>
+<td>−1</td>
+</tr>
+<tr>
+<td>BOD_settling</td>
+<td>k_s·BOD</td>
+<td>−1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Reaeration</td>
+<td>k_a·(DO_sat − DO)</td>
+<td>0</td>
+<td>+1</td>
+</tr>
+</tbody>
+</table>
+<p>so that in each reach</p>
+<p>d(V·BOD)/dt = Q·(BOD_in − BOD) − V·(k_d + k_s)·BOD
+  d(V·DO)/dt = Q·(DO_in − DO) − V·k_d·BOD + V·k_a·(DO_sat − DO)</p>
+<p>with k_d = 0.764, k_s = 0.514 and k_a = 1.902 per day. Reaeration is written as a reaction here; the <code>atmospheric exchange</code> source in the mass_transfer plugin computes the same flux, Storage·k·(saturation − concentration). The rates are fixed at their 20 °C values. The reaeration constant is an input; for reference, the O'Connor-Dobbins formula 3.93·U^0.5/H^1.5 (U in m/s, H in m) gives 1.4 per day for this depth and velocity.</p>
+<p><strong>Analytical solution.</strong> For steady plug flow the travel time to distance x is t = x/U. With k_r = k_d + k_s = 1.278 per day for total BOD removal and D = DO_sat − DO the oxygen deficit:</p>
+<p>BOD(t) = L₀ · e^(−k_r·t)
+  D(t) = k_d·L₀/(k_a − k_r) · (e^(−k_r·t) − e^(−k_a·t)) + D₀ · e^(−k_a·t)</p>
+<p>with L₀ = 16.66 g/m³ and D₀ = 9.092 − 7.09 = 2.00 g/m³. The deficit is largest at</p>
+<p>t_c = 1/(k_a − k_r) · ln[ (k_a/k_r) · (1 − D₀·(k_a − k_r)/(k_d·L₀)) ] = 0.472 day</p>
+<p>which is 14.3 km downstream, where the analytical DO is 5.43 g/m³.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Sag profile.</strong> The figure below shows the steady state at day 3, with the model value at the downstream end of each reach and the analytical curves. DO falls from 7.09 g/m³ at the outfall to a minimum of 5.50 g/m³ in Reach_15 (14 to 15 km), then recovers to 6.8 g/m³ at 40 km.</li>
+</ul>
+<p><img alt="Steady BOD and DO profiles along the river, model and analytical" src="results/do_sag_profile.png" /></p>
+<ul>
+<li><strong>Agreement.</strong> The model DO is 0.06 g/m³ above the analytical value at 5 and 15 km and 0.01 g/m³ above it at 30 km. BOD is 0.4% to 2.6% higher. The differences come from representing the river as 40 well-mixed reaches: each 1 km reach behaves like a small continuously stirred tank, which slightly slows the first-order decay compared with plug flow and smooths the profile. Shorter reaches reduce the difference.</li>
+<li><strong>Settling matters.</strong> Settling removes 40% of the BOD (k_s/k_r = 0.514/1.278) without consuming oxygen in the water column. With the same total removal but all of it as oxidation (k_d = 1.278 per day), the sag would be much deeper.</li>
+<li><strong>Travel time.</strong> In the time-series plots each location responds after the water from the outfall reaches it, then levels off at its steady value. The 30 km location reaches steady state after about 1.6 days.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>Flow, effluent load and temperature are constant. The model reaches steady state within 2 days; it can be driven with time-varying flow or concentrations by replacing the input files.</li>
+<li>The effluent is fully mixed with the river at the outfall. Lateral and vertical gradients are ignored.</li>
+<li>Only carbonaceous BOD is modeled. Nitrogenous oxygen demand (nitrification), sediment oxygen demand, photosynthesis and respiration are not included.</li>
+<li>Rate constants are constant along the river and not corrected for temperature. To add temperature dependence, link each reaction parameter to a temperature time series and set its Arrhenius factor (typically θ = 1.047 for k_d and 1.024 for k_a).</li>
+<li>Longitudinal dispersion is not specified (dispersivity 0); the reach-to-reach mixing of the 1 km cells acts as numerical dispersion.</li>
+<li>The input values (flow, mixed concentrations and rate constants) are illustrative and do not describe a particular river.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="90 90 3020 1566" class="ohq-diagram" style="max-width:1510px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Channel_01"><title>Channel_01 (Trapezoidal_Channel_link)</title><path d="M350.0 250.0 L400.0 250.0 L450.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_02"><title>Channel_02 (Trapezoidal_Channel_link)</title><path d="M650.0 250.0 L700.0 250.0 L750.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_03"><title>Channel_03 (Trapezoidal_Channel_link)</title><path d="M950.0 250.0 L1000.0 250.0 L1050.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_04"><title>Channel_04 (Trapezoidal_Channel_link)</title><path d="M1250.0 250.0 L1300.0 250.0 L1350.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_05"><title>Channel_05 (Trapezoidal_Channel_link)</title><path d="M1550.0 250.0 L1600.0 250.0 L1650.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_06"><title>Channel_06 (Trapezoidal_Channel_link)</title><path d="M1850.0 250.0 L1900.0 250.0 L1950.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_07"><title>Channel_07 (Trapezoidal_Channel_link)</title><path d="M2150.0 250.0 L2200.0 250.0 L2250.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_08"><title>Channel_08 (Trapezoidal_Channel_link)</title><path d="M2450.0 250.0 L2500.0 250.0 L2550.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_09"><title>Channel_09 (Trapezoidal_Channel_link)</title><path d="M2750.0 250.0 L2800.0 250.0 L2850.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_10"><title>Channel_10 (Trapezoidal_Channel_link)</title><path d="M2950.0 350.0 L2950.0 400.0 L2950.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_11"><title>Channel_11 (Trapezoidal_Channel_link)</title><path d="M2850.0 550.0 L2800.0 550.0 L2750.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_12"><title>Channel_12 (Trapezoidal_Channel_link)</title><path d="M2550.0 550.0 L2500.0 550.0 L2450.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_13"><title>Channel_13 (Trapezoidal_Channel_link)</title><path d="M2250.0 550.0 L2200.0 550.0 L2150.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_14"><title>Channel_14 (Trapezoidal_Channel_link)</title><path d="M1950.0 550.0 L1900.0 550.0 L1850.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_15"><title>Channel_15 (Trapezoidal_Channel_link)</title><path d="M1650.0 550.0 L1600.0 550.0 L1550.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_16"><title>Channel_16 (Trapezoidal_Channel_link)</title><path d="M1350.0 550.0 L1300.0 550.0 L1250.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_17"><title>Channel_17 (Trapezoidal_Channel_link)</title><path d="M1050.0 550.0 L1000.0 550.0 L950.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_18"><title>Channel_18 (Trapezoidal_Channel_link)</title><path d="M750.0 550.0 L700.0 550.0 L650.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_19"><title>Channel_19 (Trapezoidal_Channel_link)</title><path d="M450.0 550.0 L400.0 550.0 L350.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_20"><title>Channel_20 (Trapezoidal_Channel_link)</title><path d="M250.0 650.0 L250.0 700.0 L250.0 750.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_21"><title>Channel_21 (Trapezoidal_Channel_link)</title><path d="M350.0 850.0 L400.0 850.0 L450.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_22"><title>Channel_22 (Trapezoidal_Channel_link)</title><path d="M650.0 850.0 L700.0 850.0 L750.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_23"><title>Channel_23 (Trapezoidal_Channel_link)</title><path d="M950.0 850.0 L1000.0 850.0 L1050.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_24"><title>Channel_24 (Trapezoidal_Channel_link)</title><path d="M1250.0 850.0 L1300.0 850.0 L1350.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_25"><title>Channel_25 (Trapezoidal_Channel_link)</title><path d="M1550.0 850.0 L1600.0 850.0 L1650.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_26"><title>Channel_26 (Trapezoidal_Channel_link)</title><path d="M1850.0 850.0 L1900.0 850.0 L1950.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_27"><title>Channel_27 (Trapezoidal_Channel_link)</title><path d="M2150.0 850.0 L2200.0 850.0 L2250.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_28"><title>Channel_28 (Trapezoidal_Channel_link)</title><path d="M2450.0 850.0 L2500.0 850.0 L2550.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_29"><title>Channel_29 (Trapezoidal_Channel_link)</title><path d="M2750.0 850.0 L2800.0 850.0 L2850.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_30"><title>Channel_30 (Trapezoidal_Channel_link)</title><path d="M2950.0 950.0 L2950.0 1000.0 L2950.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_31"><title>Channel_31 (Trapezoidal_Channel_link)</title><path d="M2850.0 1150.0 L2800.0 1150.0 L2750.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_32"><title>Channel_32 (Trapezoidal_Channel_link)</title><path d="M2550.0 1150.0 L2500.0 1150.0 L2450.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_33"><title>Channel_33 (Trapezoidal_Channel_link)</title><path d="M2250.0 1150.0 L2200.0 1150.0 L2150.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_34"><title>Channel_34 (Trapezoidal_Channel_link)</title><path d="M1950.0 1150.0 L1900.0 1150.0 L1850.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_35"><title>Channel_35 (Trapezoidal_Channel_link)</title><path d="M1650.0 1150.0 L1600.0 1150.0 L1550.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_36"><title>Channel_36 (Trapezoidal_Channel_link)</title><path d="M1350.0 1150.0 L1300.0 1150.0 L1250.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_37"><title>Channel_37 (Trapezoidal_Channel_link)</title><path d="M1050.0 1150.0 L1000.0 1150.0 L950.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_38"><title>Channel_38 (Trapezoidal_Channel_link)</title><path d="M750.0 1150.0 L700.0 1150.0 L650.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_39"><title>Channel_39 (Trapezoidal_Channel_link)</title><path d="M450.0 1150.0 L400.0 1150.0 L350.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_40"><title>Channel_40 (Trapezoidal_Channel_link)</title><path d="M250.0 1250.0 L250.0 1300.0 L250.0 1350.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Reach_01"><title>Reach_01 (Trapezoidal Channel Segment)</title><rect x="150" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="172" y="172" width="156" height="156"/>
+<text x="250" y="406" font-size="43" text-anchor="middle">Reach_01</text></g>
+<g class="d-node" data-name="Reach_02"><title>Reach_02 (Trapezoidal Channel Segment)</title><rect x="450" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="472" y="172" width="156" height="156"/>
+<text x="550" y="406" font-size="43" text-anchor="middle">Reach_02</text></g>
+<g class="d-node" data-name="Reach_03"><title>Reach_03 (Trapezoidal Channel Segment)</title><rect x="750" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="772" y="172" width="156" height="156"/>
+<text x="850" y="406" font-size="43" text-anchor="middle">Reach_03</text></g>
+<g class="d-node" data-name="Reach_04"><title>Reach_04 (Trapezoidal Channel Segment)</title><rect x="1050" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1072" y="172" width="156" height="156"/>
+<text x="1150" y="406" font-size="43" text-anchor="middle">Reach_04</text></g>
+<g class="d-node" data-name="Reach_05"><title>Reach_05 (Trapezoidal Channel Segment)</title><rect x="1350" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1372" y="172" width="156" height="156"/>
+<text x="1450" y="406" font-size="43" text-anchor="middle">Reach_05</text></g>
+<g class="d-node" data-name="Reach_06"><title>Reach_06 (Trapezoidal Channel Segment)</title><rect x="1650" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1672" y="172" width="156" height="156"/>
+<text x="1750" y="406" font-size="43" text-anchor="middle">Reach_06</text></g>
+<g class="d-node" data-name="Reach_07"><title>Reach_07 (Trapezoidal Channel Segment)</title><rect x="1950" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1972" y="172" width="156" height="156"/>
+<text x="2050" y="406" font-size="43" text-anchor="middle">Reach_07</text></g>
+<g class="d-node" data-name="Reach_08"><title>Reach_08 (Trapezoidal Channel Segment)</title><rect x="2250" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2272" y="172" width="156" height="156"/>
+<text x="2350" y="406" font-size="43" text-anchor="middle">Reach_08</text></g>
+<g class="d-node" data-name="Reach_09"><title>Reach_09 (Trapezoidal Channel Segment)</title><rect x="2550" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2572" y="172" width="156" height="156"/>
+<text x="2650" y="406" font-size="43" text-anchor="middle">Reach_09</text></g>
+<g class="d-node" data-name="Reach_10"><title>Reach_10 (Trapezoidal Channel Segment)</title><rect x="2850" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2872" y="172" width="156" height="156"/>
+<text x="2950" y="406" font-size="43" text-anchor="middle">Reach_10</text></g>
+<g class="d-node" data-name="Reach_11"><title>Reach_11 (Trapezoidal Channel Segment)</title><rect x="2850" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2872" y="472" width="156" height="156"/>
+<text x="2950" y="706" font-size="43" text-anchor="middle">Reach_11</text></g>
+<g class="d-node" data-name="Reach_12"><title>Reach_12 (Trapezoidal Channel Segment)</title><rect x="2550" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2572" y="472" width="156" height="156"/>
+<text x="2650" y="706" font-size="43" text-anchor="middle">Reach_12</text></g>
+<g class="d-node" data-name="Reach_13"><title>Reach_13 (Trapezoidal Channel Segment)</title><rect x="2250" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2272" y="472" width="156" height="156"/>
+<text x="2350" y="706" font-size="43" text-anchor="middle">Reach_13</text></g>
+<g class="d-node" data-name="Reach_14"><title>Reach_14 (Trapezoidal Channel Segment)</title><rect x="1950" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1972" y="472" width="156" height="156"/>
+<text x="2050" y="706" font-size="43" text-anchor="middle">Reach_14</text></g>
+<g class="d-node" data-name="Reach_15"><title>Reach_15 (Trapezoidal Channel Segment)</title><rect x="1650" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1672" y="472" width="156" height="156"/>
+<text x="1750" y="706" font-size="43" text-anchor="middle">Reach_15</text></g>
+<g class="d-node" data-name="Reach_16"><title>Reach_16 (Trapezoidal Channel Segment)</title><rect x="1350" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1372" y="472" width="156" height="156"/>
+<text x="1450" y="706" font-size="43" text-anchor="middle">Reach_16</text></g>
+<g class="d-node" data-name="Reach_17"><title>Reach_17 (Trapezoidal Channel Segment)</title><rect x="1050" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1072" y="472" width="156" height="156"/>
+<text x="1150" y="706" font-size="43" text-anchor="middle">Reach_17</text></g>
+<g class="d-node" data-name="Reach_18"><title>Reach_18 (Trapezoidal Channel Segment)</title><rect x="750" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="772" y="472" width="156" height="156"/>
+<text x="850" y="706" font-size="43" text-anchor="middle">Reach_18</text></g>
+<g class="d-node" data-name="Reach_19"><title>Reach_19 (Trapezoidal Channel Segment)</title><rect x="450" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="472" y="472" width="156" height="156"/>
+<text x="550" y="706" font-size="43" text-anchor="middle">Reach_19</text></g>
+<g class="d-node" data-name="Reach_20"><title>Reach_20 (Trapezoidal Channel Segment)</title><rect x="150" y="450" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="172" y="472" width="156" height="156"/>
+<text x="250" y="706" font-size="43" text-anchor="middle">Reach_20</text></g>
+<g class="d-node" data-name="Reach_21"><title>Reach_21 (Trapezoidal Channel Segment)</title><rect x="150" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="172" y="772" width="156" height="156"/>
+<text x="250" y="1006" font-size="43" text-anchor="middle">Reach_21</text></g>
+<g class="d-node" data-name="Reach_22"><title>Reach_22 (Trapezoidal Channel Segment)</title><rect x="450" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="472" y="772" width="156" height="156"/>
+<text x="550" y="1006" font-size="43" text-anchor="middle">Reach_22</text></g>
+<g class="d-node" data-name="Reach_23"><title>Reach_23 (Trapezoidal Channel Segment)</title><rect x="750" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="772" y="772" width="156" height="156"/>
+<text x="850" y="1006" font-size="43" text-anchor="middle">Reach_23</text></g>
+<g class="d-node" data-name="Reach_24"><title>Reach_24 (Trapezoidal Channel Segment)</title><rect x="1050" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1072" y="772" width="156" height="156"/>
+<text x="1150" y="1006" font-size="43" text-anchor="middle">Reach_24</text></g>
+<g class="d-node" data-name="Reach_25"><title>Reach_25 (Trapezoidal Channel Segment)</title><rect x="1350" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1372" y="772" width="156" height="156"/>
+<text x="1450" y="1006" font-size="43" text-anchor="middle">Reach_25</text></g>
+<g class="d-node" data-name="Reach_26"><title>Reach_26 (Trapezoidal Channel Segment)</title><rect x="1650" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1672" y="772" width="156" height="156"/>
+<text x="1750" y="1006" font-size="43" text-anchor="middle">Reach_26</text></g>
+<g class="d-node" data-name="Reach_27"><title>Reach_27 (Trapezoidal Channel Segment)</title><rect x="1950" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1972" y="772" width="156" height="156"/>
+<text x="2050" y="1006" font-size="43" text-anchor="middle">Reach_27</text></g>
+<g class="d-node" data-name="Reach_28"><title>Reach_28 (Trapezoidal Channel Segment)</title><rect x="2250" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2272" y="772" width="156" height="156"/>
+<text x="2350" y="1006" font-size="43" text-anchor="middle">Reach_28</text></g>
+<g class="d-node" data-name="Reach_29"><title>Reach_29 (Trapezoidal Channel Segment)</title><rect x="2550" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2572" y="772" width="156" height="156"/>
+<text x="2650" y="1006" font-size="43" text-anchor="middle">Reach_29</text></g>
+<g class="d-node" data-name="Reach_30"><title>Reach_30 (Trapezoidal Channel Segment)</title><rect x="2850" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2872" y="772" width="156" height="156"/>
+<text x="2950" y="1006" font-size="43" text-anchor="middle">Reach_30</text></g>
+<g class="d-node" data-name="Reach_31"><title>Reach_31 (Trapezoidal Channel Segment)</title><rect x="2850" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2872" y="1072" width="156" height="156"/>
+<text x="2950" y="1306" font-size="43" text-anchor="middle">Reach_31</text></g>
+<g class="d-node" data-name="Reach_32"><title>Reach_32 (Trapezoidal Channel Segment)</title><rect x="2550" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2572" y="1072" width="156" height="156"/>
+<text x="2650" y="1306" font-size="43" text-anchor="middle">Reach_32</text></g>
+<g class="d-node" data-name="Reach_33"><title>Reach_33 (Trapezoidal Channel Segment)</title><rect x="2250" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="2272" y="1072" width="156" height="156"/>
+<text x="2350" y="1306" font-size="43" text-anchor="middle">Reach_33</text></g>
+<g class="d-node" data-name="Reach_34"><title>Reach_34 (Trapezoidal Channel Segment)</title><rect x="1950" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1972" y="1072" width="156" height="156"/>
+<text x="2050" y="1306" font-size="43" text-anchor="middle">Reach_34</text></g>
+<g class="d-node" data-name="Reach_35"><title>Reach_35 (Trapezoidal Channel Segment)</title><rect x="1650" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1672" y="1072" width="156" height="156"/>
+<text x="1750" y="1306" font-size="43" text-anchor="middle">Reach_35</text></g>
+<g class="d-node" data-name="Reach_36"><title>Reach_36 (Trapezoidal Channel Segment)</title><rect x="1350" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1372" y="1072" width="156" height="156"/>
+<text x="1450" y="1306" font-size="43" text-anchor="middle">Reach_36</text></g>
+<g class="d-node" data-name="Reach_37"><title>Reach_37 (Trapezoidal Channel Segment)</title><rect x="1050" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1072" y="1072" width="156" height="156"/>
+<text x="1150" y="1306" font-size="43" text-anchor="middle">Reach_37</text></g>
+<g class="d-node" data-name="Reach_38"><title>Reach_38 (Trapezoidal Channel Segment)</title><rect x="750" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="772" y="1072" width="156" height="156"/>
+<text x="850" y="1306" font-size="43" text-anchor="middle">Reach_38</text></g>
+<g class="d-node" data-name="Reach_39"><title>Reach_39 (Trapezoidal Channel Segment)</title><rect x="450" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="472" y="1072" width="156" height="156"/>
+<text x="550" y="1306" font-size="43" text-anchor="middle">Reach_39</text></g>
+<g class="d-node" data-name="Reach_40"><title>Reach_40 (Trapezoidal Channel Segment)</title><rect x="150" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="172" y="1072" width="156" height="156"/>
+<text x="250" y="1306" font-size="43" text-anchor="middle">Reach_40</text></g>
+<g class="d-node" data-name="Downstream"><title>Downstream (Trapezoidal Channel Segment (Imposed depth))</title><rect x="150" y="1350" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="172" y="1372" width="156" height="156"/>
+<text x="250" y="1606" font-size="43" text-anchor="middle">Downstream</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>41</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Reach-01'><summary><span class='cname'>40 × Trapezoidal Channel Segment</span><span class='ctype'>Trapezoidal Channel Segment · open_channel</span><span class='crole'><p>Forty river reaches, Reach_01 just below the discharge to Reach_40 at 40 km. Each is 1 km long, with a 10 m base width, side slopes of 2 horizontal to 1 vertical, Manning n = 0.035 and a bed that drops 0.2 m per reach (slope 0.0002). Each reach is a well-mixed storage cell. Reach_01 receives the mixed river and effluent flow from <code>river_flow.txt</code> with BOD = 16.66 g/m³ and DO = 7.09 g/m³.</p></span></summary><div class='cbody'><p class='members'>Reach_01, Reach_02, Reach_03, Reach_04, Reach_05, Reach_06, Reach_07, Reach_08 …</p><p class='muted'>Showing properties of <b>Reach_01</b>.</p><p class=type-help><b>Trapezoidal Channel Segment:</b> Trapezoidal Channel Segment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>BOD: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>BOD: Constant Inflow concentration</td><td class='v'>16.66</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>DO: Concentration</td><td class='v'>9.092</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>DO: Constant Inflow concentration</td><td class='v'>7.09</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.035</td><td></td><td>Roughness coefficient used in Manning&#x27;s equation to estimate flow resistance.</td></tr><tr><td>Area of agriculural land</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Base Width</td><td class='v'>10</td><td>m</td><td>The width of the bottom (flat) portion of the trapezoidal channel cross-section.</td></tr><tr><td>Bottom Elevation</td><td class='v'>-0</td><td>m</td><td>Elevation of the channel bottom relative to the model’s vertical datum.</td></tr><tr><td>Obstacle height</td><td class='v'>0</td><td>m</td><td>The water depth below which the flow ceases</td></tr><tr><td>Initial Water Depth</td><td class='v'>1.393</td><td>m</td><td>Depth of water in the channel segment. If depth is initially unknown, it is estimated based on storage.</td></tr><tr><td>Inflow time series</td><td class='v'>river_flow.txt</td><td>m^3/day</td><td></td></tr><tr><td>Inflow multiplier</td><td class='v'>1</td><td></td><td>Scales the inflow time series (for example an uncertain lateral inflow estimate). 1 uses the series as given.</td></tr><tr><td>Segment length</td><td class='v'>1000</td><td>m</td><td></td></tr><tr><td>Area of non-agriculural activity</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Side Slope</td><td class='v'>2</td><td></td><td>The horizontal to vertical ratio of the sloped sides (e.g., 2 means 2 horizontal to 1 vertical).</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Downstream'><summary><span class='cname'>Downstream</span><span class='ctype'>Trapezoidal Channel Segment (Imposed depth) · open_channel</span><span class='crole'><p>A reach below Reach_40 whose depth is imposed from <code>downstream_depth.txt</code> (1.393 m, the uniform-flow depth), so the river leaves the model without backwater. It absorbs everything that flows out; its own concentrations are not used.</p></span></summary><div class='cbody'><p class=type-help><b>Trapezoidal Channel Segment (Imposed depth):</b> Trapezoidal Channel Segment (Imposed Depth)</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>BOD: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>DO: Concentration</td><td class='v'>9.092</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.035</td><td></td><td>Roughness coefficient used in Manning&#x27;s equation to estimate flow resistance.</td></tr><tr><td>Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Area of agriculural land</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Base Width</td><td class='v'>10</td><td>m</td><td>The width of the bottom (flat) portion of the trapezoidal channel cross-section.</td></tr><tr><td>Bottom Elevation</td><td class='v'>-8</td><td>m</td><td>Elevation of the channel bottom relative to the model’s vertical datum.</td></tr><tr><td>Obstacle height</td><td class='v'>0</td><td>m</td><td>The water depth below which the flow ceases</td></tr><tr><td>Water Depth</td><td class='v'>downstream_depth.txt</td><td>m</td><td></td></tr><tr><td>Segment length</td><td class='v'>1000</td><td>m</td><td></td></tr><tr><td>Area of non-agriculural activity</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Side Slope</td><td class='v'>2</td><td></td><td>The horizontal to vertical ratio of the sloped sides (e.g., 2 means 2 horizontal to 1 vertical).</td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>40</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Channel-01'><summary><span class='cname'>40 × Trapezoidal_Channel_link</span><span class='ctype'>Trapezoidal_Channel_link · open_channel</span><span class='crole'><p>Forty Manning links, Channel_01 to Channel_40, each carrying water from one reach to the next. Flow is driven by the water-surface slope; positive flow is downstream.</p></span></summary><div class='cbody'><p class='members'>Channel_01, Channel_02, Channel_03, Channel_04, Channel_05, Channel_06, Channel_07, Channel_08 …</p><p class='muted'>Showing properties of <b>Channel_01</b>.</p><p class=type-help><b>Trapezoidal_Channel_link:</b> Link from a channel segment to another</p></div></details>
+</div>
+<h3>Constituents <small>2</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-BOD'><summary><span class='cname'>BOD</span><span class='ctype'>Constituent</span><span class='crole'><p>Ultimate carbonaceous biochemical oxygen demand (g/m³ of O₂ equivalent).</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/day</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-DO'><summary><span class='cname'>DO</span><span class='ctype'>Constituent</span><span class='crole'><p>Dissolved oxygen (g/m³). Starts at saturation in all reaches.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/day</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>4</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-k-d'><summary><span class='cname'>k_d</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Deoxygenation rate constant (1/day): the rate at which BOD is oxidized in the water column, consuming oxygen.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.764</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-s'><summary><span class='cname'>k_s</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>BOD settling rate constant (1/day): loss of particulate BOD to the bed, which removes BOD without consuming oxygen in the water.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.514</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-a'><summary><span class='cname'>k_a</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Reaeration rate constant (1/day).</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.902</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-DO-sat'><summary><span class='cname'>DO_sat</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Dissolved-oxygen saturation concentration (g/m³); 9.09 g/m³ corresponds to fresh water at 20 °C.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>9.092</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reactions <small>3</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-BOD-oxidation'><summary><span class='cname'>BOD_oxidation</span><span class='ctype'>Reaction</span><span class='crole'><p>Oxidation of BOD, rate k_d·BOD. Removes one gram of DO per gram of BOD.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_d*BOD)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>BOD</td><td class='v'>-1</td></tr><tr><td>DO</td><td class='v'>-1</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-BOD-settling'><summary><span class='cname'>BOD_settling</span><span class='ctype'>Reaction</span><span class='crole'><p>Settling of BOD, rate k_s·BOD. Removes BOD only.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_s*BOD)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>BOD</td><td class='v'>-1</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-Reaeration'><summary><span class='cname'>Reaeration</span><span class='ctype'>Reaction</span><span class='crole'><p>Oxygen transfer from the atmosphere, rate k_a·(DO_sat − DO). Adds DO when the water is below saturation.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_a*(DO_sat-DO))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>DO</td><td class='v'>1</td></tr></tbody></table></div></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>river_flow.txt</code></td><td><p>River flow below the outfall (m³/day) versus time (days): a constant 540 000 m³/day (6.25 m³/s), the combined upstream flow and effluent.</p></td></tr><tr><td><code>downstream_depth.txt</code></td><td><p>Water depth imposed at the downstream boundary (m) versus time (days): a constant 1.393 m.</p></td></tr><tr><td><code>analytical_do_5km.csv</code></td><td><p>Analytical steady DO 5 km below the discharge (g/m³), drawn as a horizontal line over the run. Not read by the model.</p></td></tr><tr><td><code>analytical_do_15km.csv</code></td><td><p>Analytical steady DO 15 km below the discharge, near the critical point.</p></td></tr><tr><td><code>analytical_do_30km.csv</code></td><td><p>Analytical steady DO 30 km below the discharge.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>3</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Dissolved oxygen at three distances' loading='lazy'><figcaption><b>Dissolved oxygen at three distances</b> The river starts saturated. As the BOD front travels downstream, each location settles to its steady DO, which agrees with the Streeter-Phelps value to within 0.07 g/m³. The lowest DO is near 15 km.</figcaption></figure><figure><img src='plot_2.png' alt='BOD at three distances' loading='lazy'><figcaption><b>BOD at three distances</b> BOD arrives at each location after the travel time from the outfall (about 0.17, 0.5 and 1 day) and then stays constant.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/streeter-phelps">View source on GitHub</a>.</div></footer>
+</body></html>

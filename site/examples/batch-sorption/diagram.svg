@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="240 240 720 366" class="ohq-diagram" style="max-width:360px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-node" data-name="Sorption_test"><title>Sorption_test (Reactor)</title><rect x="300" y="300" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="322" y="322" width="156" height="156"/>
+<text x="400" y="518" font-size="14" text-anchor="middle">Sorption_test</text></g>
+<g class="d-node" data-name="Desorption_test"><title>Desorption_test (Reactor)</title><rect x="700" y="300" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="722" y="322" width="156" height="156"/>
+<text x="800" y="518" font-size="14" text-anchor="middle">Desorption_test</text></g>
+</svg>

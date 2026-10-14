@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 320 1366" class="ohq-diagram" style="max-width:160px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Infiltration"><title>Infiltration (surfacewater_to_soil_link)</title><path d="M100.0 200.0 L100.0 225.0 L100.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Percolation_upper"><title>Percolation_upper (soil_to_soil_link)</title><path d="M100.0 450.0 L100.0 475.0 L100.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Percolation_lower"><title>Percolation_lower (soil_to_soil_link)</title><path d="M100.0 700.0 L100.0 725.0 L100.0 750.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Deep_drainage"><title>Deep_drainage (soil_to_fixedhead_link)</title><path d="M100.0 950.0 L100.0 975.0 L100.0 1000.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Field_surface"><title>Field_surface (Catchment)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="218" font-size="14" text-anchor="middle">Field_surface</text></g>
+<g class="d-node" data-name="Root_zone_upper"><title>Root_zone_upper (Soil)</title><rect x="0" y="250" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="272" width="156" height="156"/>
+<text x="100" y="468" font-size="14" text-anchor="middle">Root_zone_upper</text></g>
+<g class="d-node" data-name="Root_zone_middle"><title>Root_zone_middle (Soil)</title><rect x="0" y="500" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="522" width="156" height="156"/>
+<text x="100" y="718" font-size="14" text-anchor="middle">Root_zone_middle</text></g>
+<g class="d-node" data-name="Root_zone_lower"><title>Root_zone_lower (Soil)</title><rect x="0" y="750" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="772" width="156" height="156"/>
+<text x="100" y="968" font-size="14" text-anchor="middle">Root_zone_lower</text></g>
+<g class="d-node" data-name="Water_table"><title>Water_table (fixed_head)</title><rect x="0" y="1000" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="22" y="1022" width="156" height="156"/>
+<text x="100" y="1218" font-size="14" text-anchor="middle">Water_table</text></g>
+</svg>

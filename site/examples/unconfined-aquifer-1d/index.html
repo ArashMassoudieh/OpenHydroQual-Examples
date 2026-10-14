@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1D Unconfined Aquifer Between Two Rivers · OpenHydroQual Examples</title>
+<meta name="description" content="A strip of unconfined aquifer between two rivers, solved cell by cell with Dupuit flow. Two years of recharge raise a groundwater mound and create a water divide; the simulated steady state is checked against the Dupuit-Forchheimer parabola.">
+<meta name="keywords" content="aquifer, unconfined aquifer, groundwater, water table, dupuit, dupuit forchheimer, darcy, recharge, groundwater mound, water divide, specific yield, transmissivity, fixed head, river boundary, stream aquifer exchange, baseflow, analytical solution, teaching">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#a0702a">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Soil, Plants &amp; Groundwater</div>
+<h1>1D Unconfined Aquifer Between Two Rivers</h1>
+<p class="lede">A strip of unconfined aquifer between two rivers, solved cell by cell with Dupuit flow. Two years of recharge raise a groundwater mound and create a water divide; the simulated steady state is checked against the Dupuit-Forchheimer parabola.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=unconfined_groundwater'>unconfined_groundwater</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/unconfined-aquifer-1d.zip" download>Download model (.zip)</a>
+    <div class="muted">6 KB · 2 files · open <code>dupuit_aquifer.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A strip of unconfined (water table) aquifer lies between two rivers that cut through its full thickness. The west river stands at 10 m and the east river at 9 m above the impermeable base, so groundwater flows from west to east. Recharge from infiltrating rain then raises the water table between the rivers into a mound, which can rise above the higher river. When it does, a groundwater divide forms inside the aquifer and the west river, which was losing water to the aquifer, starts to gain water from it.</p>
+<p>This is the textbook Dupuit-Forchheimer problem, and it has a closed-form steady-state solution. That makes it a good first groundwater model: the numerical result can be checked against the analytical one, and the transient shows how fast an aquifer responds to a change in recharge. The same structure, extended to two dimensions or coupled to soil and stream components, is the basis of larger catchment groundwater models.</p>
+<h2>How it works</h2>
+<p>The expressions below are taken from <code>unconfined_groundwater.json</code>.</p>
+<p><strong>Aquifer cells.</strong> Each <code>Unconfined Groundwater cell</code> stores water in its pores. With storage S, plan area A, specific yield S_y and base elevation z_b:</p>
+<p>h = S / (S_y · A) + z_b  (water table elevation, <code>piezometric_head</code>)
+  b = h − z_b  (saturated thickness, <code>depth</code>)
+  dS/dt = R · A + Σ Q_links</p>
+<p>where R is the recharge rate per unit area read from <code>recharge.csv</code>. The initial storage is A · (h_initial − z_b) · S_y.</p>
+<p><strong>Flow between cells</strong> (<code>UC_groundwater_link</code>) is Darcy flow through the saturated thickness, with the Dupuit assumption that flow is horizontal and the head is uniform over the vertical:</p>
+<p>Q = c · ½(K_s + K_e) · (h_s − h_e)/L · w · ½(b_s + b_e)</p>
+<p>with L = 50 m the distance between cell centres and w = 100 m the width of the strip. Because the base is flat, (h_s − h_e)·(b_s + b_e)/2 = (h_s² − h_e²)/2, so this is a direct discretization of the Dupuit equation in terms of h². The factor c reduces the flow linearly to zero when the upstream cell's saturated thickness falls within <code>cutoff_depth</code> (0.05 m) of its residual thickness; it equals 1 throughout this run.</p>
+<p><strong>River boundaries</strong> (<code>unconfined_groundwater_to_fixedhead</code>):</p>
+<p>Q = K · (h_cell − H_river)/L · w · b_cell</p>
+<p>with L = 25 m, the distance from the edge cell's centre to the river. Positive Q is discharge from the aquifer to the river.</p>
+<p><strong>Initial condition.</strong> The heads start at the steady state without recharge, h²(x) = h₀² − (h₀² − h_L²)·x/L. Under that profile 9.5 m³/day enters from the west river and leaves through the east river.</p>
+<p><strong>Analytical steady state with recharge.</strong> For a uniform recharge R between fixed heads h₀ at x = 0 and h_L at x = L, the Dupuit-Forchheimer solution is</p>
+<p>h²(x) = h₀² − (h₀² − h_L²)·x/L + (R/K)·x·(L − x)</p>
+<p>With h₀ = 10 m, h_L = 9 m, L = 500 m, K = 5 m/day and R = 0.001 m/day, the mound peaks at the water divide</p>
+<p>x_d = L/2 − K(h₀² − h_L²)/(2RL) = 155 m, with h(x_d) = 10.237 m</p>
+<p>Of the 50 m³/day of recharge, 15.5 m³/day flows west and 34.5 m³/day flows east. The time the aquifer takes to adjust is of the order of S_y·L²/(π²·K·b) ≈ 100 days.</p>
+<h2>What to look for in the results</h2>
+<p><strong>Agreement with the analytical solution.</strong> By day 729, after two years of constant recharge, the model is at steady state. Every cell lies within 6 mm of the Dupuit-Forchheimer parabola:</p>
+<table>
+<thead>
+<tr>
+<th>Cell</th>
+<th>x (m)</th>
+<th>No recharge (m)</th>
+<th>Analytical, with recharge (m)</th>
+<th>Model, day 729 (m)</th>
+<th>Difference (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cell_01</td>
+<td>25</td>
+<td>9.952</td>
+<td>10.071</td>
+<td>10.077</td>
+<td>+5.8</td>
+</tr>
+<tr>
+<td>Cell_02</td>
+<td>75</td>
+<td>9.856</td>
+<td>10.175</td>
+<td>10.180</td>
+<td>+5.4</td>
+</tr>
+<tr>
+<td>Cell_03</td>
+<td>125</td>
+<td>9.760</td>
+<td>10.229</td>
+<td>10.234</td>
+<td>+5.1</td>
+</tr>
+<tr>
+<td>Cell_04</td>
+<td>175</td>
+<td>9.662</td>
+<td>10.234</td>
+<td>10.238</td>
+<td>+4.9</td>
+</tr>
+<tr>
+<td>Cell_05</td>
+<td>225</td>
+<td>9.563</td>
+<td>10.189</td>
+<td>10.194</td>
+<td>+4.6</td>
+</tr>
+<tr>
+<td>Cell_06</td>
+<td>275</td>
+<td>9.463</td>
+<td>10.096</td>
+<td>10.100</td>
+<td>+4.6</td>
+</tr>
+<tr>
+<td>Cell_07</td>
+<td>325</td>
+<td>9.362</td>
+<td>9.951</td>
+<td>9.956</td>
+<td>+4.6</td>
+</tr>
+<tr>
+<td>Cell_08</td>
+<td>375</td>
+<td>9.260</td>
+<td>9.753</td>
+<td>9.758</td>
+<td>+4.6</td>
+</tr>
+<tr>
+<td>Cell_09</td>
+<td>425</td>
+<td>9.157</td>
+<td>9.499</td>
+<td>9.503</td>
+<td>+4.7</td>
+</tr>
+<tr>
+<td>Cell_10</td>
+<td>475</td>
+<td>9.053</td>
+<td>9.183</td>
+<td>9.188</td>
+<td>+4.9</td>
+</tr>
+</tbody>
+</table>
+<p>The "no recharge" column is also the model's initial state, reproduced exactly. The small, nearly uniform excess with recharge comes from the edge cells: recharge falling on the 25 m between a cell centre and the river is lumped at the centre, which raises the head by about R·(Δx/2)²/(2K·b) ≈ 6 mm. Smaller cells reduce it.</p>
+<ul>
+<li><strong>The water divide.</strong> At steady state, Flow_03_04 is −0.48 m³/day (westward) and Flow_04_05 is +4.52 m³/day (eastward), so the divide lies inside Cell_04 (150 to 200 m), consistent with the analytical 155 m.</li>
+<li><strong>A river that switches from losing to gaining.</strong> West_exchange starts at −9.5 m³/day (the west river feeds the aquifer). It crosses zero on day 30 and reaches +15.5 m³/day at steady state, matching the analytical 15.5 m³/day. The east river receives 34.5 m³/day. The two sum to the 50 m³/day of recharge.</li>
+<li><strong>Response time.</strong> More than 85% of the rise happens in the first 200 days, consistent with the ~100 day time scale. After recharge stops at day 730, the mound decays on the same time scale: the west river turns back into a losing river on day 808, and by day 1095 the heads are back within about 20 mm of their starting values.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>Dupuit assumptions: flow is horizontal and the head does not vary with depth. This is accurate when the aquifer is much longer than it is thick (here 500 m against about 10 m), and it is poor close to seepage faces and partially penetrating rivers.</li>
+<li>The aquifer is homogeneous and isotropic with a flat, impermeable base. The flow is one dimensional across a 100 m wide strip, with no flow through the north and south sides.</li>
+<li>The rivers are fixed heads with no streambed resistance. Their stages do not respond to the exchange.</li>
+<li>Recharge is uniform in space and arrives at the water table immediately. There is no unsaturated zone delay and no evapotranspiration from the water table.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 240 3620 366" class="ohq-diagram" style="max-width:1810px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="West_exchange"><title>West_exchange (unconfined_groundwater_to_fixedhead)</title><path d="M300.0 400.0 L250.0 400.0 L200.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_01_02"><title>Flow_01_02 (UC_groundwater_link)</title><path d="M500.0 400.0 L550.0 400.0 L600.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_02_03"><title>Flow_02_03 (UC_groundwater_link)</title><path d="M800.0 400.0 L850.0 400.0 L900.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_03_04"><title>Flow_03_04 (UC_groundwater_link)</title><path d="M1100.0 400.0 L1150.0 400.0 L1200.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_04_05"><title>Flow_04_05 (UC_groundwater_link)</title><path d="M1400.0 400.0 L1450.0 400.0 L1500.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_05_06"><title>Flow_05_06 (UC_groundwater_link)</title><path d="M1700.0 400.0 L1750.0 400.0 L1800.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_06_07"><title>Flow_06_07 (UC_groundwater_link)</title><path d="M2000.0 400.0 L2050.0 400.0 L2100.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_07_08"><title>Flow_07_08 (UC_groundwater_link)</title><path d="M2300.0 400.0 L2350.0 400.0 L2400.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_08_09"><title>Flow_08_09 (UC_groundwater_link)</title><path d="M2600.0 400.0 L2650.0 400.0 L2700.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_09_10"><title>Flow_09_10 (UC_groundwater_link)</title><path d="M2900.0 400.0 L2950.0 400.0 L3000.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="East_exchange"><title>East_exchange (unconfined_groundwater_to_fixedhead)</title><path d="M3200.0 400.0 L3250.0 400.0 L3300.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="River_West"><title>River_West (fixed_head)</title><rect x="0" y="300" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="22" y="322" width="156" height="156"/>
+<text x="100" y="567" font-size="52" text-anchor="middle">River_West</text></g>
+<g class="d-node" data-name="Cell_01"><title>Cell_01 (Unconfined Groundwater cell)</title><rect x="300" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="322" width="156" height="156"/>
+<text x="400" y="567" font-size="52" text-anchor="middle">Cell_01</text></g>
+<g class="d-node" data-name="Cell_02"><title>Cell_02 (Unconfined Groundwater cell)</title><rect x="600" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="622" y="322" width="156" height="156"/>
+<text x="700" y="567" font-size="52" text-anchor="middle">Cell_02</text></g>
+<g class="d-node" data-name="Cell_03"><title>Cell_03 (Unconfined Groundwater cell)</title><rect x="900" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="922" y="322" width="156" height="156"/>
+<text x="1000" y="567" font-size="52" text-anchor="middle">Cell_03</text></g>
+<g class="d-node" data-name="Cell_04"><title>Cell_04 (Unconfined Groundwater cell)</title><rect x="1200" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1222" y="322" width="156" height="156"/>
+<text x="1300" y="567" font-size="52" text-anchor="middle">Cell_04</text></g>
+<g class="d-node" data-name="Cell_05"><title>Cell_05 (Unconfined Groundwater cell)</title><rect x="1500" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1522" y="322" width="156" height="156"/>
+<text x="1600" y="567" font-size="52" text-anchor="middle">Cell_05</text></g>
+<g class="d-node" data-name="Cell_06"><title>Cell_06 (Unconfined Groundwater cell)</title><rect x="1800" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1822" y="322" width="156" height="156"/>
+<text x="1900" y="567" font-size="52" text-anchor="middle">Cell_06</text></g>
+<g class="d-node" data-name="Cell_07"><title>Cell_07 (Unconfined Groundwater cell)</title><rect x="2100" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="2122" y="322" width="156" height="156"/>
+<text x="2200" y="567" font-size="52" text-anchor="middle">Cell_07</text></g>
+<g class="d-node" data-name="Cell_08"><title>Cell_08 (Unconfined Groundwater cell)</title><rect x="2400" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="2422" y="322" width="156" height="156"/>
+<text x="2500" y="567" font-size="52" text-anchor="middle">Cell_08</text></g>
+<g class="d-node" data-name="Cell_09"><title>Cell_09 (Unconfined Groundwater cell)</title><rect x="2700" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="2722" y="322" width="156" height="156"/>
+<text x="2800" y="567" font-size="52" text-anchor="middle">Cell_09</text></g>
+<g class="d-node" data-name="Cell_10"><title>Cell_10 (Unconfined Groundwater cell)</title><rect x="3000" y="300" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="3022" y="322" width="156" height="156"/>
+<text x="3100" y="567" font-size="52" text-anchor="middle">Cell_10</text></g>
+<g class="d-node" data-name="River_East"><title>River_East (fixed_head)</title><rect x="3300" y="300" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="3322" y="322" width="156" height="156"/>
+<text x="3400" y="567" font-size="52" text-anchor="middle">River_East</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>12</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-River-West'><summary><span class='cname'>River_West</span><span class='ctype'>fixed_head</span><span class='crole'><p>A river that fully penetrates the aquifer at x = 0, holding the water table at 10 m above the aquifer base.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Head</td><td class='v'>10.0</td><td>m</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Cell-01'><summary><span class='cname'>10 × Unconfined Groundwater cell</span><span class='ctype'>Unconfined Groundwater cell · unconfined_groundwater</span><span class='crole'><p>Ten aquifer cells (Cell_01 at the west end to Cell_10 at the east end), each 50 m long in the flow direction and 100 m wide (5000 m²). Base at 0 m, hydraulic conductivity 5 m/day, specific yield 0.2. Each receives recharge from <code>recharge.csv</code>. The initial heads are the steady state without recharge.</p></span></summary><div class='cbody'><p class='members'>Cell_01, Cell_02, Cell_03, Cell_04, Cell_05, Cell_06, Cell_07, Cell_08 …</p><p class='muted'>Showing properties of <b>Cell_01</b>.</p><p class=type-help><b>Unconfined Groundwater cell:</b> Unconfined Aquifer Cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cell area</td><td class='v'>5000</td><td>m<sup>2</sup></td><td>Cell area</td></tr><tr><td>Base Elevation</td><td class='v'>0</td><td>m</td><td>Base Elevation</td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>5.0</td><td>m/day</td><td>Hydraulic Conductivity</td></tr><tr><td>Initial Piezometric head</td><td class='v'>9.9524</td><td>m</td><td>Initial Piezometric head; Piezometric head</td></tr><tr><td>Recharge per unit area</td><td class='v'>recharge.csv</td><td>m/day</td><td>Recharge per unit area</td></tr><tr><td>Specific Yield</td><td class='v'>0.2</td><td></td><td>Specific Yield</td></tr></tbody></table></div></details>
+<details class='comp' id='c-River-East'><summary><span class='cname'>River_East</span><span class='ctype'>fixed_head</span><span class='crole'><p>A river at x = 500 m, holding the water table at 9 m.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Head</td><td class='v'>9.0</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>11</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-West-exchange'><summary><span class='cname'>West_exchange</span><span class='ctype'>unconfined_groundwater_to_fixedhead · unconfined_groundwater</span><span class='crole'><p>Flow between Cell_01 and the west river over the 25 m half cell. Positive when groundwater discharges to the river, negative when the river loses water to the aquifer.</p></span></summary><div class='cbody'><p class=type-help><b>unconfined_groundwater_to_fixedhead:</b> Unconfined Groundwater to fixed head</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Length</td><td class='v'>25.0</td><td>m</td><td>Length</td></tr><tr><td>Interface Width</td><td class='v'>100.0</td><td>m</td><td>Interface Width</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Flow-01-02'><summary><span class='cname'>9 × UC_groundwater_link</span><span class='ctype'>UC_groundwater_link · unconfined_groundwater</span><span class='crole'><p>Dupuit flow between neighbouring cells (Flow_01_02 to Flow_09_10), positive from west to east.</p></span></summary><div class='cbody'><p class='members'>Flow_01_02, Flow_02_03, Flow_03_04, Flow_04_05, Flow_05_06, Flow_06_07, Flow_07_08, Flow_08_09 …</p><p class='muted'>Showing properties of <b>Flow_01_02</b>.</p><p class=type-help><b>UC_groundwater_link:</b> Unconfined Aquifer link</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Centroid to centroid length</td><td class='v'>50.0</td><td>m</td><td>Centroid to centroid length</td></tr><tr><td>Width of the connector</td><td class='v'>100.0</td><td>m</td><td>Width of the connector</td></tr></tbody></table></div></details>
+<details class='comp' id='c-East-exchange'><summary><span class='cname'>East_exchange</span><span class='ctype'>unconfined_groundwater_to_fixedhead · unconfined_groundwater</span><span class='crole'><p>Flow between Cell_10 and the east river, with the same sign convention: positive means discharge to the river.</p></span></summary><div class='cbody'><p class=type-help><b>unconfined_groundwater_to_fixedhead:</b> Unconfined Groundwater to fixed head</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Length</td><td class='v'>25.0</td><td>m</td><td>Length</td></tr><tr><td>Interface Width</td><td class='v'>100.0</td><td>m</td><td>Interface Width</td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>recharge.csv</code></td><td><p>Recharge rate per unit area (m/day) versus time (day): 0.001 m/day (1 mm/day, 365 mm/year) for the first 730 days, then zero. Two columns, comma separated, no header.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>1095</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>0.001</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Water table elevation' loading='lazy'><figcaption><b>Water table elevation</b> The water table rises towards a new steady state over roughly a year, holds it while recharge continues, and recedes once recharge stops at day 730. Cell_04 ends up higher than Cell_01, next to the higher river.</figcaption></figure><figure><img src='plot_2.png' alt='Exchange with the rivers and flow across the divide' loading='lazy'><figcaption><b>Exchange with the rivers and flow across the divide</b> The west river switches from losing to gaining on day 30 and back on day 808. The flow between Cell_03 and Cell_04 changes sign as the water divide forms between them.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/unconfined-aquifer-1d">View source on GitHub</a>.</div></footer>
+</body></html>

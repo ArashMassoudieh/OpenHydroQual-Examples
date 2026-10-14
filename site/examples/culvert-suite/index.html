@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Culvert Verification Suite · OpenHydroQual Examples</title>
+<meta name="description" content="A road culvert between two channel reaches, hit by an extreme storm that overtops the road. Ten companion models cover inlet and outlet control, submergence, rising tailwater, box barrels, reverse flow and tracer transport.">
+<meta name="keywords" content="culvert, road crossing, inlet control, outlet control, hds-5, fhwa, headwater, tailwater, hw/d, roadway overtopping, broad-crested weir, submerged inlet, surcharge, preissmann slot, box culvert, multi-barrel, reverse flow, entrance loss, exit loss, verification">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#6a55c2">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Hydraulic Structures</div>
+<h1>Culvert Verification Suite</h1>
+<p class="lede">A road culvert between two channel reaches, hit by an extreme storm that overtops the road. Ten companion models cover inlet and outlet control, submergence, rising tailwater, box barrels, reverse flow and tracer transport.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=culvert'>culvert</a><a class='plug' href='../../?plugin=open_channel'>open_channel</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/culvert-suite.zip" download>Download model (.zip)</a>
+    <div class="muted">30 KB · 19 files · open <code>T4_roadway_overtopping.ohq</code> in OpenHydroQual and press Run</div>
+    <a class='btn ghost' href='../../docs/culvert_model.pdf' target='_blank' rel='noopener'>Technical guide (PDF)</a>
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A road crosses a small stream on an embankment, and the stream passes under the road through a single 1.0 m concrete pipe culvert. Every culvert analysis asks the same questions: for a given flood, how high does the water rise upstream (the headwater), which part of the structure limits the flow, and does the road overtop?</p>
+<p>The main model (<code>T4_roadway_overtopping.ohq</code>) answers these for an extreme storm with a 9 m³/s peak, about three times the pipe's capacity. The download also contains ten smaller companion models, T1 to T11, each of which isolates one culvert behavior. Together they form the verification set for the culvert components. They are listed in the table below and documented in the technical guide (PDF).</p>
+<h2>How it works</h2>
+<p>The crossing is built from three objects in series, plus a road link in parallel:</p>
+<p>US_Channel → <strong>Inlet</strong> → <strong>Barrel</strong> → <strong>Outlet</strong> → DS_Channel → Tailwater → Outfall
+  US_Channel → <strong>Road</strong> → DS_Channel</p>
+<p><strong>Channel reaches.</strong> Each trapezoidal reach is one storage cell. Its depth follows from storage S, length L, base width b and side slope z:</p>
+<p>d = (−b + √(b² + 4·z·S/L)) / (2·z),  head h = z_bed + d</p>
+<p><strong>Barrel.</strong> The barrel is also a storage cell. The wetted fraction u = S/S_full, with S_full = N·L·πD²/4, gives the depth through a polynomial fit to the circular section. Once the barrel runs full, extra volume is stored in a narrow virtual slot above the crown (a Preissmann slot of width σ·D, σ = <code>slot_width_ratio</code> = 0.05), which converts pressure head into a stage:</p>
+<p>h = (z_inlet + z_outlet)/2 + d(u) + max(S − S_full, 0) / (N·L·σ·D)</p>
+<p>The barrel friction loss coefficient is f = 2g·n²·L / R^(4/3), with R the hydraulic radius of the wetted section.</p>
+<p><strong>Inlet link (inlet control).</strong> HDS-5 expresses inlet control through the discharge parameter q* = K_u·Q / (A·D^0.5), with K_u = 1.811 in SI units. With HW the headwater depth above the inlet invert and S₀ the barrel slope:</p>
+<ul>
+<li>Unsubmerged (Form 1): HW/D = H_c/D + K·q*^M − 0.5·S₀, where H_c is the specific head at critical depth. The link solves it for q* with four fixed-point iterations through the critical-flow function of the circular section.</li>
+<li>Submerged: HW/D = c·q<em>² + Y − 0.5·S₀, so q</em> = √((HW/D − Y + 0.5·S₀)/c).</li>
+<li>The two forms are blended by a weight that ramps from 0 to 1 as the submerged q* goes from 3.5 to 4.0, which bridges the gap HDS-5 leaves between them.</li>
+</ul>
+<p>The inlet link then passes</p>
+<p>Q = min(Q_inlet, |Q_entrance|) · sign(Q_entrance),  Q_inlet = N·q*·A·D^0.5 / K_u,  Q_entrance = N·A·√(2g·Δh / k_e)</p>
+<p>where Δh is the head difference between the upstream reach and the barrel (each floored at the inlet invert) and A is the full barrel area. Here K = 0.0098, M = 2.0, c = 0.0398, Y = 0.67 (HDS-5 Table A.1, circular concrete, square edge with headwall) and k_e = 0.5.</p>
+<p><strong>Outlet link (outlet control).</strong> Between the barrel and the downstream reach:</p>
+<p>Q = A·√(2g·(h_barrel − TW) / (k_x + f))</p>
+<p>with k_x = 1.0. When the barrel is deep (barrel head above the outlet invert between 0.75·D and 1.8·D), the tailwater TW is progressively raised to at least the HDS-5 grade line z_outlet + (d_c + D)/2, where d_c is the critical depth at the current flow. This represents outlet control with a low tailwater.</p>
+<p>Because the entrance loss (k_e) and the barrel and exit losses (k_x + f) sit on two links with the barrel storage between them, the steady-state result equals the single HDS-5 outlet-control equation HW = TW + (k_e + k_x + f)·V²/2g.</p>
+<p><strong>Road link.</strong> Flow over the embankment is a broad-crested weir:</p>
+<p>Q_road = k_t·C_r·B·[max(h_up − z_crest, 0)^1.5 − max(h_down − z_crest, 0)^1.5]</p>
+<p>with C_r = 1.7 (SI), B = 12 m, z_crest = 2.3 m and k_t = 1 (no submergence correction).</p>
+<p><strong>Sign convention.</strong> All links are positive from upstream to downstream. Negative values mean reverse flow, which T6 exercises.</p>
+<p><strong>Units.</strong> Flows in the model and in the output are in m³/day (1 m³/s = 86,400 m³/day), lengths in m, time in days.</p>
+<h3>The test cases</h3>
+<p>Every case except T7 and T10 uses the same reaches, barrel and links as the main model, without the road link. The results below come from running each model with the current OpenHydroQual release. "Closure" is the volume balance over the structure (inflow − outflow − change in storage) as a fraction of the inflow volume.</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Model file</th>
+<th>Condition</th>
+<th>What it verifies</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td><code>T1_inlet_control.ohq</code></td>
+<td>0.8 m³/s storm, free outfall</td>
+<td>Unsubmerged inlet control (HDS-5 Form 1)</td>
+<td>HW/D peaks at 0.75; the submerged weight stays 0; inlet control governs throughout</td>
+</tr>
+<tr>
+<td>T2</td>
+<td><code>T2_submerged_inlet.ohq</code></td>
+<td>3.2 m³/s storm</td>
+<td>Submerged inlet, barrel surcharge through the slot</td>
+<td>HW/D 2.78, q* 7.3; the barrel surcharges about 1.0 m above the crown</td>
+</tr>
+<tr>
+<td>T3</td>
+<td><code>T3_outlet_control_tailwater.ohq</code></td>
+<td>0.8 m³/s storm, outfall level rising to 1.9 m</td>
+<td>Switch from inlet to outlet control as the tailwater drowns the outlet</td>
+<td>Inlet control governs about 60% of the time, outlet control the rest</td>
+</tr>
+<tr>
+<td>T4</td>
+<td><code>T4_roadway_overtopping.ohq</code> (main)</td>
+<td>9.0 m³/s storm, road crest 2.3 m</td>
+<td>Roadway overtopping in parallel with a surcharged culvert</td>
+<td>0.46 m over the crest, 6.3 m³/s over the road, 51% of the storm volume</td>
+</tr>
+<tr>
+<td>T5</td>
+<td><code>T5_box_multibarrel.ohq</code></td>
+<td>9.0 m³/s storm, three 1.5 m × 1.2 m box cells</td>
+<td>Box section, multiple barrels, box inlet coefficients (K = 0.026, M = 1.0, c = 0.0347, Y = 0.81)</td>
+<td>Carries the full 9.0 m³/s with HW/rise 0.99</td>
+</tr>
+<tr>
+<td>T6</td>
+<td><code>T6_reverse_flow.ohq</code></td>
+<td>Small storm, then an outfall surge to 2.55 m</td>
+<td>Flow reversal through the outlet and inlet</td>
+<td>Flow reverses to −0.093 m³/s; the barrel surcharges 1.15 m</td>
+</tr>
+<tr>
+<td>T7</td>
+<td><code>T7_lumped_vs_routed.ohq</code></td>
+<td>3.2 m³/s storm, two independent crossings</td>
+<td>Single-link <code>Circular Culvert</code> versus the storage-routed barrel</td>
+<td>Peak flows and volumes agree to better than 0.01%</td>
+</tr>
+<tr>
+<td>T8</td>
+<td><code>T8_dry_to_dry.ohq</code></td>
+<td>1.2 m³/s square pulse, 3 days</td>
+<td>Wetting from dry and full drain-down</td>
+<td>Returns to dry with no negative storage; closure 0.002%</td>
+</tr>
+<tr>
+<td>T9</td>
+<td><code>T9_steep_slope.ohq</code></td>
+<td>0.8 m³/s storm, 5% barrel slope</td>
+<td>Steep barrel, strong inlet control</td>
+<td>Inlet control throughout; barrel depth never above 43% of the diameter</td>
+</tr>
+<tr>
+<td>T10</td>
+<td><code>T10_water_quality.ohq</code></td>
+<td>0.8 m³/s storm with a 50 g/m³ tracer pulse</td>
+<td>Constituent transport through the inlet, barrel and outlet</td>
+<td>Peak concentration 50.0 g/m³ upstream and in the barrel, 49.6 g/m³ downstream</td>
+</tr>
+<tr>
+<td>T11</td>
+<td><code>T11_outlet_control_hgl.ohq</code></td>
+<td>3.2 m³/s storm, 60 m corrugated barrel (n = 0.024) on a 0.17% slope</td>
+<td>The (d_c + D)/2 grade line rule</td>
+<td>Rule active on 57% of flowing steps; the effective tailwater rises from 0.52 m to 1.37 m</td>
+</tr>
+</tbody>
+</table>
+<p>Volume closure is better than 0.02% for every case except T6 (0.26%), where a sharp surge arrives against a nearly empty barrel. All models cap the solver time step at 0.0025 day (3.6 minutes) through <code>max_timestep_increase_factor</code>. With the default cap of 0.025 day the steps are too coarse to follow the boundary time series, and the volume balance of T3 degrades to about 1.8%.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>The inlet caps the culvert flow.</strong> The culvert flow levels off near 2.7 m³/s while the inflow keeps rising to 9 m³/s. At the peak, HW/D = 2.26 and the submerged inlet equation gives q* = √((2.26 − 0.67 + 0.005)/0.0398) = 6.3, so Q = 6.3 × 0.785 m² × (1 m)^0.5 / 1.811 = 2.74 m³/s, which matches the output.</li>
+<li><strong>Overtopping from t = 0.33 to 0.68 day.</strong> At the peak the headwater is 2.76 m, 0.46 m above the crest, and the weir carries 1.7 × 12 × 0.456^1.5 = 6.28 m³/s. Over the event, 51% of the volume crosses the road.</li>
+<li><strong>The road limits the headwater.</strong> Although the inflow is three times the pipe capacity, the headwater rises only 0.46 m above the crest, because weir capacity grows with the 1.5 power of head.</li>
+<li><strong>Surcharge.</strong> The barrel stage rises above its crown (mean invert 0.4 m plus 1.0 m) by up to 0.72 m, through the Preissmann slot.</li>
+<li><strong>Inlet control throughout.</strong> The downstream reach stays below 1.24 m, so the outlet never limits the flow. The regime plot shows the switch to the submerged inlet form and back.</li>
+<li><strong>Little attenuation.</strong> The two reaches store only a few hundred cubic meters, so the outflow hydrograph closely follows the inflow.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>Each reach and the barrel are single storage cells. There is no water-surface profile in the barrel (no M1, M2 or S2 curves, no hydraulic jump), and on steep slopes the barrel depth comes from its volume, not from normal depth.</li>
+<li>The fit for the wetted perimeter of a circular barrel is about 5% low at full flow, which raises the friction-controlled capacity by about 3%. Inlet control is not affected.</li>
+<li>The (d_c + D)/2 rule is ramped in between 0.75 and 1.8 barrel rises, a wider band than HDS-5 implies, for numerical robustness.</li>
+<li>The Preissmann slot is a numerical device. It slightly inflates stored volume once the barrel surcharges.</li>
+<li>The roadway weir uses a constant coefficient and no tailwater submergence correction (k_t = 1). In T4 the downstream reach never reaches the crest, so this has no effect here.</li>
+<li>The downstream boundary is a fixed level. A real downstream channel would raise its stage with flow, which pushes a culvert toward outlet control (as T3 shows).</li>
+<li>All hydrographs are synthetic.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1220 666" class="ohq-diagram" style="max-width:610px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Inlet"><title>Inlet (Channel_to_culvert (Circular))</title><path d="M200.0 200.0 L250.0 250.0 L300.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outlet"><title>Outlet (Culvert_to_channel (Circular))</title><path d="M500.0 300.0 L550.0 250.0 L600.0 200.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Tailwater"><title>Tailwater (channel2fixed)</title><path d="M800.0 100.0 L850.0 100.0 L900.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Road"><title>Road (Roadway_Overtopping)</title><path d="M200.0 100.0 L400.0 100.0 L600.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="US_Channel"><title>US_Channel (Trapezoidal Channel Segment)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="223" font-size="17" text-anchor="middle">US_Channel</text></g>
+<g class="d-node" data-name="Barrel"><title>Barrel (Culvert Barrel (Circular))</title><rect x="300" y="300" width="200" height="200" rx="16"/>
+<image href="icons/culvert_circular.png" x="322" y="322" width="156" height="156"/>
+<text x="400" y="523" font-size="17" text-anchor="middle">Barrel</text></g>
+<g class="d-node" data-name="DS_Channel"><title>DS_Channel (Trapezoidal Channel Segment)</title><rect x="600" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="622" y="22" width="156" height="156"/>
+<text x="700" y="223" font-size="17" text-anchor="middle">DS_Channel</text></g>
+<g class="d-node" data-name="Outfall"><title>Outfall (fixed_head)</title><rect x="900" y="0" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="922" y="22" width="156" height="156"/>
+<text x="1000" y="223" font-size="17" text-anchor="middle">Outfall</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>4</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-US-Channel'><summary><span class='cname'>US_Channel</span><span class='ctype'>Trapezoidal Channel Segment · open_channel</span><span class='crole'><p>Upstream (headwater) channel reach, 100 m long, trapezoidal with a 3 m base width, side slopes of 2 horizontal to 1 vertical, Manning n = 0.035 and bed at 0.5 m. The storm hydrograph enters here. Its water level is the culvert headwater.</p></span></summary><div class='cbody'><p class=type-help><b>Trapezoidal Channel Segment:</b> Trapezoidal Channel Segment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Base Width</td><td class='v'>3</td><td>m</td><td>The width of the bottom (flat) portion of the trapezoidal channel cross-section.</td></tr><tr><td>Side Slope</td><td class='v'>2</td><td></td><td>The horizontal to vertical ratio of the sloped sides (e.g., 2 means 2 horizontal to 1 vertical).</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.035</td><td></td><td>Roughness coefficient used in Manning&#x27;s equation to estimate flow resistance.</td></tr><tr><td>Bottom Elevation</td><td class='v'>0.5</td><td>m</td><td>Elevation of the channel bottom relative to the model’s vertical datum.</td></tr><tr><td>Segment length</td><td class='v'>100</td><td>m</td><td></td></tr><tr><td>Initial Water Depth</td><td class='v'>0.05</td><td>m</td><td>Depth of water in the channel segment. If depth is initially unknown, it is estimated based on storage.</td></tr><tr><td>Inflow time series</td><td class='v'>inflow_extreme.csv</td><td>m^3/day</td><td></td></tr><tr><td>Inflow multiplier</td><td class='v'>1</td><td></td><td>Scales the inflow time series (for example an uncertain lateral inflow estimate). 1 uses the series as given.</td></tr><tr><td>Obstacle height</td><td class='v'>0</td><td>m</td><td>The water depth below which the flow ceases</td></tr><tr><td>Area of agriculural land</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Area of non-agriculural activity</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Barrel'><summary><span class='cname'>Barrel</span><span class='ctype'>Culvert Barrel (Circular) · culvert</span><span class='crole'><p>One circular concrete pipe, 1.0 m diameter and 20 m long, inverts at 0.5 m (inlet) and 0.3 m (outlet), n = 0.013. A storage block, so it can fill, run full and surcharge.</p></span></summary><div class='cbody'><p class=type-help><b>Culvert Barrel (Circular):</b> Storage-routed circular culvert barrel placed between two open channel segments</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Number of barrels</td><td class='v'>1</td><td></td><td>Number of identical barrels installed side by side. Storage, flow area and capacity all scale with this number.</td></tr><tr><td>Barrel diameter</td><td class='v'>1.0</td><td>m</td><td>Internal diameter of a single barrel.</td></tr><tr><td>Barrel length</td><td class='v'>20</td><td>m</td><td>Length of the barrel along its axis. Sets the barrel storage volume and the friction loss.</td></tr><tr><td>Inlet invert elevation</td><td class='v'>0.5</td><td>m</td><td>Elevation of the barrel invert at the upstream face, on the same vertical datum as the connected channel segments.</td></tr><tr><td>Outlet invert elevation</td><td class='v'>0.3</td><td>m</td><td>Elevation of the barrel invert at the downstream face, on the same vertical datum as the connected channel segments.</td></tr><tr><td>Manning&#x27;s roughness coefficient</td><td class='v'>0.013</td><td></td><td>Barrel roughness. Typical values: 0.012-0.013 concrete, 0.024 corrugated metal.</td></tr><tr><td>Effective inlet crest width factor</td><td class='v'>0.65</td><td></td><td>Fraction of the diameter used as the effective crest width in the unsubmerged inlet-control rating of the attached inlet link. The default of 0.65 reproduces the HDS-5 unsubmerged inlet-control curve for a square-edged circular pipe to within about 10 percent over 0&lt;HW/D&lt;1.</td></tr><tr><td>Preissmann slot width ratio</td><td class='v'>0.05</td><td></td><td>Width of the virtual slot above the barrel crown, as a fraction of the diameter. The slot converts surcharged (pressurized) flow into an equivalent free-surface stage so the barrel can build head above its crown. Smaller values are more physically accurate but stiffer to solve.</td></tr><tr><td>Initial Water Depth</td><td class='v'>0</td><td>m</td><td>Water depth in the barrel measured above the reference invert. Supplied as an initial condition; thereafter it is recovered from the barrel storage by inverting the circular area-depth relation (accurate to about 0.5 percent of the diameter).</td></tr></tbody></table></div></details>
+<details class='comp' id='c-DS-Channel'><summary><span class='cname'>DS_Channel</span><span class='ctype'>Trapezoidal Channel Segment · open_channel</span><span class='crole'><p>Downstream (tailwater) channel reach, same cross-section as the upstream reach, bed at 0.3 m.</p></span></summary><div class='cbody'><p class=type-help><b>Trapezoidal Channel Segment:</b> Trapezoidal Channel Segment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Base Width</td><td class='v'>3</td><td>m</td><td>The width of the bottom (flat) portion of the trapezoidal channel cross-section.</td></tr><tr><td>Side Slope</td><td class='v'>2</td><td></td><td>The horizontal to vertical ratio of the sloped sides (e.g., 2 means 2 horizontal to 1 vertical).</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.035</td><td></td><td>Roughness coefficient used in Manning&#x27;s equation to estimate flow resistance.</td></tr><tr><td>Bottom Elevation</td><td class='v'>0.3</td><td>m</td><td>Elevation of the channel bottom relative to the model’s vertical datum.</td></tr><tr><td>Segment length</td><td class='v'>100</td><td>m</td><td></td></tr><tr><td>Initial Water Depth</td><td class='v'>0.05</td><td>m</td><td>Depth of water in the channel segment. If depth is initially unknown, it is estimated based on storage.</td></tr><tr><td>Inflow multiplier</td><td class='v'>1</td><td></td><td>Scales the inflow time series (for example an uncertain lateral inflow estimate). 1 uses the series as given.</td></tr><tr><td>Obstacle height</td><td class='v'>0</td><td>m</td><td>The water depth below which the flow ceases</td></tr><tr><td>Area of agriculural land</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Area of non-agriculural activity</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Outfall'><summary><span class='cname'>Outfall</span><span class='ctype'>fixed_head</span><span class='crole'><p>Fixed water level of 0.35 m at the end of the downstream reach, 5 cm above its bed, so in practice a free outfall.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>0.35</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>4</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Inlet'><summary><span class='cname'>Inlet</span><span class='ctype'>Channel_to_culvert (Circular) · culvert</span><span class='crole'><p>Entrance of the culvert. Passes the smaller of the HDS-5 inlet-control capacity and the entrance-loss limited flow (k_e = 0.5). Coefficients are for a circular concrete pipe, square edge with headwall.</p></span></summary><div class='cbody'><p class=type-help><b>Channel_to_culvert (Circular):</b> Inlet transition from an open channel segment to a circular culvert barrel (HDS-5 inlet control plus entrance loss)</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Entrance loss coefficient</td><td class='v'>0.5</td><td></td><td>Head loss coefficient at the culvert entrance (HDS-5 ke). Typical values: 0.2 grooved end or bevelled edge with headwall, 0.5 square edge with headwall, 0.9 projecting corrugated pipe.</td></tr><tr><td>HDS-5 inlet control K</td><td class='v'>0.0098</td><td></td><td>Coefficient K from HDS-5 Table A.1 (Constants for Inlet Control Design Equations), for the specific barrel shape, material and inlet edge configuration. The default corresponds to circular concrete pipe, square edge with headwall (Chart 1, scale 1). VERIFY this value against Table A.1 for your inlet before using the result in a design submittal.</td></tr><tr><td>HDS-5 inlet control M</td><td class='v'>2.0</td><td></td><td>Exponent M from HDS-5 Table A.1, paired with K for the same inlet configuration.</td></tr><tr><td>HDS-5 inlet control c</td><td class='v'>0.0398</td><td></td><td>Coefficient c from HDS-5 Table A.1, used by the submerged inlet-control equation.</td></tr><tr><td>HDS-5 inlet control Y</td><td class='v'>0.67</td><td></td><td>Coefficient Y from HDS-5 Table A.1, paired with c for the same inlet configuration.</td></tr><tr><td>Unsubmerged equation form (1 = Form 1, 0 = Form 2)</td><td class='v'>1</td><td></td><td>Set to 1 when HDS-5 Table A.1 lists the inlet as equation Form (1), which adds the specific head at critical depth to the headwater. Set to 0 for Form (2). Most circular and box entries in Table A.1 are Form (1).</td></tr><tr><td>Barrel slope correction coefficient</td><td class='v'>0.5</td><td></td><td>Coefficient of the barrel slope term in the HDS-5 inlet-control equations. HDS-5 applies -0.5S for all inlets except mitered inlets, which use +0.7S; enter 0.5 for the normal case and -0.7 for a mitered inlet.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Outlet'><summary><span class='cname'>Outlet</span><span class='ctype'>Culvert_to_channel (Circular) · culvert</span><span class='crole'><p>Exit of the culvert. Barrel friction plus exit loss (k_x = 1.0), with the HDS-5 (d_c + D)/2 tailwater rule applied when the barrel is deep.</p></span></summary><div class='cbody'><p class=type-help><b>Culvert_to_channel (Circular):</b> Outlet transition from a circular culvert barrel to an open channel segment (barrel friction, exit loss, and the HDS-5 (dc+D)/2 hydraulic grade line rule)</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Exit loss coefficient</td><td class='v'>1.0</td><td></td><td>Head loss coefficient at the culvert exit. A value of 1.0 represents full loss of the barrel velocity head into the receiving channel; use a smaller value when the outlet is well transitioned into a channel of similar section.</td></tr><tr><td>Lower limit of the (dc+D)/2 rule, as a headwater ratio</td><td class='v'>0.75</td><td></td><td>Barrel headwater ratio (head above the outlet invert divided by the barrel rise) below which the HDS-5 (dc+D)/2 hydraulic grade line rule is not applied at all. HDS-5 Section 3.2.2 states the approximate method should not be used if the inlet is unsubmerged and gives adequate results only down to a headwater of 0.75D, which is this default.</td></tr><tr><td>Upper limit of the (dc+D)/2 rule, as a headwater ratio</td><td class='v'>1.8</td><td></td><td>Barrel headwater ratio at which the (dc+D)/2 rule is applied in full; between the two limits it is ramped in linearly. HDS-5 treats the rule as fully applicable above about 1.2D, but applying it that abruptly makes the outlet rating curve non-monotonic and admits up to three simultaneous steady states, because the grade line rises faster than the driving head. A band of at least 1.05 in headwater ratio is needed to keep the rating single-valued; 1.8 is that minimum with margin.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Tailwater'><summary><span class='cname'>Tailwater</span><span class='ctype'>channel2fixed · open_channel</span><span class='crole'><p>Manning flow from the downstream reach to the outfall level.</p></span></summary><div class='cbody'><p class=type-help><b>channel2fixed:</b> Link from a channel segment to fixed head boundary</p></div></details>
+<details class='comp' id='c-Road'><summary><span class='cname'>Road</span><span class='ctype'>Roadway_Overtopping · culvert</span><span class='crole'><p>The road embankment over the culvert, crest at 2.3 m and 12 m long, acting as a broad-crested weir from the upstream to the downstream reach.</p></span></summary><div class='cbody'><p class=type-help><b>Roadway_Overtopping:</b> Weir flow over the roadway embankment, connecting the upstream and downstream channel segments directly</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Road crest elevation</td><td class='v'>2.3</td><td>m</td><td>Elevation of the low point of the roadway over the culvert. No flow occurs until the water surface rises above this elevation.</td></tr><tr><td>Overtopping width</td><td class='v'>12</td><td>m</td><td>Crest length of the roadway acting as a weir, measured perpendicular to the flow direction.</td></tr><tr><td>Roadway weir coefficient</td><td class='v'>1.7</td><td></td><td>Free-flow roadway discharge coefficient Cr in HDS-5 Equation 3.9, Qo = Cd*L*HWr^1.5. HDS-5 gives Cr graphically in Figure 3.11A (deep overtopping) and 3.11B (shallow), and notes Cd(SI) = 0.552*Cd(English); the default of 1.7 corresponds to the deep-overtopping value of about 3.1 in US units.</td></tr><tr><td>Roadway submergence correction factor kt</td><td class='v'>1</td><td></td><td>Correction factor kt for downstream submergence of the roadway crest, read from HDS-5 Figure 3.11C. It is 1.0 for a free overfall and falls towards zero as the tailwater encroaches on the crest. HDS-5 gives it as a graph, so it is entered rather than computed; check road_submergence_ratio in the results to see whether it matters for your event.</td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>inflow_extreme.csv</code></td><td><p>Inflow to the upstream reach of the main model (T4): a Gaussian storm peaking at 9.0 m³/s at t = 0.5 day on a 0.02 m³/s base flow. Time in days, flow in m³/day, every 0.005 day. Synthetic. Also used by T5.</p></td></tr><tr><td><code>T1_inlet_control.ohq</code></td><td><p>Companion model T1 (see the table of test cases).</p></td></tr><tr><td><code>T2_submerged_inlet.ohq</code></td><td><p>Companion model T2.</p></td></tr><tr><td><code>T3_outlet_control_tailwater.ohq</code></td><td><p>Companion model T3.</p></td></tr><tr><td><code>T5_box_multibarrel.ohq</code></td><td><p>Companion model T5.</p></td></tr><tr><td><code>T6_reverse_flow.ohq</code></td><td><p>Companion model T6.</p></td></tr><tr><td><code>T7_lumped_vs_routed.ohq</code></td><td><p>Companion model T7.</p></td></tr><tr><td><code>T8_dry_to_dry.ohq</code></td><td><p>Companion model T8.</p></td></tr><tr><td><code>T9_steep_slope.ohq</code></td><td><p>Companion model T9.</p></td></tr><tr><td><code>T10_water_quality.ohq</code></td><td><p>Companion model T10.</p></td></tr><tr><td><code>T11_outlet_control_hgl.ohq</code></td><td><p>Companion model T11.</p></td></tr><tr><td><code>inflow_moderate.csv</code></td><td><p>Same shape, 0.8 m³/s peak (T1, T3, T9, T10). Time in days, flow in m³/day.</p></td></tr><tr><td><code>inflow_large.csv</code></td><td><p>Same shape, 3.2 m³/s peak (T2, T7, T11). Time in days, flow in m³/day.</p></td></tr><tr><td><code>inflow_small.csv</code></td><td><p>Small storm, 0.1 m³/s peak at t = 0.3 day on a 0.01 m³/s base flow (T6). Time in days, flow in m³/day.</p></td></tr><tr><td><code>inflow_pulse.csv</code></td><td><p>Square pulse of 1.2 m³/s from t = 0.2 to 0.5 day, zero otherwise (T8). Time in days, flow in m³/day.</p></td></tr><tr><td><code>tailwater_rise.csv</code></td><td><p>Outfall water level (m) rising from 0.35 m to 1.90 m and back, peak at t = 0.55 day (T3). Time in days.</p></td></tr><tr><td><code>surge.csv</code></td><td><p>Outfall water level (m) with a sharp surge from 0.35 m to 2.55 m at t = 1.0 day (T6). Time in days.</p></td></tr><tr><td><code>tracer_in.csv</code></td><td><p>Tracer concentration in the upstream inflow (g/m³), 50 g/m³ from t = 0.30 to 0.45 day, zero otherwise (T10). Time in days.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>2</td></tr><tr><td>Initial time step</td><td class='v'>0.0005</td></tr><tr><td>Write interval (steps)</td><td class='v'>20</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>0.001</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Where the flood goes' loading='lazy'><figcaption><b>Where the flood goes</b> The culvert caps at about 2.7 m³/s (237,000 m³/day). Above that the road overtops and carries 6.3 m³/s at the peak, about half of the storm volume.</figcaption></figure><figure><img src='plot_2.png' alt='Water levels' loading='lazy'><figcaption><b>Water levels</b> The headwater rises to 2.76 m, 0.46 m above the 2.3 m road crest. The barrel surcharges by up to 0.72 m above its crown. The tailwater stays low, so the culvert stays in inlet control.</figcaption></figure><figure><img src='plot_3.png' alt='Inlet regime' loading='lazy'><figcaption><b>Inlet regime</b> The inlet moves from the unsubmerged to the submerged HDS-5 equation (weight 0 to 1) as HW/D passes 1.15 to 1.30, and back on the falling limb.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/culvert-suite">View source on GitHub</a>.</div></footer>
+</body></html>

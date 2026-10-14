@@ -1,0 +1,32 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = Pond_Plugin.json
+addtemplate; filename = mass_transfer.json
+create constituent;type=Constituent,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],diffusion_coefficient=0[m~^2/s],dispersivity=0[m],external_mass_flow_timeseries=,external_source=,name=PCB,stoichiometric_constant=0,time_variable_inflow_concentration=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1.05,base_value=0.45,name=k_d,reference_temperature=20,temperature=pond_temperature.csv
+create reaction;type=Reaction,PCB:stoichiometric_constant=-1,name=Decay,rate_expression=(k_d*PCB)
+create block;type=Pond,Evapotranspiration=,PCB:concentration=0[g/m~^3],PCB:constant_inflow_concentration=5[g/m~^3],PCB:external_mass_flow_timeseries=,PCB:external_source=,PCB:time_variable_inflow_concentration=,Precipitation=,Storage=10101.9[m~^3],_height=200,_width=200,alpha=7000,beta=2.2,bottom_elevation=0[m],inflow=pond_inflow.csv,name=Pond,x=300,y=300
+create block;type=Reactor,PCB:concentration=0[g/m~^3],PCB:constant_inflow_concentration=0[g/m~^3],PCB:external_mass_flow_timeseries=,PCB:external_source=,PCB:time_variable_inflow_concentration=,Storage=1000000[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Withdrawal_Sink,time_variable_inflow=,x=700,y=550
+create block;type=Reactor,PCB:concentration=0[g/m~^3],PCB:constant_inflow_concentration=0[g/m~^3],PCB:external_mass_flow_timeseries=,PCB:external_source=,PCB:time_variable_inflow_concentration=,Storage=1000000[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Downstream,time_variable_inflow=,x=700,y=50
+create link;from=Pond,to=Withdrawal_Sink,type=Fixed flow,flow=3000[m~^3/day],name=Withdrawal
+create link;from=Pond,to=Downstream,type=wier,alpha=400000,beta=1.5,crest_elevation=1.35[m],name=Weir
+create observation;type=Observation,name=pond_depth,object=Pond,expression=depth,error_structure=normal,error_standard_deviation=0.005,observed_data=pond_obs_depth.csv
+create observation;type=Observation,name=weir_outflow,object=Weir,expression=flow,error_structure=log-normal,error_standard_deviation=0.05,observed_data=pond_obs_weir_flow.csv
+create observation;type=Observation,name=PCB_conc,object=Pond,expression=PCB:concentration,error_structure=log-normal,error_standard_deviation=0.05,observed_data=pond_obs_PCB.csv
+create parameter;type=Parameter,name=weir_alpha,low=50000,high=5e+06,value=794880,prior_distribution=log-normal
+setasparameter; object=Weir, quantity=alpha, parametername=weir_alpha
+create parameter;type=Parameter,name=crest_elev,low=1,high=2,value=1.5,prior_distribution=normal
+setasparameter; object=Weir, quantity=crest_elevation, parametername=crest_elev
+create parameter;type=Parameter,name=pond_alpha,low=500,high=40000,value=4140,prior_distribution=log-normal
+setasparameter; object=Pond, quantity=alpha, parametername=pond_alpha
+create parameter;type=Parameter,name=p_k_d,low=0.05,high=20,value=1.2,prior_distribution=log-normal
+setasparameter; object=k_d, quantity=base_value, parametername=p_k_d
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=observed_outputfile, value=observedoutput.txt
+setvalue; object=system, quantity=simulation_end_time, value=365
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=nr_tolerance, value=0.001
+setvalue; object=system, quantity=write_interval, value=100
+setvalue; object=LM, quantity=max_iterations, value=40
+setvalue; object=LM, quantity=lm_numthreads, value=4

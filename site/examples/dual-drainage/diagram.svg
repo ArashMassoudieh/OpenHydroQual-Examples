@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1570 766" class="ohq-diagram" style="max-width:785px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Pervious_outlet"><title>Pervious_outlet (Reach_link)</title><path d="M260.0 238.1 L355.0 192.9 L450.0 147.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Impervious_outlet"><title>Impervious_outlet (Impervious_Reach_link)</title><path d="M267.7 254.3 L362.7 209.1 L457.7 163.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Baseflow"><title>Baseflow (unconfined_groundwater_to_stream)</title><path d="M260.0 300.0 L555.0 300.0 L850.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Inlets"><title>Inlets (Swale_to_pipe_inlet)</title><path d="M550.0 200.0 L550.0 300.0 L550.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outfall"><title>Outfall (Pipe_outfall_link)</title><path d="M650.0 450.0 L750.0 400.0 L850.0 350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Overland_overflow"><title>Overland_overflow (Compound_Channel_link)</title><path d="M650.0 150.0 L750.0 200.0 L850.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Stream_outlet"><title>Stream_outlet (channel2fixed)</title><path d="M1050.0 300.0 L1150.0 300.0 L1250.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-node composite" data-name="Neighbourhood"><title>Neighbourhood (Urban_HRU)</title><rect x="0" y="170" width="260" height="260" rx="21"/>
+<image href="icons/urban_hru.png" x="29" y="199" width="203" height="203"/>
+<text x="130" y="459" font-size="22" text-anchor="middle">Neighbourhood</text></g>
+<g class="d-node" data-name="Street"><title>Street (Compound Channel Segment)</title><rect x="450" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Compound_Channel.png" x="472" y="22" width="156" height="156"/>
+<text x="550" y="229" font-size="22" text-anchor="middle">Street</text></g>
+<g class="d-node" data-name="Storm_Sewer"><title>Storm_Sewer (Sewerchannelsegment)</title><rect x="450" y="400" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="472" y="422" width="156" height="156"/>
+<text x="550" y="629" font-size="22" text-anchor="middle">Storm_Sewer</text></g>
+<g class="d-node" data-name="Stream"><title>Stream (Compound Channel Segment)</title><rect x="850" y="200" width="200" height="200" rx="16"/>
+<image href="icons/Compound_Channel.png" x="872" y="222" width="156" height="156"/>
+<text x="950" y="429" font-size="22" text-anchor="middle">Stream</text></g>
+<g class="d-node" data-name="Outlet"><title>Outlet (fixed_head)</title><rect x="1250" y="200" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1272" y="222" width="156" height="156"/>
+<text x="1350" y="429" font-size="22" text-anchor="middle">Outlet</text></g>
+</svg>

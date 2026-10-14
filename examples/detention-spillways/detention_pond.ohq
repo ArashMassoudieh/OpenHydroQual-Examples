@@ -1,0 +1,16 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = Pond_Plugin.json
+addtemplate; filename = dam_spillways.json
+create block;type=Pond,name=Detention_Pond,Storage=0[m~^3],alpha=1600,alpha_multiplier=1,beta=2,bottom_elevation=100[m],inflow=inflow.csv,Precipitation=,Evapotranspiration=,_width=200,_height=200,x=200,y=300
+create block;type=fixed_head,name=Downstream_Channel,head=100.125[m],Storage=100000[m~^3],area=1[m~^2],_width=200,_height=200,x=800,y=300
+create link;type=orifice,name=Low_Flow_Orifice,from=Detention_Pond,to=Downstream_Channel,orifice_area=0.0491[m~^2],head_loss_coefficient=0.6
+create link;type=Riser_Spillway,name=Riser,from=Detention_Pond,to=Downstream_Channel,crest_elevation=101.5[m],riser_crest_length=3[m],weir_coefficient=1.84,conduit_diameter=0.6[m],outlet_elevation=99.5[m],loss_coefficient=1.5,rating_multiplier=1
+create link;type=Emergency_Spillway,name=Emergency_Spillway,from=Detention_Pond,to=Downstream_Channel,crest_elevation=102.2[m],alpha=1468800,beta=1.5
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=3
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-07
+setvalue; object=system, quantity=write_interval, value=1
+setvalue; object=system, quantity=timestep_clamp_series, value=All time series
+setvalue; object=system, quantity=max_timestep_increase_factor, value=5

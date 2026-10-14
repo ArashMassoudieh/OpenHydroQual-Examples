@@ -1,0 +1,16 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = mass_transfer.json
+create constituent;type=Constituent,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],diffusion_coefficient=0[m~^2/s],dispersivity=0[m],external_mass_flow_timeseries=,external_source=,name=Tracer,stoichiometric_constant=0,time_variable_inflow_concentration=
+create constituent;type=Constituent,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],diffusion_coefficient=0[m~^2/s],dispersivity=0[m],external_mass_flow_timeseries=,external_source=,name=Reactive,stoichiometric_constant=0,time_variable_inflow_concentration=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=0.7,name=k,reference_temperature=20,temperature=
+create reaction;type=Reaction,Reactive:stoichiometric_constant=-1,Tracer:stoichiometric_constant=0,name=Decay,rate_expression=(k*Reactive)
+create block;type=Reactor,Reactive:concentration=0[g/m~^3],Reactive:constant_inflow_concentration=0.8[g/m~^3],Reactive:external_mass_flow_timeseries=,Reactive:external_source=,Reactive:time_variable_inflow_concentration=,Storage=1[m~^3],Tracer:concentration=0[g/m~^3],Tracer:constant_inflow_concentration=0.8[g/m~^3],Tracer:external_mass_flow_timeseries=,Tracer:external_source=,Tracer:time_variable_inflow_concentration=,_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0.4[m~^3/day],name=CSTR,time_variable_inflow=,x=0,y=400
+create block;type=Reactor,Reactive:concentration=0[g/m~^3],Reactive:constant_inflow_concentration=0[g/m~^3],Reactive:external_mass_flow_timeseries=,Reactive:external_source=,Reactive:time_variable_inflow_concentration=,Storage=0[m~^3],Tracer:concentration=0[g/m~^3],Tracer:constant_inflow_concentration=0[g/m~^3],Tracer:external_mass_flow_timeseries=,Tracer:external_source=,Tracer:time_variable_inflow_concentration=,_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Effluent_Tank,time_variable_inflow=,x=600,y=400
+create link;from=CSTR,to=Effluent_Tank,type=Fixed flow,flow=0.4[m~^3/day],name=Outflow
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=10
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=max_timestep_increase_factor, value=1
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=10

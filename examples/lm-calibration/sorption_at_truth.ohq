@@ -1,0 +1,28 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = groundwater.json
+addtemplate; filename = mass_transfer.json
+create constituent;type=Constituent,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],diffusion_coefficient=0[m~^2/s],dispersivity=0[m],external_mass_flow_timeseries=,external_source=,name=Cu_aq,stoichiometric_constant=0,time_variable_inflow_concentration=
+create constituent;type=Sorbed_Constituent,concentration=0[g/m~^3],external_mass_flow_timeseries=,external_source=,name=Cu_s,stoichiometric_constant=0
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=1.5,name=k_f,reference_temperature=0,temperature=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=120,name=KD,reference_temperature=0,temperature=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=0.4,name=porosity,reference_temperature=0,temperature=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=1400,name=rho,reference_temperature=0,temperature=
+create reaction;type=Reaction,Cu_aq:stoichiometric_constant=-1,Cu_s:stoichiometric_constant=(porosity/rho),name=Sorption,rate_expression=(k_f*Cu_aq)
+create reaction;type=Reaction,Cu_aq:stoichiometric_constant=1,Cu_s:stoichiometric_constant=(0-porosity/rho),name=Desorption,rate_expression=(k_f/KD*Cu_s)
+create block;type=Groundwater cell,Cu_aq:concentration=1[g/m~^3],Cu_aq:constant_inflow_concentration=0[g/m~^3],Cu_aq:external_mass_flow_timeseries=,Cu_aq:external_source=,Cu_aq:time_variable_inflow_concentration=,Cu_s:concentration=0[g/m~^3],Cu_s:external_mass_flow_timeseries=,Cu_s:external_source=,_height=200,_width=200,area=1[m~^2],bottom_elevation=0[m],depth=1[m],hydraulic_conductivity=1[m/day],inflow=,moisture_content=0.4,name=Batch_Cell,porosity=0.4,specific_storage=0.01[1/m],x=400,y=300
+create observation;type=Observation,name=Cu_aqueous,object=Batch_Cell,expression=Cu_aq:concentration,error_structure=log-normal,error_standard_deviation=0.05,observed_data=sorption_obs_Cu_aq.csv
+create observation;type=Observation,name=Cu_sorbed,object=Batch_Cell,expression=Cu_s:concentration,error_structure=log-normal,error_standard_deviation=0.05,observed_data=sorption_obs_Cu_s.csv
+create parameter;type=Parameter,name=p_k_f,low=0.1,high=50,value=5,prior_distribution=log-normal
+setasparameter; object=k_f, quantity=base_value, parametername=p_k_f
+create parameter;type=Parameter,name=p_KD,low=10,high=5000,value=500,prior_distribution=log-normal
+setasparameter; object=KD, quantity=base_value, parametername=p_KD
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=observed_outputfile, value=observedoutput.txt
+setvalue; object=system, quantity=simulation_end_time, value=20
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-09
+setvalue; object=system, quantity=nr_tolerance, value=1e-10
+setvalue; object=system, quantity=write_interval, value=100
+setvalue; object=LM, quantity=max_iterations, value=40
+setvalue; object=LM, quantity=lm_numthreads, value=4

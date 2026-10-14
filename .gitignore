@@ -13,3 +13,4 @@ examples/**/Objective_Function_TimeSeries.txt
 examples/**/objective_function_values.txt
 examples/**/build_output.txt
 examples/**/log.txt
+notes/

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hillslope Hydrologic Response Units · OpenHydroQual Examples</title>
+<meta name="description" content="A hillslope built from two hydrologic response units. Each bundles a surface, a three-layer soil column and a groundwater cell. Overland flow runs from the upper unit onto the lower one, groundwater flows downslope, and the lower unit feeds a stream by surface runoff and baseflow.">
+<meta name="keywords" content="hru, hydrologic response unit, hillslope, toe slope, lumped, semi-distributed, watershed, infiltration, infiltration excess, saturation excess, run-on, variable source area, interflow, throughflow, recharge, baseflow, soil moisture, van genuchten, evapotranspiration, water balance">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#3a6fb0">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Watershed Hydrology</div>
+<h1>Hillslope Hydrologic Response Units</h1>
+<p class="lede">A hillslope built from two hydrologic response units. Each bundles a surface, a three-layer soil column and a groundwater cell. Overland flow runs from the upper unit onto the lower one, groundwater flows downslope, and the lower unit feeds a stream by surface runoff and baseflow.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=hydrologic_response_unit'>hydrologic_response_unit</a><a class='plug' href='../../?plugin=unsaturated_soil'>unsaturated_soil</a><a class='plug' href='../../?plugin=groundwater'>groundwater</a><a class='plug' href='../../?plugin=soil_evapotranspiration_models'>soil_evapotranspiration_models</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/hillslope-hru.zip" download>Download model (.zip)</a>
+    <div class="muted">9 KB · 3 files · open <code>hru_hillslope.ohq</code> in OpenHydroQual and press Run</div>
+    <a class='btn ghost' href='../../docs/hydrologic_response_units.pdf' target='_blank' rel='noopener'>Technical guide (PDF)</a>
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A hydrologic response unit (HRU) is a piece of land treated as one hydrological column: a surface, a soil profile and a groundwater store, with the fluxes between them. Semi-distributed watershed models (SWAT, PRMS, and many others) build a watershed from HRUs. OpenHydroQual provides the HRU as a composite block, so a whole land column is added as a single object with one set of properties.</p>
+<p>This model is a hillslope with two units in series: a steeper <strong>upslope</strong> unit with a deep unsaturated zone, and a flatter <strong>toe-slope</strong> unit with a thin soil next to the stream. Surface water and groundwater both move downslope from one unit to the next. The model shows how such a cascade generates streamflow, and why runoff tends to come from the wet land near the stream (the variable-source-area idea).</p>
+<h2>How it works</h2>
+<p>Each <code>Hydrologic_Response_Unit</code> contains five members and four internal links. In the output their names carry the unit name as a prefix, for example <code>Downslope__Soil_1_theta</code> or <code>Upslope__recharge_flow</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>What it is</th>
+<th>Upslope</th>
+<th>Downslope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Catchment</code></td>
+<td>Surface store that receives rain</td>
+<td>at 100 m</td>
+<td>at 94 m</td>
+</tr>
+<tr>
+<td><code>Soil_1</code></td>
+<td>Top soil layer, D/7 thick</td>
+<td>0.71 m</td>
+<td>0.20 m</td>
+</tr>
+<tr>
+<td><code>Soil_2</code></td>
+<td>Middle layer, 2D/7</td>
+<td>1.43 m</td>
+<td>0.40 m</td>
+</tr>
+<tr>
+<td><code>Soil_3</code></td>
+<td>Bottom layer, 4D/7</td>
+<td>2.86 m</td>
+<td>0.80 m</td>
+</tr>
+<tr>
+<td><code>Groundwater</code></td>
+<td>Groundwater cell below the soil</td>
+<td>8 m, base at 87 m</td>
+<td>6.6 m, base at 86 m</td>
+</tr>
+</tbody>
+</table>
+<p>D is the depth to groundwater (5 m and 1.4 m). Both units have a plan area A = 20,000 m² and the same clay-loam soil: K_sat = 0.06 m/day, van Genuchten α = 1.9 1/m, n = 1.31, θ_sat = 0.41, θ_res = 0.095.</p>
+<p><strong>Surface.</strong> Rain falls on the <code>Catchment</code> member. Water on the surface leaves by infiltration, or as sheet flow when its depth d exceeds the depression storage d_s (1 mm):</p>
+<p>Q = 86400 · (W/n) · S^0.5 · max(d − d_s, 0)^(5/3)  (m³/day)</p>
+<p>with width W = 200 m, slope S and Manning roughness n (0.05 and 0.1 upslope, 0.02 and 0.12 downslope). <code>Overland_flow</code> delivers the upslope sheet flow to the downslope surface, where it can infiltrate (run-on). <code>Runoff_to_stream</code> delivers the downslope sheet flow to the stream.</p>
+<p><strong>Soil water.</strong> Each layer has the van Genuchten relations between moisture content θ, effective saturation S_e = (θ − θ_res)/(θ_sat − θ_res) and suction head ψ:</p>
+<p>ψ = −(1/α)·(S_e^(−1/m) − 1)^(1/n),  k_r = [1 − (1 − S_e^(1/m))^m]²,  m = 1 − 1/n</p>
+<p>and its total head is h = bottom elevation + layer thickness + ψ. Flow between members is Darcy flow driven by head differences:</p>
+<ul>
+<li>Infiltration (surface to <code>Soil_1</code>): Q = A·K_sat·(h_surface − h_1)/(d_1/2), switched off smoothly when no water is ponded. While the top layer is dry, its suction makes the infiltration capacity several times K_sat.</li>
+<li>Percolation (<code>Soil_1</code> to <code>Soil_2</code>, <code>Soil_2</code> to <code>Soil_3</code>): Q = A·K_sat·k_r·(h_i − h_j)/L, with k_r evaluated at the wetter of the two layers and L the mean thickness. It can be upward (capillary rise).</li>
+<li>Recharge (<code>Soil_3</code> to <code>Groundwater</code>): Q = A·K_r·(h_3 − h_g)/L with the constant recharge conductivity K_r = 0.06 m/day and L = (d_3 + b)/2, b being the groundwater cell thickness.</li>
+<li>Evapotranspiration from <code>Soil_1</code>: E = corr_fact · ET₀ · A · θ/θ_sat.</li>
+</ul>
+<p><strong>Groundwater.</strong> The groundwater cell stores water as a moisture content θ_g over its volume A·b. Its head is h_g = base + b + (θ_g − φ)/S_s with porosity φ = 0.25. The specific storage is set to S_s = φ/b (0.031 and 0.038 1/m), which makes h_g = base + θ_g·b/φ, the elevation of a free water table. The initial moisture contents (0.125 and 0.171) put the water tables at 91 m and 90.5 m.</p>
+<p><strong>Between the units and to the stream.</strong> <code>Groundwater_throughflow</code> is Q = A_x·K̄·(h_up − h_down)/L with A_x = 1200 m², K̄ = 5 m/day and L = 200 m, about 15 m³/day at the start. <code>Baseflow_to_stream</code> is Q = A_b·K·(h_down − h_stream)/L with A_b = 400 m², K = 5 m/day, L = 100 m and the stream at 88 m, about 50 m³/day.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Where runoff comes from.</strong> Of 149 mm of rain, only 7.3 mm leaves as surface runoff, in three storms. The upslope unit sheds 59 m³ of overland flow in total, and in the storm on day 20 most of it re-infiltrates on the toe slope (18 m³ arrives, 5 m³ reaches the stream).</li>
+<li><strong>Infiltration excess.</strong> In the storm on day 7.5 (8 mm/h) the rain rate exceeds the infiltration capacity on both units. Runoff to the stream peaks at 1630 m³/day.</li>
+<li><strong>Saturation excess.</strong> By day 25.5 the thin top layer of the toe slope is almost saturated (θ = 0.403 of 0.41). In the last storm the toe slope produces 115 m³ of runoff although the rain is less intense, while the upper unit contributes only 34 m³.</li>
+<li><strong>Slow subsurface.</strong> Recharge responds to storms days later and is damped by the soil column. Over one month the water tables move by less than 0.13 m, so throughflow (15 to 20 m³/day) and baseflow (about 50 m³/day) are nearly constant. In the first day the bottom soil layers drain toward equilibrium with the water table, which shows as a short peak of recharge.</li>
+<li><strong>Water balance.</strong> Over the 4 ha hillslope, in mm of water:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>m³</th>
+<th>mm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rain</td>
+<td>5947</td>
+<td>148.7</td>
+</tr>
+<tr>
+<td>Evapotranspiration</td>
+<td>−2466</td>
+<td>−61.7</td>
+</tr>
+<tr>
+<td>Surface runoff to the stream</td>
+<td>−292</td>
+<td>−7.3</td>
+</tr>
+<tr>
+<td>Baseflow to the stream</td>
+<td>−1486</td>
+<td>−37.2</td>
+</tr>
+<tr>
+<td>Increase in soil water</td>
+<td>1516</td>
+<td>37.9</td>
+</tr>
+<tr>
+<td>Increase in groundwater</td>
+<td>184</td>
+<td>4.6</td>
+</tr>
+</tbody>
+</table>
+<p>The terms close to within 1.2 m³ (0.02% of the rain).</p>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>Each unit is laterally uniform: one surface depth, one moisture content per layer and one water table for 2 ha. Gradients inside a unit are not resolved.</li>
+<li>The three soil layers share one set of soil properties. Evapotranspiration is taken only from the top layer and is proportional to its relative wetness.</li>
+<li>Recharge uses a constant conductivity. This is adequate here because the water tables lie only 2 to 4 m below the soil columns; for deep water tables the Urban HRU recharges through the unsaturated conductivity instead (see the technical guide).</li>
+<li>The stream is a fixed head at 88 m, so stream stage does not respond to the inflow.</li>
+<li>Surface runoff is sheet flow with no channel; the depression storage holds water that only infiltrates (there is no surface evaporation).</li>
+<li>The groundwater cell is the confined-type <code>Groundwater cell</code>. Setting S_s = φ/b gives it a water-table response, but its storage is not limited at the top of the cell.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 1320 676" class="ohq-diagram" style="max-width:660px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Overland_flow"><title>Overland_flow (Catchment_link)</title><path d="M260.0 195.0 L380.0 255.0 L500.0 315.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_to_stream"><title>Runoff_to_stream (Catchment_link)</title><path d="M760.0 380.0 L880.0 380.0 L1000.0 380.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Groundwater_throughflow"><title>Groundwater_throughflow (groundwater_link)</title><path d="M252.0 211.1 L372.0 271.1 L492.0 331.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Baseflow_to_stream"><title>Baseflow_to_stream (groundwater_to_fixedhead)</title><path d="M760.0 398.0 L880.0 398.0 L1000.0 398.0" marker-mid="url(#arr)"/></g>
+<g class="d-node composite" data-name="Upslope"><title>Upslope (Hydrologic_Response_Unit)</title><rect x="0" y="0" width="260" height="260" rx="21"/>
+<image href="icons/hydrologic_response_unit.png" x="29" y="29" width="203" height="203"/>
+<text x="130" y="285" font-size="19" text-anchor="middle">Upslope</text></g>
+<g class="d-node composite" data-name="Downslope"><title>Downslope (Hydrologic_Response_Unit)</title><rect x="500" y="250" width="260" height="260" rx="21"/>
+<image href="icons/hydrologic_response_unit.png" x="529" y="279" width="203" height="203"/>
+<text x="630" y="535" font-size="19" text-anchor="middle">Downslope</text></g>
+<g class="d-node" data-name="Stream"><title>Stream (fixed_head)</title><rect x="1000" y="280" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1022" y="302" width="156" height="156"/>
+<text x="1100" y="505" font-size="19" text-anchor="middle">Stream</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>1</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Stream'><summary><span class='cname'>Stream</span><span class='ctype'>fixed_head</span><span class='crole'><p>Fixed-head block at 88 m standing for the stream at the foot of the slope. Its storage starts at zero and accumulates both surface runoff and baseflow.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>88</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Composite blocks <small>2</small></h3><p class='kind-blurb'>Pre-assembled groups of blocks and links that behave as a single unit.</p><div class='comp-list'>
+<details class='comp' id='c-Upslope'><summary><span class='cname'>Upslope</span><span class='ctype'>Hydrologic_Response_Unit · hydrologic_response_unit</span><span class='crole'><p>Upper hillslope unit: 2 ha, surface at 100 m, 5 m of unsaturated clay-loam soil over an 8 m groundwater cell. The water table starts at 91 m, 4 m below the soil column. Steeper (5%) and with a deep unsaturated zone.</p></span></summary><div class='cbody'><p class=type-help><b>Hydrologic_Response_Unit:</b> A one-dimensional land column: runoff-generating catchment surface, an unsaturated profile discretised into three layers whose thicknesses are in a 1:2:4 ratio (finest at the surface, where moisture gradients are steepest), and a groundwater cell beneath. Runoff leaves through the catchment; groundwater leaves through a selected external connector. Use groundwater_to_stream for head-gradient-driven discharge or Linear_baseflow for a threshold linear-reservoir recession, not both for the same physical pathway. Layer thicknesses and all bottom elevations are computed from the ground surface elevation, the depth to groundwater and the groundwater thickness.</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Plan area of the unit</td><td class='v'>20000</td><td>m<sup>2</sup></td><td>Applied to the catchment, all three soil layers and the groundwater cell - every block in the unit shares one plan area.</td></tr><tr><td>Ground surface elevation</td><td class='v'>100</td><td>m</td><td>Datum for the whole column. Every bottom elevation below is measured down from here.</td></tr><tr><td>Depth from the ground surface to the water table</td><td class='v'>5.0</td><td>m</td><td>Total thickness of the unsaturated profile. It is split between the three layers in a 1:2:4 ratio, so they are one seventh, two sevenths and four sevenths of this value.</td></tr><tr><td>Thickness of the groundwater cell</td><td class='v'>8.0</td><td>m</td><td>Saturated thickness below the water table. Its bottom elevation is the surface elevation less the depth to groundwater less this thickness.</td></tr><tr><td>Precipitation source</td><td class='v'>Rain</td><td></td><td>Applied to the catchment surface.</td></tr><tr><td>Evapotranspiration source (top soil layer only)</td><td class='v'>ET</td><td></td><td>Applied to the uppermost soil layer only; the deeper layers and the groundwater cell are not subject to evapotranspiration.</td></tr><tr><td>Slope of the catchment surface</td><td class='v'>0.05</td><td></td><td></td></tr><tr><td>Overland flow width of the catchment</td><td class='v'>200</td><td>m</td><td></td></tr><tr><td>Manning roughness coefficient of the surface</td><td class='v'>0.1</td><td></td><td></td></tr><tr><td>Surface depression storage depth</td><td class='v'>0.001</td><td>m</td><td></td></tr><tr><td>Fraction of precipitation that becomes runoff</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Saturated hydraulic conductivity of the soil profile</td><td class='v'>0.06</td><td>m/day</td><td>Shared by all three layers: they discretise one soil profile rather than representing different materials.</td></tr><tr><td>van Genuchten α of the soil profile</td><td class='v'>1.9</td><td>1/m</td><td></td></tr><tr><td>van Genuchten n of the soil profile</td><td class='v'>1.31</td><td></td><td></td></tr><tr><td>Saturated moisture content of the soil profile</td><td class='v'>0.41</td><td></td><td></td></tr><tr><td>Residual moisture content of the soil profile</td><td class='v'>0.095</td><td></td><td></td></tr><tr><td>Specific storage of the soil profile</td><td class='v'>0.01</td><td>1/m</td><td></td></tr><tr><td>Initial moisture content of the soil layers</td><td class='v'>0.25</td><td></td><td>Initial condition for all three layers. Each layer&#x27;s initial storage follows from its own area, thickness and this value.</td></tr><tr><td>Hydraulic conductivity of the soil-aquifer interface</td><td class='v'>0.06</td><td>m/day</td><td>Governs recharge from the bottom soil layer into the groundwater cell. Set it equal to K_sat for a homogeneous profile, or lower it to represent a clogging layer or aquitard at the water table.</td></tr><tr><td>Hydraulic conductivity of the groundwater cell</td><td class='v'>5</td><td>m/day</td><td>Hydraulic conductivity of the groundwater cell. It controls groundwater_to_stream and other Darcy-style groundwater links. Linear_baseflow uses its own recession_rate instead, so groundwater_K does not control that connector.</td></tr><tr><td>Porosity of the groundwater cell</td><td class='v'>0.25</td><td></td><td></td></tr><tr><td>Specific storage of the groundwater cell</td><td class='v'>0.03125</td><td>1/m</td><td></td></tr><tr><td>Initial moisture content of the groundwater cell</td><td class='v'>0.1250</td><td></td><td>Set this equal to the groundwater porosity for a fully saturated start, which is almost always what you want. The groundwater cell uses a confined formulation, head = cell top + (moisture content - porosity)/specific storage, so at full saturation the head sits at the top of the cell and any deficit becomes an elastic underpressure: with a specific storage of 0.01, a moisture content 0.025 below porosity already puts the head 2.5 m low. The cell&#x27;s initial storage follows as area times thickness times this value.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Downslope'><summary><span class='cname'>Downslope</span><span class='ctype'>Hydrologic_Response_Unit · hydrologic_response_unit</span><span class='crole'><p>Toe-slope unit next to the stream: 2 ha, surface at 94 m, only 1.4 m of soil over a 6.6 m groundwater cell. The water table starts at 90.5 m. Flatter (2%), with a thin soil column that can fill during storms.</p></span></summary><div class='cbody'><p class=type-help><b>Hydrologic_Response_Unit:</b> A one-dimensional land column: runoff-generating catchment surface, an unsaturated profile discretised into three layers whose thicknesses are in a 1:2:4 ratio (finest at the surface, where moisture gradients are steepest), and a groundwater cell beneath. Runoff leaves through the catchment; groundwater leaves through a selected external connector. Use groundwater_to_stream for head-gradient-driven discharge or Linear_baseflow for a threshold linear-reservoir recession, not both for the same physical pathway. Layer thicknesses and all bottom elevations are computed from the ground surface elevation, the depth to groundwater and the groundwater thickness.</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Plan area of the unit</td><td class='v'>20000</td><td>m<sup>2</sup></td><td>Applied to the catchment, all three soil layers and the groundwater cell - every block in the unit shares one plan area.</td></tr><tr><td>Ground surface elevation</td><td class='v'>94</td><td>m</td><td>Datum for the whole column. Every bottom elevation below is measured down from here.</td></tr><tr><td>Depth from the ground surface to the water table</td><td class='v'>1.4</td><td>m</td><td>Total thickness of the unsaturated profile. It is split between the three layers in a 1:2:4 ratio, so they are one seventh, two sevenths and four sevenths of this value.</td></tr><tr><td>Thickness of the groundwater cell</td><td class='v'>6.6</td><td>m</td><td>Saturated thickness below the water table. Its bottom elevation is the surface elevation less the depth to groundwater less this thickness.</td></tr><tr><td>Precipitation source</td><td class='v'>Rain</td><td></td><td>Applied to the catchment surface.</td></tr><tr><td>Evapotranspiration source (top soil layer only)</td><td class='v'>ET</td><td></td><td>Applied to the uppermost soil layer only; the deeper layers and the groundwater cell are not subject to evapotranspiration.</td></tr><tr><td>Slope of the catchment surface</td><td class='v'>0.02</td><td></td><td></td></tr><tr><td>Overland flow width of the catchment</td><td class='v'>200</td><td>m</td><td></td></tr><tr><td>Manning roughness coefficient of the surface</td><td class='v'>0.12</td><td></td><td></td></tr><tr><td>Surface depression storage depth</td><td class='v'>0.001</td><td>m</td><td></td></tr><tr><td>Fraction of precipitation that becomes runoff</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Saturated hydraulic conductivity of the soil profile</td><td class='v'>0.06</td><td>m/day</td><td>Shared by all three layers: they discretise one soil profile rather than representing different materials.</td></tr><tr><td>van Genuchten α of the soil profile</td><td class='v'>1.9</td><td>1/m</td><td></td></tr><tr><td>van Genuchten n of the soil profile</td><td class='v'>1.31</td><td></td><td></td></tr><tr><td>Saturated moisture content of the soil profile</td><td class='v'>0.41</td><td></td><td></td></tr><tr><td>Residual moisture content of the soil profile</td><td class='v'>0.095</td><td></td><td></td></tr><tr><td>Specific storage of the soil profile</td><td class='v'>0.01</td><td>1/m</td><td></td></tr><tr><td>Initial moisture content of the soil layers</td><td class='v'>0.28</td><td></td><td>Initial condition for all three layers. Each layer&#x27;s initial storage follows from its own area, thickness and this value.</td></tr><tr><td>Hydraulic conductivity of the soil-aquifer interface</td><td class='v'>0.06</td><td>m/day</td><td>Governs recharge from the bottom soil layer into the groundwater cell. Set it equal to K_sat for a homogeneous profile, or lower it to represent a clogging layer or aquitard at the water table.</td></tr><tr><td>Hydraulic conductivity of the groundwater cell</td><td class='v'>5</td><td>m/day</td><td>Hydraulic conductivity of the groundwater cell. It controls groundwater_to_stream and other Darcy-style groundwater links. Linear_baseflow uses its own recession_rate instead, so groundwater_K does not control that connector.</td></tr><tr><td>Porosity of the groundwater cell</td><td class='v'>0.25</td><td></td><td></td></tr><tr><td>Specific storage of the groundwater cell</td><td class='v'>0.03788</td><td>1/m</td><td></td></tr><tr><td>Initial moisture content of the groundwater cell</td><td class='v'>0.1705</td><td></td><td>Set this equal to the groundwater porosity for a fully saturated start, which is almost always what you want. The groundwater cell uses a confined formulation, head = cell top + (moisture content - porosity)/specific storage, so at full saturation the head sits at the top of the cell and any deficit becomes an elastic underpressure: with a specific storage of 0.01, a moisture content 0.025 below porosity already puts the head 2.5 m low. The cell&#x27;s initial storage follows as area times thickness times this value.</td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>4</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Overland-flow'><summary><span class='cname'>Overland_flow</span><span class='ctype'>Catchment_link</span><span class='crole'><p>Sheet flow from the surface of <code>Upslope</code> onto the surface of <code>Downslope</code>, where it can infiltrate again (run-on).</p></span></summary><div class='cbody'><p class=type-help><b>Catchment_link:</b> Link from a catchment</p></div></details>
+<details class='comp' id='c-Runoff-to-stream'><summary><span class='cname'>Runoff_to_stream</span><span class='ctype'>Catchment_link</span><span class='crole'><p>Sheet flow from the surface of <code>Downslope</code> into the stream.</p></span></summary><div class='cbody'><p class=type-help><b>Catchment_link:</b> Link from a catchment</p></div></details>
+<details class='comp' id='c-Groundwater-throughflow'><summary><span class='cname'>Groundwater_throughflow</span><span class='ctype'>groundwater_link · groundwater</span><span class='crole'><p>Darcy flow from the groundwater cell of <code>Upslope</code> to that of <code>Downslope</code> across a 1200 m² saturated cross-section over 200 m. Positive downslope; it reverses if the lower water table rises above the upper one.</p></span></summary><div class='cbody'><p class=type-help><b>groundwater_link:</b> Groundwater link</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Interface Area</td><td class='v'>1200</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Length</td><td class='v'>200</td><td>m</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Baseflow-to-stream'><summary><span class='cname'>Baseflow_to_stream</span><span class='ctype'>groundwater_to_fixedhead · groundwater</span><span class='crole'><p>Darcy flow from the groundwater cell of <code>Downslope</code> to the stream across a 400 m² seepage face over 100 m. Positive toward the stream.</p></span></summary><div class='cbody'><p class=type-help><b>groundwater_to_fixedhead:</b> Groundwater to fixed head</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Interface Area</td><td class='v'>400</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Length</td><td class='v'>100</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Sources <small>2</small></h3><p class='kind-blurb'>External inputs or sinks applied to blocks: rainfall, evaporation, loads, exchange with the atmosphere.</p><div class='comp-list'>
+<details class='comp' id='c-Rain'><summary><span class='cname'>Rain</span><span class='ctype'>Precipitation</span><span class='crole'><p>Hourly rainfall for 30 days: five storms of 22 to 40 mm, 149 mm in total. Falls on the surface of both units.</p></span></summary><div class='cbody'><p class=type-help><b>Precipitation:</b> Precipitation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Precipitation Cumulative</td><td class='v'>precipitation.csv</td><td>m</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-ET'><summary><span class='cname'>ET</span><span class='ctype'>Evapotranspiration_Time_Series (Soil) · soil_evapotranspiration_models</span><span class='crole'><p>Reference evapotranspiration (about 2.6 mm/day) withdrawn from the top soil layer of both units, scaled by that layer's relative wetness θ/θ_sat (correction factor 1).</p></span></summary><div class='cbody'><p class=type-help><b>Evapotranspiration_Time_Series (Soil):</b> Evapotranspiration time-series for soil</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Evaporation time series</td><td class='v'>evapotranspiration.csv</td><td>m/day</td><td></td></tr><tr><td>Scale factor</td><td class='v'>1</td><td></td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>precipitation.csv</code></td><td><p>Hourly rainfall depth. Three columns, no header: interval start (days), interval end (days), depth in the interval (m). 720 intervals over 30 days.</p></td></tr><tr><td><code>evapotranspiration.csv</code></td><td><p>Daily reference evapotranspiration (m/day) versus time (days). Two columns, no header. 2.36 to 2.87 mm/day.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>30</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>0.001</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Rainfall' loading='lazy'><figcaption><b>Rainfall</b> Five storms. The storm on day 7.5 is the largest (40 mm) and the most intense (8 mm/h).</figcaption></figure><figure><img src='plot_2.png' alt='Surface flows' loading='lazy'><figcaption><b>Surface flows</b> Surface runoff appears only in three storms and is mostly produced on the toe slope. The upper unit sheds little water, and much of it soaks in again on the way down.</figcaption></figure><figure><img src='plot_3.png' alt='Top-soil moisture' loading='lazy'><figcaption><b>Top-soil moisture</b> The thin top layer of the toe slope wets quickly and comes close to saturation (θ_sat = 0.41) in the storms on days 7.5 and 25.5. The thicker upslope layer stays well below saturation.</figcaption></figure><figure><img src='plot_4.png' alt='Subsurface flows' loading='lazy'><figcaption><b>Subsurface flows</b> Recharge starts with a short drainage of the initial soil water, then responds to storms with a delay of days. Baseflow is steady at about 50 m³/day because the groundwater heads barely move in one month.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/hillslope-hru">View source on GitHub</a>.</div></footer>
+</body></html>

@@ -1,0 +1,11 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = groundwater.json
+create block;type=Groundwater cell,name=Aquifer,area=1000000[m~^2],depth=10[m],bottom_elevation=0[m],porosity=0.3,specific_storage=0.03[1/m],moisture_content=0.22,hydraulic_conductivity=1[m/day],inflow=recharge.csv,_width=200,_height=200,x=0,y=0
+create block;type=fixed_head,name=Stream,head=0[m],Storage=0[m~^3],_width=200,_height=200,x=450,y=0
+create link;type=Linear_baseflow,name=Baseflow,from=Aquifer,to=Stream,recession_rate=0.01[1/day],min_moisture_content=0.2
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=365
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=10

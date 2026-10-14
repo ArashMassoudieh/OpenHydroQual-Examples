@@ -1,0 +1,21 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = unsaturated_soil.json
+addtemplate; filename = groundwater.json
+addtemplate; filename = soil_evapotranspiration_models.json
+addtemplate; filename = hydrologic_response_unit.json
+create source;type=Precipitation,name=Rain,timeseries=precipitation.csv
+create source;type=Evapotranspiration_Time_Series (Soil),name=ET,ET_timeseries=evapotranspiration.csv,corr_fact=1
+create composite;type=Hydrologic_Response_Unit,name=Upslope,area=20000[m~^2],surface_elevation=100[m],depth_to_groundwater=5.0[m],groundwater_thickness=8.0[m],Precipitation=Rain,Evapotranspiration=ET,catchment_slope=0.05,catchment_width=200[m],manning_coefficient=0.1,depression_storage=0.001[m],runoff_coefficient=1,K_sat=0.06[m/day],alpha_vG=1.9[1/m],n_vG=1.31,theta_sat=0.41,theta_res=0.095,soil_specific_storage=0.01[1/m],initial_moisture_content=0.25,recharge_K=0.06[m/day],groundwater_K=5[m/day],groundwater_porosity=0.25,groundwater_specific_storage=0.03125[1/m],initial_groundwater_moisture_content=0.1250,_width=260,_height=260,x=0,y=0
+create composite;type=Hydrologic_Response_Unit,name=Downslope,area=20000[m~^2],surface_elevation=94[m],depth_to_groundwater=1.4[m],groundwater_thickness=6.6[m],Precipitation=Rain,Evapotranspiration=ET,catchment_slope=0.02,catchment_width=200[m],manning_coefficient=0.12,depression_storage=0.001[m],runoff_coefficient=1,K_sat=0.06[m/day],alpha_vG=1.9[1/m],n_vG=1.31,theta_sat=0.41,theta_res=0.095,soil_specific_storage=0.01[1/m],initial_moisture_content=0.28,recharge_K=0.06[m/day],groundwater_K=5[m/day],groundwater_porosity=0.25,groundwater_specific_storage=0.03788[1/m],initial_groundwater_moisture_content=0.1705,_width=260,_height=260,x=500,y=250
+create block;type=fixed_head,name=Stream,head=88[m],Storage=0[m~^3],_width=200,_height=200,x=1000,y=280
+create link;type=Catchment_link,name=Overland_flow,from=Upslope,to=Downslope
+create link;type=Catchment_link,name=Runoff_to_stream,from=Downslope,to=Stream
+create link;type=groundwater_link,name=Groundwater_throughflow,from=Upslope,to=Downslope,area=1200[m~^2],length=200[m]
+create link;type=groundwater_to_fixedhead,name=Baseflow_to_stream,from=Downslope,to=Stream,area=400[m~^2],length=100[m]
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=30
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=nr_tolerance, value=0.001
+setvalue; object=system, quantity=write_interval, value=10
