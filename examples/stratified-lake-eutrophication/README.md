@@ -104,23 +104,27 @@ inputs:
   tributary_OP_50pct.csv: "Half of tributary_OP.csv, read by the scenario model."
 plots:
   - title: Layer temperatures
+    linewidth: 0.6
     ylabel: Temperature (°C)
     series:
       - {column: "Epilimnion_T_water:value", label: "Epilimnion"}
       - {column: "Hypolimnion_T_water:value", label: "Hypolimnion"}
     caption: The layers have the same temperature until 1 May. During stratification the epilimnion follows the air to 30 °C while the hypolimnion warms only from 15.3 to 18.0 °C. Turnover on 5 October, when the cooling surface water reaches the bottom-water temperature, mixes the lake again.
   - title: Vertical exchange between the layers
+    linewidth: 0.6
     ylabel: Exchange flow (m³/day)
     logy: true
     series:
       - {column: "Exchange_down_flow", label: "Q_mix"}
     caption: The exchange flow drops a hundredfold, from 500 000 to 5000 m³/day, while the lake is stratified. The bottom water is then renewed only once every 480 days, against every 5 days while mixed.
   - title: Phytoplankton in the epilimnion
+    linewidth: 0.6
     ylabel: Chlorophyll-a (µg/L)
     series:
       - {column: "Obs_Epi_chl_a_expression", label: "Epilimnion"}
     caption: A spring bloom peaks at 41 µg/L in early May, just after stratification sets in. Phosphorus limits the summer epilimnion to 15 to 30 µg/L, and the phosphate mixed up at turnover feeds a short fall bloom of 38 µg/L.
   - title: Dissolved oxygen
+    linewidth: 0.6
     ylabel: O₂ (g/m³)
     series:
       - {column: "Epilimnion_O2:concentration", label: "Epilimnion"}
@@ -129,6 +133,7 @@ plots:
     hlines: [{y: 2.0, label: "Hypoxia (2 g/m³)"}]
     caption: Cut off from the atmosphere, the hypolimnion loses its oxygen within a month of stratification. It is hypoxic from 3 June to 21 October and close to anoxic for most of that time. At turnover the anoxic bottom water, with its ammonia and reduced species, mixes into the surface, and the epilimnion drops to 4.7 g/m³ (50% of saturation). The epilimnion is supersaturated through the summer, day and night (see What to look for).
   - title: Phosphorus in the two layers
+    linewidth: 0.6
     ylabel: Concentration (g P/m³)
     series:
       - {column: "Obs_Epi_total_P_expression", label: "Total P, epilimnion"}
@@ -136,6 +141,7 @@ plots:
       - {column: "Hypolimnion_PO4:concentration", label: "PO4, hypolimnion", style: dashed}
     caption: Phosphate released by the anoxic sediment accumulates below the thermocline, where hypolimnion total P climbs to 0.75 g P/m³ while the epilimnion stays near 0.05 to 0.09 g P/m³. Turnover mixes the two layers, and the epilimnion total P jumps to 0.45 g P/m³.
   - title: Nitrogen in the hypolimnion
+    linewidth: 0.6
     ylabel: Concentration (g N/m³)
     series:
       - {column: "Hypolimnion_NOx:concentration", label: "NOx, hypolimnion"}
@@ -143,6 +149,7 @@ plots:
       - {column: "Epilimnion_NOx:concentration", label: "NOx, epilimnion"}
     caption: Once the hypolimnion is anoxic, denitrification removes its nitrate (2.0 to 0.002 g N/m³) while ammonia from mineralization builds up to 1.6 g N/m³, since nitrification needs oxygen. At turnover the ammonia is nitrified in the mixed lake.
   - title: Phosphate release from the sediment
+    linewidth: 0.6
     ylabel: PO4 flux (mg P/m²/day)
     series:
       - {column: "Sediment_interface_PO4:masstransfer", label: "Sediment to hypolimnion", scale: -0.0033333}

@@ -98,17 +98,20 @@ inputs:
   tributary_OP_50pct.csv: "Half of tributary_OP.csv, read by the scenario model."
 plots:
   - title: Phytoplankton
+    linewidth: 0.6
     ylabel: Chlorophyll-a (µg/L)
     series:
       - {column: "Obs_Chl_a_expression", label: "Chlorophyll-a"}
     caption: Algae stay below 3 µg/L under ice, bloom to about 47 µg/L in mid-March, hold at 22 to 35 µg/L in April and May, and grow to 50 to 65 µg/L in July and August as the water warms and the sediment releases phosphorus. The rise to 79 µg/L in early October is a response to the nitrate brought by the 118 mm storm of 30 September, which lifts the summer nitrogen limitation; it takes six days (net growth about 0.07 per day), not hours.
   - title: Phosphorus
+    linewidth: 0.6
     ylabel: Concentration (g P/m³)
     series:
       - {column: "Obs_Total_P_expression", label: "Total P"}
       - {column: "Lake_PO4:concentration", label: "PO4"}
     caption: Spring growth draws phosphate down to 0.003 g P/m³ (strong P limitation). From late July, once the algae are nitrogen limited, phosphate released by the sediment accumulates, and total P rises from 0.05 to 0.26 g P/m³ by the end of September before flushing and renewed sorption bring it down.
   - title: Nitrogen
+    linewidth: 0.6
     ylabel: Concentration (g N/m³)
     series:
       - {column: "Obs_Total_N_expression", label: "Total N"}
@@ -117,6 +120,7 @@ plots:
       - {column: "Lake_ON:concentration", label: "Organic N"}
     caption: Nitrate dominates in winter and spring (1.5 g N/m³). In summer algal uptake and denitrification exhaust it (below 0.01 g N/m³ from mid-August) and the algae become nitrogen limited; ammonia stays low because it is taken up as fast as it is released.
   - title: Dissolved oxygen
+    linewidth: 0.6
     ylabel: O₂ (g/m³)
     series:
       - {column: "Lake_O2:concentration", label: "DO"}
@@ -124,6 +128,7 @@ plots:
     hlines: [{y: 2.0, label: "Hypoxia (2 g/m³)"}]
     caption: Under ice, with no reaeration, respiration pulls DO from 12 to between 6.3 and 9.6 g/m³ while saturation is 14 g/m³. In spring and summer photosynthesis supersaturates the lake by day and respiration pulls it below saturation on most nights from August on. The wind-mixed lake never approaches hypoxia.
   - title: Diel oxygen cycle in late August
+    linewidth: 0.6
     ylabel: O₂ (g/m³)
     xlim: [230, 250]
     ylim: [6, 11]
@@ -132,11 +137,13 @@ plots:
       - {column: "Obs_DO_saturation_expression", label: "Saturation", style: dashed}
     caption: Photosynthesis raises DO to 8.2 to 8.7 g/m³ (103 to 110% of saturation) each afternoon, and algal respiration, decomposition and sediment demand pull it to 7.0 to 7.4 g/m³ before dawn, 0.5 to 0.8 g/m³ below saturation, a daily swing of 1.0 to 1.4 g/m³.
   - title: Phosphate release from the sediment
+    linewidth: 0.6
     ylabel: PO4 flux (mg P/m²/day)
     series:
       - {column: "Sediment_interface_PO4:masstransfer", label: "Sediment to lake", scale: -0.002}
     caption: The release is 1 to 5 mg P/m²/day in the cold, oxic months and rises to 20 to 31 mg P/m²/day from mid-August to early September, when the warm sediment is nearly anoxic. Over the year it adds 1370 kg of P to the water, 1.5 times the tributary load.
   - title: Sediment pore water
+    linewidth: 0.6
     ylabel: Concentration (g/m³)
     series:
       - {column: "Sediment_O2:concentration", label: "O2"}

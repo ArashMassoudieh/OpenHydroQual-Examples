@@ -154,12 +154,13 @@ def make_plots(meta, series, out_dir, ex_dir):
             if "scale" in s:  # unit conversion, e.g. m/day to mm/h
                 v = [x * s["scale"] for x in v]
             style = s.get("style", "line")
+            lw = s.get("linewidth", p.get("linewidth"))   # optional, per series or per plot
             if style == "points":
                 ax.plot(t, v, "o", ms=3.5, color=color, label=label, alpha=.85)
             elif style == "dashed":
-                ax.plot(t, v, "--", color=color, lw=1.6, label=label)
+                ax.plot(t, v, "--", color=color, lw=lw or 1.6, label=label)
             else:
-                ax.plot(t, v, color=color, lw=1.8, label=label)
+                ax.plot(t, v, color=color, lw=lw or 1.8, label=label)
             found += 1
         if not found:
             plt.close(fig)
