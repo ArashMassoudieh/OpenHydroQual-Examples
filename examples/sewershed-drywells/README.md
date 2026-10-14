@@ -3,12 +3,12 @@ title: Sewershed with Infiltration Pond and Drywell
 track: storm
 level: 3
 status: ready
-summary: An 11.3 ha Los Angeles sewershed drains through two storm-sewer lines into an infiltration pond with a 42 m drywell. A 133-cell radial grid follows the injected water through 70 m of layered vadose zone, and a build-up and wash-off pollutant tracks the first flush.
+summary: An 11.3 ha urban sewershed in an arid climate drains through two storm-sewer lines into an infiltration pond with a 42 m drywell. A 133-cell radial grid follows the injected water through 70 m of layered vadose zone, and a build-up and wash-off pollutant tracks the first flush.
 plugins: [Sewer_system, Well, unsaturated_soil, Pond_Plugin, buildup_washoff, soil_evapotranspiration_models]
 features: [Large model (163 blocks, 302 links), Drywell injection, Radial vadose-zone grid, Build-up and wash-off, Observed weather forcing]
-keywords: [drywell, dry well, class v injection well, infiltration basin, infiltration pond, sewershed, storm sewer, pipe network, managed aquifer recharge, stormwater capture, groundwater recharge, vadose zone, unsaturated flow, van genuchten, radial grid, axisymmetric, build-up, wash-off, first flush, pollutant transport, penman, los angeles, case study, large model]
+keywords: [drywell, dry well, class v injection well, infiltration basin, infiltration pond, sewershed, storm sewer, pipe network, managed aquifer recharge, stormwater capture, groundwater recharge, vadose zone, unsaturated flow, van genuchten, radial grid, axisymmetric, build-up, wash-off, first flush, pollutant transport, penman, arid climate, case study, large model]
 components:
-  Rain: "Hourly precipitation for 18 November to 10 December 2018 at Los Angeles International Airport (103 mm in three storms). It falls on the 13 catchments."
+  Rain: "Hourly precipitation for 18 November to 10 December 2018 (103 mm in three storms). It falls on the 13 catchments."
   Soil_ET: "Penman evapotranspiration from the top soil layer under the pond, driven by hourly air temperature, relative humidity, solar radiation and wind speed at the same location."
   Buildup: "Constant build-up of the surface pollutant on every catchment, 0.01 g/m²/day."
   Pollutant_surface: "Pollutant bound to the catchment surfaces (g/m²). Starts at 1 g/m², the load accumulated over about 100 dry days, and grows by Buildup between storms."
@@ -35,11 +35,11 @@ components:
   soil_to_soil_H_link: "Radial unsaturated flow between neighbouring rings (Radial_Lii_Rjj), over a cylindrical interface of area 2π·r·thickness."
   soil_to_fixedhead_link: "Drainage from the bottom layer (L13) of each column into the water table (Recharge_R00 to R10)."
 inputs:
-  precipitation.csv: "Hourly precipitation. Three columns, no header: interval start (day), interval end (day), depth in the interval (m). Day 0 is 18 November 2018 00:00 Pacific Standard Time. NASA POWER hourly precipitation for the grid cell that contains Los Angeles International Airport (LAX)."
-  air_temperature.csv: "Hourly air temperature at 2 m (°C), two columns: time (day), value. Same source and location."
-  relative_humidity.csv: "Hourly relative humidity at 2 m as a fraction (0 to 1), two columns: time (day), value. Same source and location."
-  solar_radiation.csv: "Hourly incoming shortwave radiation at the surface (W/m²), two columns: time (day), value. Same source and location."
-  wind_speed.csv: "Hourly wind speed (m/s), two columns: time (day), value. Same source and location."
+  precipitation.csv: "Hourly precipitation. Three columns, no header: interval start (day), interval end (day), depth in the interval (m). Day 0 is 18 November 2018 00:00 local standard time."
+  air_temperature.csv: "Hourly air temperature at 2 m (°C), two columns: time (day), value. Same period and time base as the precipitation."
+  relative_humidity.csv: "Hourly relative humidity at 2 m as a fraction (0 to 1), two columns: time (day), value. Same period and time base as the precipitation."
+  solar_radiation.csv: "Hourly incoming shortwave radiation at the surface (W/m²), two columns: time (day), value. Same period and time base as the precipitation."
+  wind_speed.csv: "Hourly wind speed (m/s), two columns: time (day), value. Same period and time base as the precipitation."
 plots:
   - title: Rainfall
     ylabel: Intensity (m/day)
@@ -89,7 +89,7 @@ plots:
 
 ## What this model represents
 
-In arid and semi-arid cities such as Los Angeles, stormwater is increasingly treated as a resource: it is collected by the storm-sewer network and infiltrated, in place of being sent to the ocean. Where the near-surface soils are tight, **drywells** are used: vertical shafts, here 2 m wide and 42 m deep, that bypass the surface layers and put the water directly into deeper, more permeable strata. Their performance depends on how much water the surrounding vadose zone can accept, and their risk depends on what the water carries: the first flush of a storm washes the pollutants accumulated on streets and roofs during the dry season straight into the drywell.
+In arid and semi-arid cities, stormwater is increasingly treated as a resource: it is collected by the storm-sewer network and infiltrated, in place of being sent to the ocean. Where the near-surface soils are tight, **drywells** are used: vertical shafts, here 2 m wide and 42 m deep, that bypass the surface layers and put the water directly into deeper, more permeable strata. Their performance depends on how much water the surrounding vadose zone can accept, and their risk depends on what the water carries: the first flush of a storm washes the pollutants accumulated on streets and roofs during the dry season straight into the drywell.
 
 This model is a complete small sewershed with such a system:
 
@@ -99,7 +99,7 @@ This model is a complete small sewershed with such a system:
 - An **axisymmetric grid of 133 soil cells** (13 layers by 11 columns) represents the 70 m vadose zone around the drywell down to the water table.
 - A **build-up and wash-off** pollutant is carried from the catchment surfaces through the sewers, the pond and the drywell into the soil.
 
-It is driven by observed hourly precipitation and weather at Los Angeles International Airport for the first storms of the 2018 to 2019 wet season, 18 November to 10 December 2018. It is the largest example in this collection (163 blocks and 302 links) and runs in about five minutes.
+It is driven by hourly precipitation and weather for the first storms of the 2018 to 2019 wet season, 18 November to 10 December 2018. It is the largest example in this collection (163 blocks and 302 links) and runs in about five minutes.
 
 ## How it works
 

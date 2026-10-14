@@ -47,7 +47,7 @@ components:
   POM_respiration: "Aerobic oxidation of bed POM, rate k_p·POM·O2/(O2 + K_o): the sediment oxygen demand."
   POM_denitrification: "Oxidation of bed POM with nitrate, rate k_pdn·POM·K_on/(K_on + O2)·NOx/(NOx + K_dn). The main nitrogen sink of the pond."
 inputs:
-  pond_inflow.txt: "Storm inflow to Pond_1 (m³/day) versus time (days), 30-minute averages of the author's original record (2- to 6-minute steps) over 100 days. Events recur on days 0 to 11, 14 to 17, 20 to 37, 46 to 53 and 64 to 71; the total is 6009 m³. Source of the original record not documented."
+  pond_inflow.txt: "Synthetic storm inflow to Pond_1 (m³/day) versus time (days), made up for this example: 30-minute averages of a finer (2- to 6-minute) synthetic series over 100 days. Events recur on days 0 to 11, 14 to 17, 20 to 37, 46 to 53 and 64 to 71; the total is 6009 m³."
   load_DOM.txt: "DOM mass load entering Pond_1 with the inflow (g/day), 30-minute averages. Total 26.5 kg, a flow-weighted concentration of 4.4 g/m³."
   load_O2.txt: "Oxygen carried by the inflow (g/day). Total 30.9 kg (5.1 g/m³ flow-weighted)."
   load_NH3.txt: "Ammonia nitrogen load (g N/day). Total 6.7 kg (1.12 g N/m³ flow-weighted)."
@@ -55,7 +55,7 @@ inputs:
   air_temperature.csv: "Air temperature (°C) versus time (days), hourly, mean 25.8 °C, range 10.8 to 39.3 °C. Used by the Penman model."
   solar_radiation.csv: "Incoming solar radiation (W/m²), hourly, mean 326 W/m², peak 1013 W/m²."
   relative_humidity.csv: "Relative humidity (fraction, 0 to 1), hourly, mean 0.57."
-  wind_speed.csv: "Wind speed, hourly, mean 8.2 and peak 32 in the file's units. The units are not documented (a mean of 8.2 m/s would be unusually windy); the model applies a wind scale factor of 0.5."
+  wind_speed.csv: "Wind speed (m/s), hourly, mean 8.2 m/s, peak 32 m/s. The model applies a wind scale factor of 0.5."
 plots:
   - title: Water level
     ylabel: Water surface elevation (m)
@@ -165,5 +165,5 @@ with k_H = 2 g/m³/day, K_s = 20 g/m³, K_o = 0.5 g/m³, η_on = 0.04, k_N = 1 g
 - Rate constants are fixed at their reference values; temperature does not affect the kinetics. Water temperature is not computed, and the Penman model uses air temperature.
 - The reaction parameters are illustrative values chosen to give active, plausible kinetics; they have not been calibrated to this pond. The large DOM release from the bed is a consequence of the chosen POM pool and hydrolysis rate.
 - Settling of particulate matter, phosphorus, algae and plants are not modeled. POM is a fixed initial pool with no deposition from the water column.
-- The 30-minute inflow and load series are averages of a finer original record; their totals match the original to within 0.1%. The origin of the inflow, load and weather records, and the units of the wind series, are not documented.
+- The inflow and the four load series are synthetic, made up to exercise the model; they do not describe a real pond. The 30-minute series are averages of a finer synthetic series, with totals matching it to within 0.1%.
 - The Atmosphere block and its links are a device for a fixed-saturation boundary; the Outlet tank is a mass-accounting device. Reactions also run in the aquifer, where they have little effect because its large volume keeps concentrations low.

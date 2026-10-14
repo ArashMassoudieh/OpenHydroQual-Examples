@@ -788,7 +788,7 @@
    "track": "storm",
    "level": 3,
    "status": "ready",
-   "summary": "An 11.3 ha Los Angeles sewershed drains through two storm-sewer lines into an infiltration pond with a 42 m drywell. A 133-cell radial grid follows the injected water through 70 m of layered vadose zone, and a build-up and wash-off pollutant tracks the first flush.",
+   "summary": "An 11.3 ha urban sewershed in an arid climate drains through two storm-sewer lines into an infiltration pond with a 42 m drywell. A 133-cell radial grid follows the injected water through 70 m of layered vadose zone, and a build-up and wash-off pollutant tracks the first flush.",
    "plugins": [
     "Sewer_system",
     "Well",
@@ -827,7 +827,7 @@
     "first flush",
     "pollutant transport",
     "penman",
-    "los angeles",
+    "arid climate",
     "case study",
     "large model"
    ],
