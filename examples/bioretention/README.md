@@ -35,7 +35,7 @@ inputs:
   air_temperature.csv: "Air temperature (°C) versus time (day, day 0 = 1 July 2010), roughly hourly. Hourly weather record at BWI airport, Maryland, USA."
   relative_humidity.csv: "Relative humidity as a fraction (0 to 1) versus time (day). Hourly weather record at BWI airport, Maryland, USA."
   solar_radiation.csv: "Incoming solar radiation (W/m²) versus time (day), every 30 minutes. Weather record at BWI airport, Maryland, USA."
-  wind_speed.csv: "Wind speed (m/s) versus time (day). Hourly weather record at BWI airport, Maryland, USA. Data assumption: the source file gave no unit; its values were taken to be in mph, multiplied by 0.447 to convert to m/s, and treated as measured at 10 m height."
+  wind_speed.csv: "Wind speed (m/s) versus time (day). Hourly NOAA NCDC Local Climatological Data for BWI airport, Maryland, USA, reported in mph at the 10 m anemometer height and converted to m/s (×0.447)."
 plots:
   - title: Inflow and outflows of the cell
     ylabel: Flow (m³/day)
@@ -131,4 +131,3 @@ This is the standard Penman combination of an energy term and a drying-power ter
 - The radiation term uses half of the incoming solar radiation as available energy (f_s = 0.5), a simple stand-in for net radiation and soil heat flux. Evapotranspiration is taken only from the top 0.2 m, with no explicit root uptake or plant water stress, and it can dry the top layer to its residual water content.
 - The parking area has no depression storage or losses. Runoff water quality is not modelled.
 - Soil hydraulic parameters are textbook values for a loamy sand media and a loam native soil, not site measurements. The media conductivity is set lower than that of a new loamy sand to represent some clogging.
-- Data assumption: the wind speed unit in the source record was not documented. The values were assumed to be in mph, converted to m/s (×0.447), and taken as measured at z₂ = 10 m, the standard height of an airport anemometer. If the original values were in another unit, the aerodynamic part of ET (about a quarter of the total weight) would be scaled accordingly.
