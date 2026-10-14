@@ -1,0 +1,12 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = Pond_Plugin.json
+create block;type=Pond,Evapotranspiration=,Precipitation=,Storage=200[m~^3],_height=200,_width=200,alpha=100,alpha_multiplier=1,beta=1,bottom_elevation=0[m],inflow=,name=Tank,x=0,y=400
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=0[m],name=Outlet,x=600,y=400
+create link;from=Tank,to=Outlet,type=orifice,head_loss_coefficient=0.6,orifice_area=0.002[m~^2],name=Orifice
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=1
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=max_timestep_increase_factor, value=1
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=10

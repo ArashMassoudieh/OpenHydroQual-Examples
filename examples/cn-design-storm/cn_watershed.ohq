@@ -1,0 +1,18 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = cn_catchment.json
+create source;type=Precipitation,name=Design_storm,timeseries=design_storm.csv
+create composite;type=CN_Catchment,name=Rural,CN=65,area=1000000[m~^2],hydraulic_length=2000[m],slope=0.03,recovery_coefficient=0.1[1/day],initial_abstraction_depth=0[m],Precipitation=Design_storm,_width=260,_height=260,x=0,y=0
+create composite;type=CN_Catchment,name=Urban,CN=90,area=400000[m~^2],hydraulic_length=800[m],slope=0.01,recovery_coefficient=0.1[1/day],initial_abstraction_depth=0[m],Precipitation=Design_storm,_width=260,_height=260,x=500,y=0
+create composite;type=CN_Catchment_3,name=Rural_3res,CN=65,area=1000000[m~^2],hydraulic_length=2000[m],slope=0.03,recovery_coefficient=0.1[1/day],initial_abstraction_depth=0[m],Precipitation=Design_storm,_width=260,_height=260,x=0,y=500
+create block;type=fixed_head,name=Watershed_outlet,head=0[m],Storage=0[m~^3],_width=200,_height=200,x=1000,y=30
+create block;type=fixed_head,name=Comparison_outlet,head=0[m],Storage=0[m~^3],_width=200,_height=200,x=1000,y=530
+create link;type=CN_outlet,name=Rural_runoff,from=Rural,to=Urban
+create link;type=CN_outlet,name=Watershed_hydrograph,from=Urban,to=Watershed_outlet
+create link;type=CN_outlet,name=Rural_3res_hydrograph,from=Rural_3res,to=Comparison_outlet
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=1.5
+setvalue; object=system, quantity=initial_time_step, value=0.0001
+setvalue; object=system, quantity=minimum_timestep, value=1e-08
+setvalue; object=system, quantity=nr_tolerance, value=1e-06
+setvalue; object=system, quantity=write_interval, value=5

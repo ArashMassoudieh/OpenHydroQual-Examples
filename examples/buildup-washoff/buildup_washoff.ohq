@@ -1,0 +1,18 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = Sewer_system.json
+addtemplate; filename = buildup_washoff.json
+create source;type=Precipitation,name=Rain,timeseries=rainfall.txt
+create source;type=Build up (Saturation),name=Buildup,build_up_rate=0.2,saturation=5[g/m~^2]
+create constituent;type=Immobile_Constituent,name=Surface_Solids,stoichiometric_constant=0,external_source=,external_mass_flow_timeseries=,concentration=0[g/m~^2]
+create constituent;type=Constituent,name=TSS,concentration=0[g/m~^3],constant_inflow_concentration=0,diffusion_coefficient=0,dispersivity=0,external_mass_flow_timeseries=,external_source=,stoichiometric_constant=0,time_variable_inflow_concentration=
+create reaction_parameter;type=ReactionParameter,name=k_w,base_value=5e+06,Arrhenius_factor=1,reference_temperature=20,temperature=
+create reaction;type=surface_release,name=Washoff,Surface_Solids:stoichiometric_constant=-1,TSS:stoichiometric_constant=1,concentration_dependence_rate_expression=(k_w*Surface_Solids),release_coefficient=1,exponent_of_depth=2
+create block;type=Catchment,name=Parking_Lot,area=10000[m~^2],Width=100[m],Slope=0.01,ManningCoeff=0.015,Runoff_coeff=1,depression_storage=0[m],depth=0[m],elevation=0[m],loss_coefficient=0[1/day],inflow=,Precipitation=Rain,Evapotranspiration=,Surface_Solids:concentration=2[g/m~^2],Surface_Solids:external_source=Buildup,Surface_Solids:external_mass_flow_timeseries=,TSS:concentration=0[g/m~^3],TSS:external_source=,TSS:external_mass_flow_timeseries=,Washoff:release_coefficient=1,Washoff:exponent_of_depth=2,_width=200,_height=200,x=200,y=300
+create block;type=Catch basin,name=Outfall,bottom_elevation=-1[m],Storage=0[m~^3],area=100[m~^2],inflow=,Surface_Solids:concentration=0[g/m~^2],Surface_Solids:external_source=,Surface_Solids:external_mass_flow_timeseries=,TSS:concentration=0[g/m~^3],TSS:external_source=,TSS:external_mass_flow_timeseries=,Washoff:release_coefficient=0,Washoff:exponent_of_depth=0,_width=200,_height=200,x=600,y=300
+create link;type=Catchment_link,name=Runoff,from=Parking_Lot,to=Outfall
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=80
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=1

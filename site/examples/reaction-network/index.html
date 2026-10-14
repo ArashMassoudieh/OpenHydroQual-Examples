@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multi-Species Reaction Network · OpenHydroQual Examples</title>
+<meta name="description" content="A batch reactor in which compound A degrades by saturating (Michaelis-Menten) kinetics into an intermediate B, which is then lost by second-order decay. The A rate responds to a measured temperature record.">
+<meta name="keywords" content="reaction network, reaction chain, sequential reactions, intermediate, daughter product, stoichiometry, yield, monod, michaelis menten, saturation kinetics, second order, kinetics, biodegradation, arrhenius, theta, temperature, batch reactor">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#1f9e89">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Reactions &amp; Water Quality</div>
+<h1>Multi-Species Reaction Network</h1>
+<p class="lede">A batch reactor in which compound A degrades by saturating (Michaelis-Menten) kinetics into an intermediate B, which is then lost by second-order decay. The A rate responds to a measured temperature record.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/reaction-network.zip" download>Download model (.zip)</a>
+    <div class="muted">4 KB · 2 files · open <code>reaction_network.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A single, closed, well-mixed batch reactor holding two dissolved species linked in a chain:</p>
+<p><strong>A → B → (removed)</strong></p>
+<p>This pattern appears in many water-quality problems. Examples include a pesticide breaking down into a more persistent metabolite, nitrogen moving from ammonium to nitrite, or a chlorinated solvent dechlorinating step by step. The model has no transport, so it isolates the reaction kinetics. It is a natural starting point before reactions are placed in a network of blocks and links.</p>
+<h2>How it works</h2>
+<p>Each <strong>reaction</strong> has a rate expression, which OpenHydroQual evaluates in every block where the constituents are present. Each reaction also has a set of <strong>stoichiometric coefficients</strong>, which say how much each constituent changes per unit of reaction. For a block of volume V, the mass balance of each constituent is</p>
+<p>d(V·Cᵢ)/dt = V · Σⱼ νᵢⱼ · rⱼ</p>
+<p>where νᵢⱼ is the stoichiometric coefficient of constituent i in reaction j and rⱼ is the rate of reaction j. With the coefficients set in this model:</p>
+<table>
+<thead>
+<tr>
+<th>Reaction</th>
+<th>Rate rⱼ</th>
+<th>ν for A</th>
+<th>ν for B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A_to_B</td>
+<td>k_A·A / (K_s + A)</td>
+<td>−1</td>
+<td>+Y_B</td>
+</tr>
+<tr>
+<td>B_loss</td>
+<td>k_B·B²</td>
+<td>0</td>
+<td>−1</td>
+</tr>
+</tbody>
+</table>
+<p>so that</p>
+<p>dA/dt = −k_A·A/(K_s + A)
+  dB/dt = Y_B·k_A·A/(K_s + A) − k_B·B²</p>
+<p>Stoichiometric coefficients can be numbers or names of reaction parameters. Here the yield <strong>Y_B</strong> is a parameter, so it can be changed or calibrated in one place.</p>
+<p><strong>Temperature correction.</strong> Every reaction parameter can follow a temperature time series:</p>
+<p>value = base_value · θ^(T − T_ref)</p>
+<p>Here only <strong>k_A</strong> is linked to <code>temperature.txt</code> (θ = 1.05, T_ref = 20 °C). It therefore ranges from about 0.68 at 12 °C to 1.63 at 30 °C. The other parameters use θ = 1, which makes them independent of temperature.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>The warm pulse (days 0.5 to 1.5).</strong> The decline of A steepens visibly as k_A more than doubles.</li>
+<li><strong>Rise and fall of B.</strong> B peaks shortly after the warm period. After the peak, B declines more slowly than A, because second-order loss weakens as B becomes dilute.</li>
+<li><strong>Saturation.</strong> At t = 0, A (2 g/m³) is well above K_s (0.6 g/m³), so A degrades at close to its maximum rate. Late in the run, A ≪ K_s and the decay becomes nearly exponential, which shows as a straight line on a log scale.</li>
+<li><strong>Mass accounting.</strong> Because Y_B &lt; 1, the total A + B is not conserved. The missing 20% represents mass converted to products that are not tracked.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The reactor is perfectly mixed and closed: no inflow, outflow or volume change.</li>
+<li>Temperature affects only k_A. Temperature is prescribed from data, not computed from a heat balance.</li>
+<li>Rate expressions are written in concentration units (g/m³), so each rate is in g/m³/day.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="340 240 320 366" class="ohq-diagram" style="max-width:160px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-node" data-name="Batch_Reactor"><title>Batch_Reactor (Reactor)</title><rect x="400" y="300" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="422" y="322" width="156" height="156"/>
+<text x="500" y="518" font-size="14" text-anchor="middle">Batch_Reactor</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>1</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Batch-Reactor'><summary><span class='cname'>Batch_Reactor</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A closed, well-mixed vessel of 10 m³ with no inflow or outflow. All change in concentration is caused by the two reactions.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>A: Concentration</td><td class='v'>2</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>B: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Initial Storage</td><td class='v'>10</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m^3/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>2</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-A'><summary><span class='cname'>A</span><span class='ctype'>Constituent</span><span class='crole'><p>The parent compound, for example an organic contaminant that is biodegraded. Starts at 2 g/m³.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m^3</td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m^3</td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m^2/s</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-B'><summary><span class='cname'>B</span><span class='ctype'>Constituent</span><span class='crole'><p>An intermediate (daughter) product formed from A. Starts at zero.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m^3</td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m^3</td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m^2/s</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>4</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-k-A'><summary><span class='cname'>k_A</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Maximum degradation rate of A (g/m³/day at 20 °C). Corrected for temperature using the <code>temperature.txt</code> record and θ = 1.05.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1.05</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr><tr><td>Temperature time-series (degrees Celsius)</td><td class='v'>temperature.txt</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-B'><summary><span class='cname'>k_B</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Second-order rate constant for loss of B (m³/g/day).</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.5</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-s'><summary><span class='cname'>K_s</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Half-saturation concentration of A (g/m³). Below K_s the A reaction is close to first order; well above it the rate approaches k_A.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.6</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Y-B'><summary><span class='cname'>Y_B</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Yield of B, in grams of B formed per gram of A degraded.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.8</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reactions <small>2</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-A-to-B'><summary><span class='cname'>A_to_B</span><span class='ctype'>Reaction</span><span class='crole'><p>Degradation of A into B, rate k_A·A/(K_s + A).</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_A*A/(K_s+A))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>A</td><td class='v'>-1</td></tr><tr><td>B</td><td class='v'>Y_B</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-B-loss'><summary><span class='cname'>B_loss</span><span class='ctype'>Reaction</span><span class='crole'><p>Second-order removal of B (for example dimerization or precipitation), rate k_B·B².</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_B*B^2)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>B</td><td class='v'>-1</td></tr></tbody></table></div></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>temperature.txt</code></td><td><p>Water temperature (°C) versus time (days). A warm period of 30 °C from day 0.5 to day 1.5 interrupts a baseline of 12 °C. Two columns, comma separated, no header.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>5</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Concentrations' loading='lazy'><figcaption><b>Concentrations</b> A degrades fastest during the warm period. B accumulates while A is abundant, then declines once production can no longer keep up with second-order loss.</figcaption></figure><figure><img src='plot_2.png' alt='Temperature-corrected rate constant' loading='lazy'><figcaption><b>Temperature-corrected rate constant</b> k_A follows the temperature record through k_A = 1.0 × 1.05^(T − 20).</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/reaction-network">View source on GitHub</a>.</div></footer>
+</body></html>

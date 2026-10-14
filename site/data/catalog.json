@@ -1,0 +1,1304 @@
+{
+ "tracks": [
+  {
+   "id": "start",
+   "name": "Getting Started",
+   "color": "#2f7dd1"
+  },
+  {
+   "id": "wq",
+   "name": "Reactions & Water Quality",
+   "color": "#1f9e89"
+  },
+  {
+   "id": "storm",
+   "name": "Stormwater & Green Infrastructure",
+   "color": "#5b9a2c"
+  },
+  {
+   "id": "hydro",
+   "name": "Watershed Hydrology",
+   "color": "#3a6fb0"
+  },
+  {
+   "id": "soil",
+   "name": "Soil, Plants & Groundwater",
+   "color": "#a0702a"
+  },
+  {
+   "id": "hyd",
+   "name": "Hydraulic Structures",
+   "color": "#6a55c2"
+  },
+  {
+   "id": "mgmt",
+   "name": "Water Resources Management",
+   "color": "#c2553f"
+  },
+  {
+   "id": "calib",
+   "name": "Calibration & Uncertainty",
+   "color": "#b8417e"
+  },
+  {
+   "id": "auto",
+   "name": "Automation & Scripting",
+   "color": "#56606e"
+  }
+ ],
+ "examples": [
+  {
+   "id": "cstr-tracer",
+   "title": "CSTR Tracer Test",
+   "track": "start",
+   "level": 1,
+   "status": "planned",
+   "summary": "A tracer through a continuously stirred tank reactor, verified against the analytical solution.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "Constituents",
+    "Analytical verification"
+   ],
+   "keywords": [
+    "cstr",
+    "stirred tank",
+    "reactor",
+    "tracer",
+    "residence time",
+    "breakthrough",
+    "verification",
+    "validation",
+    "analytical",
+    "mixing"
+   ]
+  },
+  {
+   "id": "draining-tank",
+   "title": "Draining Tank",
+   "track": "start",
+   "level": 1,
+   "status": "planned",
+   "summary": "A tank empties into a sink through a link. The simplest water balance.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "Storage",
+    "Outflow link"
+   ],
+   "keywords": [
+    "tank",
+    "reservoir",
+    "drain",
+    "outflow",
+    "recession",
+    "storage",
+    "water balance"
+   ]
+  },
+  {
+   "id": "first-order-decay",
+   "title": "First-Order Decay in a Batch Reactor",
+   "track": "start",
+   "level": 1,
+   "status": "planned",
+   "summary": "Exponential decay of one constituent, compared with the exact solution.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "Reactions",
+    "Analytical verification"
+   ],
+   "keywords": [
+    "decay",
+    "first order",
+    "batch",
+    "kinetics",
+    "half-life",
+    "degradation",
+    "exponential",
+    "reaction",
+    "verification"
+   ]
+  },
+  {
+   "id": "parallel-links",
+   "title": "Parallel Links",
+   "track": "start",
+   "level": 1,
+   "status": "planned",
+   "summary": "Two blocks joined by several links that share the flow.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "Multiple links",
+    "Flow partitioning"
+   ],
+   "keywords": [
+    "links",
+    "parallel",
+    "connections",
+    "flow split",
+    "partition",
+    "network topology"
+   ]
+  },
+  {
+   "id": "rain-on-catchment",
+   "title": "Rain on a Catchment",
+   "track": "start",
+   "level": 1,
+   "status": "planned",
+   "summary": "A single catchment receives a rainfall time series and drains to a fixed-head outlet.",
+   "plugins": [
+    "main_components"
+   ],
+   "features": [
+    "Blocks & links",
+    "Precipitation source"
+   ],
+   "keywords": [
+    "first model",
+    "rainfall",
+    "runoff",
+    "precipitation",
+    "catchment",
+    "outlet",
+    "time series",
+    "beginner"
+   ]
+  },
+  {
+   "id": "plug-flow-reactor",
+   "title": "Plug-Flow Reactor Tracer",
+   "track": "start",
+   "level": 2,
+   "status": "planned",
+   "summary": "A plug-flow reactor built from cells in series, showing advection and numerical dispersion.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "Composite blocks",
+    "Cells in series",
+    "Tracer transport"
+   ],
+   "keywords": [
+    "pfr",
+    "plug flow",
+    "composite",
+    "tanks in series",
+    "advection",
+    "dispersion",
+    "tracer",
+    "residence time distribution",
+    "rtd"
+   ]
+  },
+  {
+   "id": "batch-sorption",
+   "title": "Batch Sorption & Desorption, Two Sorbents",
+   "track": "wq",
+   "level": 2,
+   "status": "planned",
+   "summary": "Kinetic sorption of a solute onto two solid materials with different capacities and rates.",
+   "plugins": [
+    "mass_transfer",
+    "groundwater"
+   ],
+   "features": [
+    "Sorbed constituents",
+    "Kinetic sorption",
+    "Two-site model"
+   ],
+   "keywords": [
+    "sorption",
+    "desorption",
+    "adsorption",
+    "isotherm",
+    "langmuir",
+    "freundlich",
+    "kd",
+    "two-site",
+    "batch",
+    "sediment",
+    "metals",
+    "pfas"
+   ]
+  },
+  {
+   "id": "reaction-network",
+   "title": "Multi-Species Reaction Network",
+   "track": "wq",
+   "level": 2,
+   "status": "ready",
+   "summary": "A batch reactor in which compound A degrades by saturating (Michaelis-Menten) kinetics into an intermediate B, which is then lost by second-order decay. The A rate responds to a measured temperature record.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "Reaction chain",
+    "Stoichiometry",
+    "Rate expressions",
+    "Temperature correction"
+   ],
+   "keywords": [
+    "reaction network",
+    "reaction chain",
+    "sequential reactions",
+    "intermediate",
+    "daughter product",
+    "stoichiometry",
+    "yield",
+    "monod",
+    "michaelis menten",
+    "saturation kinetics",
+    "second order",
+    "kinetics",
+    "biodegradation",
+    "arrhenius",
+    "theta",
+    "temperature",
+    "batch reactor"
+   ],
+   "thumb": "examples/reaction-network/thumb.svg"
+  },
+  {
+   "id": "streeter-phelps",
+   "title": "River BOD & Dissolved Oxygen (Streeter-Phelps)",
+   "track": "wq",
+   "level": 2,
+   "status": "planned",
+   "summary": "A river reach receives a BOD load and develops the classic dissolved-oxygen sag downstream.",
+   "plugins": [
+    "open_channel",
+    "mass_transfer"
+   ],
+   "features": [
+    "Open channel routing",
+    "Reaeration",
+    "BOD decay"
+   ],
+   "keywords": [
+    "streeter phelps",
+    "bod",
+    "dissolved oxygen",
+    "do sag",
+    "reaeration",
+    "river",
+    "stream",
+    "water quality",
+    "wastewater discharge",
+    "deoxygenation"
+   ]
+  },
+  {
+   "id": "sedimentation-basin",
+   "title": "Sedimentation Basin with Particle Classes",
+   "track": "wq",
+   "level": 2,
+   "status": "planned",
+   "summary": "A layered clarifier removes four particle size classes, each with its own settling velocity.",
+   "plugins": [
+    "wastewater",
+    "mass_transfer"
+   ],
+   "features": [
+    "Particles",
+    "Settling",
+    "Layered composite"
+   ],
+   "keywords": [
+    "sedimentation",
+    "settling",
+    "clarifier",
+    "particles",
+    "tss",
+    "suspended solids",
+    "particle size",
+    "stokes",
+    "removal efficiency",
+    "treatment"
+   ],
+   "doc": "sedimentation_basin_tutorial.pdf"
+  },
+  {
+   "id": "column-breakthrough",
+   "title": "Soil Column Breakthrough",
+   "track": "wq",
+   "level": 2,
+   "status": "planned",
+   "summary": "One-dimensional transport through a packed column with kinetic sorption.",
+   "plugins": [
+    "mass_transfer",
+    "groundwater"
+   ],
+   "features": [
+    "1D transport",
+    "Sorption",
+    "Breakthrough curve"
+   ],
+   "keywords": [
+    "column",
+    "breakthrough",
+    "btc",
+    "porous media",
+    "transport",
+    "advection dispersion",
+    "retardation",
+    "sorption",
+    "lab experiment"
+   ]
+  },
+  {
+   "id": "temperature-kinetics",
+   "title": "Temperature-Dependent Kinetics",
+   "track": "wq",
+   "level": 2,
+   "status": "planned",
+   "summary": "Reaction rates follow a measured temperature record through time-dependent reaction parameters.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "Time-dependent parameters",
+    "Forcing time series"
+   ],
+   "keywords": [
+    "temperature",
+    "arrhenius",
+    "theta",
+    "seasonal",
+    "time-dependent parameter",
+    "kinetics",
+    "forcing"
+   ]
+  },
+  {
+   "id": "asm-clarifier",
+   "title": "Activated Sludge Reactor + Clarifier",
+   "track": "wq",
+   "level": 3,
+   "status": "planned",
+   "summary": "A biological reactor coupled to a secondary clarifier, with biomass growth and substrate removal.",
+   "plugins": [
+    "wastewater",
+    "mass_transfer"
+   ],
+   "features": [
+    "Composite blocks",
+    "Biomass kinetics",
+    "Recycle"
+   ],
+   "keywords": [
+    "activated sludge",
+    "asm",
+    "wastewater treatment",
+    "wwtp",
+    "clarifier",
+    "biomass",
+    "substrate",
+    "monod",
+    "sludge recycle",
+    "secondary treatment"
+   ]
+  },
+  {
+   "id": "wet-pond-nutrients",
+   "title": "Wet Pond Nutrient Cycling",
+   "track": "wq",
+   "level": 3,
+   "status": "planned",
+   "summary": "A multi-cell stormwater wet pond with bed sediment, aeration, Penman evaporation and nitrogen, carbon and oxygen dynamics.",
+   "plugins": [
+    "Pond_Plugin",
+    "river_processes",
+    "mass_transfer",
+    "evapotranspiration_models"
+   ],
+   "features": [
+    "Bed sediment exchange",
+    "Atmospheric exchange",
+    "Penman ET"
+   ],
+   "keywords": [
+    "wet pond",
+    "wetland",
+    "nutrients",
+    "nitrogen",
+    "ammonia",
+    "nitrate",
+    "nitrification",
+    "denitrification",
+    "doc",
+    "dissolved oxygen",
+    "sediment",
+    "penman",
+    "evaporation",
+    "stormwater"
+   ]
+  },
+  {
+   "id": "buildup-washoff",
+   "title": "Pollutant Build-up and Wash-off",
+   "track": "storm",
+   "level": 1,
+   "status": "planned",
+   "summary": "Pollutants accumulate on an impervious surface in dry weather and wash off in storms.",
+   "plugins": [
+    "buildup_washoff",
+    "Sewer_system"
+   ],
+   "features": [
+    "Build-up",
+    "Wash-off"
+   ],
+   "keywords": [
+    "buildup",
+    "build-up",
+    "washoff",
+    "wash-off",
+    "first flush",
+    "emc",
+    "event mean concentration",
+    "impervious",
+    "urban runoff",
+    "pollutant loading",
+    "tss",
+    "metals"
+   ]
+  },
+  {
+   "id": "bioretention",
+   "title": "Bioretention Cell",
+   "track": "storm",
+   "level": 2,
+   "status": "planned",
+   "summary": "Ponding zone, engineered soil, gravel storage and underdrain, driven by rainfall and Penman evapotranspiration.",
+   "plugins": [
+    "Pond_Plugin",
+    "unsaturated_soil",
+    "Sewer_system",
+    "soil_evapotranspiration_models"
+   ],
+   "features": [
+    "Unsaturated flow",
+    "Underdrain",
+    "Overflow"
+   ],
+   "keywords": [
+    "bioretention",
+    "rain garden",
+    "lid",
+    "low impact development",
+    "gsi",
+    "green infrastructure",
+    "bmp",
+    "scm",
+    "underdrain",
+    "infiltration",
+    "ponding",
+    "engineered media"
+   ]
+  },
+  {
+   "id": "detention-spillways",
+   "title": "Detention Pond with Riser & Emergency Spillway",
+   "track": "storm",
+   "level": 2,
+   "status": "planned",
+   "summary": "A dry detention pond with a riser outlet and an emergency spillway routes a design storm.",
+   "plugins": [
+    "dam_spillways",
+    "Pond_Plugin"
+   ],
+   "features": [
+    "Riser spillway",
+    "Emergency spillway",
+    "Peak attenuation"
+   ],
+   "keywords": [
+    "detention",
+    "dry pond",
+    "riser",
+    "spillway",
+    "emergency spillway",
+    "outlet structure",
+    "peak flow",
+    "attenuation",
+    "design storm",
+    "routing",
+    "dam"
+   ]
+  },
+  {
+   "id": "infiltration-basin",
+   "title": "Infiltration Basin",
+   "track": "storm",
+   "level": 2,
+   "status": "planned",
+   "summary": "A basin collects runoff and infiltrates it through the unsaturated zone below.",
+   "plugins": [
+    "Pond_Plugin",
+    "unsaturated_soil",
+    "Sewer_system"
+   ],
+   "features": [
+    "Pond-to-soil exfiltration",
+    "Vadose zone"
+   ],
+   "keywords": [
+    "infiltration basin",
+    "recharge",
+    "exfiltration",
+    "lid",
+    "gsi",
+    "bmp",
+    "scm",
+    "vadose",
+    "drawdown",
+    "managed aquifer recharge",
+    "mar"
+   ]
+  },
+  {
+   "id": "sewershed-drywells",
+   "title": "Sewershed with Drywells",
+   "track": "storm",
+   "level": 3,
+   "status": "planned",
+   "summary": "A full urban sewershed with catchments, a sewer network, drywells injecting into a deep soil profile, and pollutant build-up.",
+   "plugins": [
+    "Sewer_system",
+    "Well",
+    "unsaturated_soil",
+    "buildup_washoff",
+    "Pond_Plugin",
+    "evapotranspiration_models"
+   ],
+   "features": [
+    "Large network",
+    "Drywells",
+    "Vadose transport"
+   ],
+   "keywords": [
+    "drywell",
+    "dry well",
+    "sewershed",
+    "storm sewer",
+    "injection well",
+    "groundwater recharge",
+    "vadose",
+    "large model",
+    "case study",
+    "urban"
+   ]
+  },
+  {
+   "id": "smart-pond-forecast",
+   "title": "Smart Pond: Forecast-Based Release",
+   "track": "storm",
+   "level": 3,
+   "status": "planned",
+   "summary": "A controlled outlet releases water ahead of forecast storms, using an uncertain rainfall forecast.",
+   "plugins": [
+    "precipitation_forcast",
+    "Pond_Plugin"
+   ],
+   "features": [
+    "Rainfall forecast",
+    "Flow control devices",
+    "Real-time control"
+   ],
+   "keywords": [
+    "real-time control",
+    "rtc",
+    "smart pond",
+    "forecast",
+    "predictive control",
+    "active control",
+    "valve",
+    "flow control",
+    "uncertainty",
+    "cmac"
+   ]
+  },
+  {
+   "id": "dual-drainage",
+   "title": "Urban Dual Drainage (Street + Pipe)",
+   "track": "storm",
+   "level": 3,
+   "status": "planned",
+   "summary": "Surface swale and underground pipe systems exchange water through inlets.",
+   "plugins": [
+    "dual_drainage",
+    "compound_channel",
+    "urban_hru",
+    "Sewer_system",
+    "open_channel"
+   ],
+   "features": [
+    "Inlets",
+    "Compound channel",
+    "Pipe outfall"
+   ],
+   "keywords": [
+    "dual drainage",
+    "minor system",
+    "major system",
+    "street flow",
+    "inlet",
+    "storm sewer",
+    "surcharge",
+    "flooding",
+    "urban drainage",
+    "swale",
+    "compound channel"
+   ]
+  },
+  {
+   "id": "linear-baseflow",
+   "title": "Linear-Reservoir Baseflow",
+   "track": "hydro",
+   "level": 1,
+   "status": "planned",
+   "summary": "A groundwater store drains as a linear reservoir, producing an exponential baseflow recession.",
+   "plugins": [
+    "groundwater"
+   ],
+   "features": [
+    "Linear reservoir",
+    "Recession"
+   ],
+   "keywords": [
+    "baseflow",
+    "linear reservoir",
+    "recession",
+    "groundwater",
+    "streamflow",
+    "low flow",
+    "storage"
+   ]
+  },
+  {
+   "id": "cn-design-storm",
+   "title": "SCS Curve Number: Design Storm",
+   "track": "hydro",
+   "level": 1,
+   "status": "planned",
+   "summary": "Runoff from two sub-watersheds using the NRCS Curve Number method under a design storm.",
+   "plugins": [
+    "cn_catchment"
+   ],
+   "features": [
+    "Curve Number",
+    "Design storm",
+    "Composite catchments"
+   ],
+   "keywords": [
+    "curve number",
+    "scs",
+    "nrcs",
+    "cn",
+    "tr-55",
+    "design storm",
+    "hyetograph",
+    "runoff",
+    "abstraction",
+    "watershed",
+    "hydrograph"
+   ],
+   "doc": "curve_number_method.pdf"
+  },
+  {
+   "id": "snowmelt",
+   "title": "Snowpack Accumulation & Melt",
+   "track": "hydro",
+   "level": 1,
+   "status": "planned",
+   "summary": "A degree-day snowpack splits precipitation into rain and snow, stores it, and releases melt.",
+   "plugins": [
+    "snowmelt",
+    "rainfall_runoff"
+   ],
+   "features": [
+    "Degree-day melt",
+    "Rain/snow partition"
+   ],
+   "keywords": [
+    "snow",
+    "snowmelt",
+    "snowpack",
+    "degree day",
+    "swe",
+    "snow water equivalent",
+    "temperature",
+    "cold region",
+    "winter",
+    "spring melt"
+   ]
+  },
+  {
+   "id": "hillslope-hru",
+   "title": "Hillslope Hydrologic Response Units",
+   "track": "hydro",
+   "level": 2,
+   "status": "planned",
+   "summary": "Two HRUs on a hillslope, each bundling surface, soil and groundwater stores, routed downslope.",
+   "plugins": [
+    "hydrologic_response_unit",
+    "unsaturated_soil",
+    "groundwater",
+    "soil_evapotranspiration_models"
+   ],
+   "features": [
+    "HRU composites",
+    "Surface-subsurface coupling"
+   ],
+   "keywords": [
+    "hru",
+    "hydrologic response unit",
+    "hillslope",
+    "lumped",
+    "semi-distributed",
+    "watershed",
+    "interflow",
+    "baseflow",
+    "soil moisture"
+   ],
+   "doc": "hydrologic_response_units.pdf"
+  },
+  {
+   "id": "riparian-hru",
+   "title": "Riparian & Mixed-Landuse HRUs",
+   "track": "hydro",
+   "level": 2,
+   "status": "planned",
+   "summary": "Mixed-landuse HRUs draining through a riparian buffer before reaching the stream.",
+   "plugins": [
+    "riparian_urban_hru",
+    "mixed_hydrologic_response_unit"
+   ],
+   "features": [
+    "Riparian buffer",
+    "Mixed landuse"
+   ],
+   "keywords": [
+    "riparian",
+    "buffer",
+    "mixed landuse",
+    "land use",
+    "hru",
+    "watershed",
+    "floodplain",
+    "stream corridor"
+   ]
+  },
+  {
+   "id": "urban-hru",
+   "title": "Urban HRU to Stream",
+   "track": "hydro",
+   "level": 2,
+   "status": "planned",
+   "summary": "An urban HRU with pervious and impervious fractions drains to a channel, with groundwater-stream exchange.",
+   "plugins": [
+    "urban_hru",
+    "open_channel",
+    "unconfined_groundwater",
+    "unsaturated_soil"
+   ],
+   "features": [
+    "Impervious fraction",
+    "GW-stream exchange"
+   ],
+   "keywords": [
+    "urban hru",
+    "impervious",
+    "imperviousness",
+    "urbanization",
+    "stream",
+    "groundwater surface water",
+    "gw-sw interaction",
+    "hydrologic response unit"
+   ]
+  },
+  {
+   "id": "data-driven-hydrology",
+   "title": "Physics-Informed Data-Driven Hydrology",
+   "track": "hydro",
+   "level": 3,
+   "status": "planned",
+   "summary": "Conceptual storage units with power-law and latent-variable behavior, trained against observed streamflow.",
+   "plugins": [
+    "physicsbaseddatadrivenhydrology"
+   ],
+   "features": [
+    "Storage units",
+    "Latent variables",
+    "Calibration"
+   ],
+   "keywords": [
+    "data driven",
+    "machine learning",
+    "physics informed",
+    "hybrid model",
+    "latent variable",
+    "power law",
+    "storage unit",
+    "conceptual model"
+   ]
+  },
+  {
+   "id": "soil-infiltration-1d",
+   "title": "1D Infiltration & Soil Boundary Conditions",
+   "track": "soil",
+   "level": 1,
+   "status": "planned",
+   "summary": "A layered soil column under ponding and free drainage, solved with Richards' equation.",
+   "plugins": [
+    "unsaturated_soil"
+   ],
+   "features": [
+    "Richards equation",
+    "Boundary conditions"
+   ],
+   "keywords": [
+    "infiltration",
+    "richards equation",
+    "van genuchten",
+    "unsaturated",
+    "vadose",
+    "soil moisture",
+    "wetting front",
+    "hydraulic conductivity",
+    "free drainage"
+   ]
+  },
+  {
+   "id": "unconfined-aquifer-1d",
+   "title": "1D Unconfined Aquifer",
+   "track": "soil",
+   "level": 2,
+   "status": "planned",
+   "summary": "A row of unconfined groundwater cells between fixed heads, with recharge.",
+   "plugins": [
+    "unconfined_groundwater"
+   ],
+   "features": [
+    "Dupuit flow",
+    "Recharge",
+    "Fixed-head boundaries"
+   ],
+   "keywords": [
+    "aquifer",
+    "unconfined",
+    "groundwater",
+    "water table",
+    "dupuit",
+    "darcy",
+    "recharge",
+    "head",
+    "teaching"
+   ]
+  },
+  {
+   "id": "soil-2d",
+   "title": "2D Soil Cross-Section",
+   "track": "soil",
+   "level": 2,
+   "status": "planned",
+   "summary": "A two-dimensional grid of soil cells showing lateral and vertical flow.",
+   "plugins": [
+    "unsaturated_soil"
+   ],
+   "features": [
+    "Grid generator",
+    "2D flow"
+   ],
+   "keywords": [
+    "2d",
+    "two dimensional",
+    "grid",
+    "cross section",
+    "lateral flow",
+    "mesh",
+    "grid generator",
+    "unsaturated"
+   ]
+  },
+  {
+   "id": "crop-growing-season",
+   "title": "Crop Growing Season",
+   "track": "soil",
+   "level": 2,
+   "status": "planned",
+   "summary": "Corn through a growing season, with leaf area index and rooting depth that change over time.",
+   "plugins": [
+    "plants",
+    "unsaturated_soil"
+   ],
+   "features": [
+    "Dynamic LAI",
+    "Dynamic root depth",
+    "Weather forcing"
+   ],
+   "keywords": [
+    "crop",
+    "corn",
+    "maize",
+    "agriculture",
+    "irrigation",
+    "lai",
+    "leaf area index",
+    "root depth",
+    "growing season",
+    "et0",
+    "crop coefficient"
+   ],
+   "doc": "plant_water_uptake.pdf"
+  },
+  {
+   "id": "rooted-soil-transpiration",
+   "title": "Rooted Soil Profile Transpiration",
+   "track": "soil",
+   "level": 2,
+   "status": "planned",
+   "summary": "Plants draw water from three soil layers according to root distribution, with Penman-Monteith transpiration.",
+   "plugins": [
+    "plants",
+    "unsaturated_soil"
+   ],
+   "features": [
+    "Root water uptake",
+    "Penman-Monteith",
+    "Layered soil"
+   ],
+   "keywords": [
+    "transpiration",
+    "root water uptake",
+    "feddes",
+    "plants",
+    "vegetation",
+    "penman monteith",
+    "evapotranspiration",
+    "et",
+    "root zone",
+    "water stress"
+   ],
+   "doc": "plant_water_uptake.pdf"
+  },
+  {
+   "id": "well-field-network",
+   "title": "Well Field & Water Supply Network",
+   "track": "soil",
+   "level": 3,
+   "status": "planned",
+   "summary": "A supply well pumps from an aquifer into a tank and pipe network serving residential users.",
+   "plugins": [
+    "pipe_pump_tank",
+    "unconfined_groundwater"
+   ],
+   "features": [
+    "Pumping well",
+    "Elastic junctions",
+    "Demand patterns"
+   ],
+   "keywords": [
+    "well",
+    "pumping",
+    "drawdown",
+    "water supply",
+    "distribution network",
+    "pipes",
+    "tank",
+    "demand",
+    "junction",
+    "cone of depression"
+   ]
+  },
+  {
+   "id": "gate-weir-control",
+   "title": "Controlled Gate & Weir",
+   "track": "hyd",
+   "level": 2,
+   "status": "planned",
+   "summary": "A channel gate whose opening is set by a control signal, regulating flow and upstream water level.",
+   "plugins": [
+    "Gate_control",
+    "open_channel"
+   ],
+   "features": [
+    "Controllable weir",
+    "Imposed gate opening"
+   ],
+   "keywords": [
+    "gate",
+    "weir",
+    "control",
+    "sluice",
+    "regulation",
+    "water level",
+    "canal",
+    "operation",
+    "structure"
+   ]
+  },
+  {
+   "id": "culvert-suite",
+   "title": "Culvert Verification Suite",
+   "track": "hyd",
+   "level": 2,
+   "status": "planned",
+   "summary": "Culvert cases covering inlet and outlet control, submergence, roadway overtopping, box barrels and reverse flow.",
+   "plugins": [
+    "culvert",
+    "open_channel"
+   ],
+   "features": [
+    "Inlet/outlet control",
+    "Roadway overtopping",
+    "Verification"
+   ],
+   "keywords": [
+    "culvert",
+    "inlet control",
+    "outlet control",
+    "hds-5",
+    "fhwa",
+    "tailwater",
+    "headwater",
+    "overtopping",
+    "box culvert",
+    "road crossing",
+    "verification"
+   ],
+   "doc": "culvert_model.pdf"
+  },
+  {
+   "id": "floodplain-bypass",
+   "title": "Floodplain Bypass",
+   "track": "hyd",
+   "level": 2,
+   "status": "planned",
+   "summary": "High flows leave the main channel over a bypass link into the floodplain and return downstream.",
+   "plugins": [
+    "floodplain_bypass",
+    "open_channel"
+   ],
+   "features": [
+    "Overbank flow",
+    "Bypass link"
+   ],
+   "keywords": [
+    "floodplain",
+    "bypass",
+    "overbank",
+    "flood",
+    "levee",
+    "high flow",
+    "river",
+    "connectivity"
+   ]
+  },
+  {
+   "id": "reservoir-operation",
+   "title": "Reservoir Operation Rule",
+   "track": "hyd",
+   "level": 2,
+   "status": "planned",
+   "summary": "Release from a reservoir follows a rule tying outflow to storage.",
+   "plugins": [
+    "main_components"
+   ],
+   "features": [
+    "Rule-based release"
+   ],
+   "keywords": [
+    "reservoir",
+    "dam",
+    "operation",
+    "rule curve",
+    "release",
+    "storage",
+    "spillway",
+    "water supply",
+    "flood control"
+   ]
+  },
+  {
+   "id": "city-water-budget",
+   "title": "City Water Budget: Supply, Demand, Reuse",
+   "track": "mgmt",
+   "level": 3,
+   "status": "planned",
+   "summary": "Wells, desalination and storage supply residential, commercial and industrial users; wastewater is treated and partly recycled.",
+   "plugins": [
+    "urban_water_management"
+   ],
+   "features": [
+    "Supply sources",
+    "User sectors",
+    "Priority allocation",
+    "Recycling"
+   ],
+   "keywords": [
+    "water management",
+    "water budget",
+    "supply",
+    "demand",
+    "desalination",
+    "reuse",
+    "recycled water",
+    "wastewater",
+    "allocation",
+    "priority",
+    "city",
+    "planning"
+   ]
+  },
+  {
+   "id": "ga-calibration",
+   "title": "Genetic Algorithm Calibration",
+   "track": "calib",
+   "level": 2,
+   "status": "planned",
+   "summary": "Estimate column transport parameters from a breakthrough curve with the built-in genetic algorithm.",
+   "plugins": [
+    "mass_transfer",
+    "groundwater"
+   ],
+   "features": [
+    "Genetic algorithm",
+    "Objective functions"
+   ],
+   "keywords": [
+    "genetic algorithm",
+    "ga",
+    "global optimization",
+    "calibration",
+    "inverse modeling",
+    "parameter estimation",
+    "evolutionary",
+    "objective function"
+   ]
+  },
+  {
+   "id": "lm-calibration",
+   "title": "Levenberg-Marquardt Calibration",
+   "track": "calib",
+   "level": 2,
+   "status": "planned",
+   "summary": "Fit parameters for batch sorption, a Monod reactor and a pond weir from synthetic data, and report parameter covariance.",
+   "plugins": [
+    "mass_transfer",
+    "Pond_Plugin",
+    "groundwater"
+   ],
+   "features": [
+    "Parameters",
+    "Observations",
+    "LM optimizer",
+    "Covariance"
+   ],
+   "keywords": [
+    "calibration",
+    "levenberg marquardt",
+    "lm",
+    "inverse modeling",
+    "parameter estimation",
+    "least squares",
+    "covariance",
+    "jacobian",
+    "optimization",
+    "fitting"
+   ],
+   "doc": "lm_calibration.pdf"
+  },
+  {
+   "id": "ar1-error-model",
+   "title": "Autocorrelated Residuals (AR1 Error Model)",
+   "track": "calib",
+   "level": 3,
+   "status": "planned",
+   "summary": "Calibrate against high-frequency data with a continuous-time AR1 error model.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "AR1 error model",
+    "Likelihood"
+   ],
+   "keywords": [
+    "ar1",
+    "autocorrelation",
+    "autoregressive",
+    "error model",
+    "residuals",
+    "likelihood",
+    "time series",
+    "uncertainty"
+   ]
+  },
+  {
+   "id": "mcmc-bayesian",
+   "title": "Bayesian Calibration with MCMC",
+   "track": "calib",
+   "level": 3,
+   "status": "planned",
+   "summary": "Sample posterior parameter distributions with Markov chain Monte Carlo and plot prediction bands.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "MCMC",
+    "Posterior distributions",
+    "Prediction intervals"
+   ],
+   "keywords": [
+    "mcmc",
+    "bayesian",
+    "markov chain monte carlo",
+    "posterior",
+    "uncertainty",
+    "prediction interval",
+    "credible interval",
+    "likelihood",
+    "metropolis",
+    "realizations"
+   ]
+  },
+  {
+   "id": "console-python",
+   "title": "Running Models from the Console & Python",
+   "track": "auto",
+   "level": 2,
+   "status": "planned",
+   "summary": "Build, modify and run models from scripts: batch runs, parameter sweeps and post-processing without the GUI.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "Script files",
+    "Console solver",
+    "Python bindings"
+   ],
+   "keywords": [
+    "python",
+    "script",
+    "scripting",
+    "command line",
+    "console",
+    "batch",
+    "automation",
+    "api",
+    "parameter sweep",
+    "headless",
+    "linux"
+   ]
+  }
+ ]
+}

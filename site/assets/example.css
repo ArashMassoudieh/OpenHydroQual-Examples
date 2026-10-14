@@ -1,0 +1,82 @@
+.ex-hero { background: linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 45%, #08131f)); color: #fff; padding: 22px 0 28px; }
+.crumb { color: rgba(255,255,255,.8); text-decoration: none; font-size: 13px; }
+.crumb:hover { color: #fff; }
+.ex-track { margin-top: 16px; font-size: 12px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase; opacity: .85; }
+.ex-hero h1 { margin: 4px 0 8px; font-size: clamp(26px, 3.6vw, 36px); letter-spacing: -.4px; }
+.ex-hero .lede { margin-bottom: 14px; }
+.ex-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ex-meta .level { color: rgba(255,255,255,.85); margin: 0 6px 0 0; }
+.ex-meta .level b { background: rgba(255,255,255,.3); }
+.ex-meta .level b.f { background: #fff; }
+.ex-meta .plug { color: #fff; border-color: rgba(255,255,255,.4); text-decoration: none; }
+.ex-meta .plug:hover { border-color: #fff; color: #fff; }
+
+.ex-main { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 36px; padding-top: 28px; padding-bottom: 40px; }
+@media (max-width: 900px) { .ex-main { grid-template-columns: 1fr; gap: 18px; } .toc { display: none; } }
+.ex-side { position: sticky; top: 16px; align-self: start; display: flex; flex-direction: column; gap: 18px; }
+@media (max-width: 900px) { .ex-side { position: static; } }
+.dlbox { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
+.btn.big { justify-content: center; padding: 11px 14px; font-size: 14px; }
+.dlbox .btn.ghost { justify-content: center; }
+.muted { color: var(--ink-3); font-size: 13px; }
+.toc { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.toc b { font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: var(--ink-3); margin-bottom: 2px; }
+.toc a { color: var(--ink-2); text-decoration: none; border-left: 2px solid var(--line); padding-left: 10px; }
+.toc a:hover { color: var(--brand); border-color: var(--brand); }
+
+.ex-body section { margin-bottom: 38px; scroll-margin-top: 16px; }
+.ex-body h2 { font-size: 22px; margin: 0 0 10px; letter-spacing: -.2px; }
+.ex-body h3 { font-size: 16px; margin: 22px 0 2px; }
+.ex-body h3 small { font-weight: 500; color: var(--ink-3); font-size: 13px; margin-left: 4px; }
+.prose { font-size: 15.5px; line-height: 1.65; }
+.prose h2 { margin-top: 26px; }
+.prose h2:first-child { margin-top: 0; }
+.prose p, .prose li { color: var(--ink); }
+.prose code, .ex-body code { font: 13px "JetBrains Mono", monospace; background: var(--chip); padding: 1px 5px; border-radius: 4px; }
+.prose table { border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+.prose th, .prose td { border-bottom: 1px solid var(--line); padding: 6px 10px; text-align: left; }
+.prose blockquote { margin: 12px 0; padding: 8px 14px; border-left: 3px solid var(--c); background: var(--surface); color: var(--ink-2); }
+
+.diagram { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; overflow-x: auto; }
+.ohq-diagram { width: 100%; height: auto; max-height: 620px; display: block; margin: 0 auto; }
+.ohq-diagram .d-node rect { fill: var(--bg); stroke: var(--line); stroke-width: 2; }
+.ohq-diagram .d-node.composite rect { stroke-dasharray: 8 5; stroke: var(--ink-3); }
+.ohq-diagram .d-node:hover rect { stroke: var(--c); stroke-width: 4; }
+.ohq-diagram text { fill: var(--ink); font-family: Inter, sans-serif; font-weight: 500; }
+.ohq-diagram .d-link path { stroke: var(--c); stroke-width: 3; fill: none; opacity: .8; }
+.ohq-diagram .d-link:hover path { stroke-width: 6; opacity: 1; }
+.ohq-diagram .d-arrow { fill: var(--c); }
+@media (prefers-color-scheme: dark) { .ohq-diagram image { filter: brightness(.95); } }
+
+.kind-blurb { margin: 0 0 8px; color: var(--ink-3); font-size: 13px; }
+.comp-list { display: flex; flex-direction: column; gap: 6px; }
+.comp { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.comp[open] { border-color: color-mix(in srgb, var(--c) 50%, var(--line)); }
+.comp summary { list-style: none; cursor: pointer; padding: 10px 14px 10px 32px; display: grid; grid-template-columns: minmax(130px, 220px) 1fr; gap: 2px 16px; position: relative; }
+.comp summary::-webkit-details-marker { display: none; }
+.comp summary::before { content: "›"; position: absolute; left: 13px; top: 8px; font-size: 18px; color: var(--ink-3); transition: transform .15s; }
+.comp[open] summary::before { transform: rotate(90deg); }
+.cname { font-weight: 600; }
+.ctype { grid-column: 1; font: 12px "JetBrains Mono", monospace; color: var(--ink-3); }
+.crole { grid-column: 2; grid-row: 1 / span 2; color: var(--ink-2); font-size: 14px; }
+.crole p { margin: 0; }
+@media (max-width: 640px) { .comp summary { grid-template-columns: 1fr; } .crole { grid-column: 1; grid-row: auto; } }
+.cbody { padding: 0 14px 14px 32px; overflow-x: auto; }
+.type-help { font-size: 13px; color: var(--ink-3); margin: 4px 0 10px; }
+.members { font-size: 13px; color: var(--ink-2); margin: 0 0 4px; }
+table.props { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.props th { text-align: left; font-weight: 600; color: var(--ink-3); font-size: 12px; text-transform: uppercase; letter-spacing: .3px; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+table.props td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-2); }
+table.props td:first-child { color: var(--ink); white-space: nowrap; }
+table.props td.v { font: 13px "JetBrains Mono", monospace; color: var(--ink); word-break: break-all; }
+table.props td p { margin: 0; }
+table.narrow { max-width: 460px; }
+table.files td:first-child { width: 1%; }
+.rxn { margin: 6px 0 12px; }
+.rate { display: flex; gap: 10px; align-items: baseline; margin-bottom: 6px; flex-wrap: wrap; }
+.rate span { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--ink-3); }
+.rate code { font-size: 13.5px; }
+table.stoich { max-width: 380px; }
+figure { margin: 0 0 22px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+figure img { width: 100%; height: auto; display: block; }
+figcaption { font-size: 13px; color: #4a5a6d; padding: 6px 4px 0; }

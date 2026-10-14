@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+site/data/.catalog.*.json
+# OpenHydroQual run outputs that may land next to a model during curation
+examples/**/output.txt
+examples/**/observedoutput.txt
+examples/**/errors.txt
+examples/**/GA_output.txt
+examples/**/state.json
+examples/**/fit_measures.txt
+examples/**/mapped_modeled_results.txt
+examples/**/Objective_Function_TimeSeries.txt
+examples/**/objective_function_values.txt
+examples/**/build_output.txt
+examples/**/log.txt

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenHydroQual Examples</title>
+<meta name="description" content="Searchable catalog of downloadable OpenHydroQual example models and documentation.">
+<link rel="icon" href="assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="https://openhydroqual.com">
+      <img src="assets/ohq.png" alt="" width="32" height="32">
+      <span>OpenHydroQual</span>
+    </a>
+    <nav class="topnav">
+      <a href="https://openhydroqual.com">Home</a>
+      <a href="#" aria-current="page">Examples</a>
+      <a href="#docs">Documentation</a>
+      <a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Example Models</h1>
+    <p class="lede">Ready-to-run models covering hydrology, water quality, stormwater, soils, hydraulics and calibration. Download a model, open it in OpenHydroQual, and press Run.</p>
+    <div class="searchbox" role="search">
+      <svg class="searchicon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="q" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Search by keyword, process or plugin, e.g. bioretention, Monod, MCMC, culvert"
+             aria-label="Search examples">
+      <kbd class="hint">/</kbd>
+    </div>
+    <div class="suggest" id="suggest" aria-label="Popular searches"></div>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="filters" aria-label="Filters">
+    <div class="chips" id="tracks" role="group" aria-label="Track"></div>
+    <div class="filter-row">
+      <div class="seg" id="levels" role="group" aria-label="Level">
+        <button data-level="0" class="on">All levels</button>
+        <button data-level="1">Beginner</button>
+        <button data-level="2">Intermediate</button>
+        <button data-level="3">Advanced</button>
+      </div>
+      <label class="select">
+        <span>Plugin</span>
+        <select id="plugin"><option value="">Any plugin</option></select>
+      </label>
+      <label class="toggle"><input type="checkbox" id="readyOnly"> Available now only</label>
+      <span class="count" id="count" aria-live="polite"></span>
+      <button class="linkbtn" id="reset" hidden>Clear filters</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>
+    <p><strong>No examples match.</strong> Try a broader term, or one of these:</p>
+    <div class="suggest" id="emptySuggest"></div>
+  </div>
+
+  <section id="docs" class="docs">
+    <h2>Documentation</h2>
+    <div class="doclist" id="doclist"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    OpenHydroQual is open source under the GPL. Examples are free to use and adapt.
+    <a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples">Contribute an example on GitHub</a>.
+  </div>
+</footer>
+<script src="assets/app.js"></script>
+</body>
+</html>

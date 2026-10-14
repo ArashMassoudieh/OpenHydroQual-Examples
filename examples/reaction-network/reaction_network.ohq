@@ -1,0 +1,17 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = mass_transfer.json
+create constituent;type=Constituent,concentration=0,constant_inflow_concentration=0,diffusion_coefficient=0,dispersivity=0,external_mass_flow_timeseries=,external_source=,name=A,stoichiometric_constant=0,time_variable_inflow_concentration=
+create constituent;type=Constituent,concentration=0,constant_inflow_concentration=0,diffusion_coefficient=0,dispersivity=0,external_mass_flow_timeseries=,external_source=,name=B,stoichiometric_constant=0,time_variable_inflow_concentration=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1.05,base_value=1,name=k_A,reference_temperature=20,temperature=temperature.txt
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=0.5,name=k_B,reference_temperature=20,temperature=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=0.6,name=K_s,reference_temperature=20,temperature=
+create reaction_parameter;type=ReactionParameter,Arrhenius_factor=1,base_value=0.8,name=Y_B,reference_temperature=20,temperature=
+create reaction;type=Reaction,A:stoichiometric_constant=-1,B:stoichiometric_constant=Y_B,name=A_to_B,rate_expression=(k_A*A/(K_s+A))
+create reaction;type=Reaction,A:stoichiometric_constant=0,B:stoichiometric_constant=-1,name=B_loss,rate_expression=(k_B*B^2)
+create block;type=Reactor,A:concentration=2[g/m~^3],A:constant_inflow_concentration=0,A:external_mass_flow_timeseries=,A:external_source=,A:time_variable_inflow_concentration=,B:concentration=0[g/m~^3],B:constant_inflow_concentration=0,B:external_mass_flow_timeseries=,B:external_source=,B:time_variable_inflow_concentration=,Storage=10[m~^3],_height=200,_width=200,bottom_elevation=0,constant_inflow=0,name=Batch_Reactor,time_variable_inflow=,x=400,y=300
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=5
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=10
