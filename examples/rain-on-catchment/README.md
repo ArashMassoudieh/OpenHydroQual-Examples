@@ -13,7 +13,7 @@ components:
   Outlet: The drainage point of the catchment, for example a storm drain inlet. A fixed-head boundary at 0 m that accepts any flow without filling up.
   Runoff: Sheet flow leaving the catchment, computed from Manning's equation with the catchment's ponded water depth. Always directed from Catchment to Outlet.
 inputs:
-  rainfall.csv: "Hourly rainfall. Three columns, comma separated, no header: interval start (days), interval end (days), rainfall depth in that interval (mm). Day 0 is 10 August 2011 at 00:00; the record covers 36 days (864 hourly intervals, 381.8 mm in total). Extracted from the sample rain gauge record distributed with the OpenHydroQual tutorials."
+  rainfall.csv: "Hourly rainfall. Three columns, comma separated, no header: interval start (days), interval end (days), rainfall depth in that interval (mm). Day 0 is 10 August 2011 at 00:00; the record covers 36 days (864 hourly intervals, 381.8 mm in total). Source: NOAA hourly precipitation at Baltimore/Washington International Airport (BWI), Maryland, USA (US public-domain data, 0.01 inch resolution). The window includes Hurricane Irene (27 to 28 August 2011) and Tropical Storm Lee (7 to 8 September 2011)."
 plots:
   - title: Effective rainfall and runoff
     ylabel: Flow rate (m³/day)

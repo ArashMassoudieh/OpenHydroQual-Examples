@@ -509,32 +509,50 @@
   },
   {
    "id": "asm-clarifier",
-   "title": "Activated Sludge Reactor + Clarifier",
+   "title": "Activated Sludge Reactor and Clarifier",
    "track": "wq",
    "level": 3,
-   "status": "planned",
-   "summary": "A biological reactor coupled to a secondary clarifier, with biomass growth and substrate removal.",
+   "status": "ready",
+   "summary": "Four aeration cells in series and a two-compartment secondary clarifier, with sludge return and wasting. Heterotrophic biomass grows on soluble substrate by Monod kinetics and decays; the plant starts up from a low biomass and settles to a steady mixed-liquor concentration set by the sludge age.",
    "plugins": [
     "wastewater",
     "mass_transfer"
    ],
    "features": [
-    "Composite blocks",
-    "Biomass kinetics",
-    "Recycle"
+    "Composite clarifier",
+    "Monod growth",
+    "Sludge recycle",
+    "Sludge age",
+    "Particles"
    ],
    "keywords": [
     "activated sludge",
     "asm",
+    "asm1",
     "wastewater treatment",
     "wwtp",
-    "clarifier",
+    "secondary treatment",
+    "aeration tank",
+    "plug flow",
+    "tanks in series",
+    "secondary clarifier",
+    "return activated sludge",
+    "ras",
+    "waste activated sludge",
+    "was",
+    "sludge age",
+    "srt",
+    "mlss",
+    "f/m ratio",
     "biomass",
+    "heterotroph",
     "substrate",
+    "cod",
     "monod",
-    "sludge recycle",
-    "secondary treatment"
-   ]
+    "yield",
+    "decay"
+   ],
+   "thumb": "examples/asm-clarifier/thumb.svg"
   },
   {
    "id": "wet-pond-nutrients",
@@ -576,15 +594,18 @@
    "title": "Pollutant Build-up and Wash-off",
    "track": "storm",
    "level": 1,
-   "status": "planned",
-   "summary": "Pollutants accumulate on an impervious surface in dry weather and wash off in storms.",
+   "status": "ready",
+   "summary": "Solids accumulate on a 1 ha parking lot in dry weather and are washed off during 80 days of real summer rainfall. Wash-off depends on the runoff depth, so intense storms after long dry spells carry the highest loads.",
    "plugins": [
     "buildup_washoff",
     "Sewer_system"
    ],
    "features": [
-    "Build-up",
-    "Wash-off"
+    "Exponential build-up",
+    "Depth-dependent wash-off",
+    "Immobile surface constituent",
+    "Supply-limited loads",
+    "Flow-weighted mean concentration"
    ],
    "keywords": [
     "buildup",
@@ -594,11 +615,19 @@
     "first flush",
     "emc",
     "event mean concentration",
+    "flow weighted mean concentration",
     "impervious",
+    "parking lot",
     "urban runoff",
+    "stormwater quality",
     "pollutant loading",
     "tss",
-    "metals"
+    "total suspended solids",
+    "sediment",
+    "street dirt",
+    "antecedent dry period",
+    "kinematic wave",
+    "swmm"
    ]
   },
   {
@@ -636,31 +665,45 @@
   },
   {
    "id": "detention-spillways",
-   "title": "Detention Pond with Riser & Emergency Spillway",
+   "title": "Detention Pond with Riser and Emergency Spillway",
    "track": "storm",
    "level": 2,
-   "status": "planned",
-   "summary": "A dry detention pond with a riser outlet and an emergency spillway routes a design storm.",
+   "status": "ready",
+   "summary": "A dry detention pond with a low-flow orifice, a drop-inlet riser and an emergency spillway routes two synthetic storm hydrographs. The small storm is handled by the orifice and the riser weir; the large one drives the riser into pipe control and spills over the emergency spillway.",
    "plugins": [
     "dam_spillways",
     "Pond_Plugin"
    ],
    "features": [
-    "Riser spillway",
+    "Level-pool routing",
+    "Low-flow orifice",
+    "Riser weir and conduit control",
     "Emergency spillway",
     "Peak attenuation"
    ],
    "keywords": [
     "detention",
     "dry pond",
+    "detention basin",
+    "stormwater pond",
     "riser",
+    "drop inlet",
+    "principal spillway",
     "spillway",
     "emergency spillway",
+    "auxiliary spillway",
+    "broad-crested weir",
+    "orifice",
     "outlet structure",
+    "stage-storage",
+    "stage-discharge",
     "peak flow",
     "attenuation",
+    "flood routing",
+    "level pool routing",
     "design storm",
-    "routing",
+    "unit hydrograph",
+    "scs",
     "dam"
    ]
   },
