@@ -4,7 +4,7 @@
 <g class="d-node" data-name="CSTR"><title>CSTR (Reactor)</title><rect x="0" y="400" width="200" height="200" rx="16"/>
 <image href="icons/reactor.png" x="22" y="422" width="156" height="156"/>
 <text x="100" y="618" font-size="14" text-anchor="middle">CSTR</text></g>
-<g class="d-node" data-name="Effluent_Tank"><title>Effluent_Tank (Reactor)</title><rect x="600" y="400" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="622" y="422" width="156" height="156"/>
-<text x="700" y="618" font-size="14" text-anchor="middle">Effluent_Tank</text></g>
+<g class="d-node" data-name="Effluent"><title>Effluent (fixed_head)</title><rect x="600" y="400" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="622" y="422" width="156" height="156"/>
+<text x="700" y="618" font-size="14" text-anchor="middle">Effluent</text></g>
 </svg>

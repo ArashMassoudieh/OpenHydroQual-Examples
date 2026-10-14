@@ -54,10 +54,10 @@
 <p><strong>Time stepping.</strong> The run uses a fixed time step of 0.001 days (about 1.4 minutes), set by <code>initial_time_step</code> with <code>max_timestep_increase_factor</code> = 1, so that the comparison with the exact solution is not blurred by the time discretization.</p>
 <h2>What to look for in the results</h2>
 <ul>
-<li><strong>Agreement with theory.</strong> The computed depth follows the exact parabola to within about 0.01 m. Half of the depth (1 m) is lost in the first 0.18 days, but the remaining metre takes another 0.44 days, because the outflow weakens as the head falls.</li>
+<li><strong>Agreement with theory.</strong> The computed depth follows the exact parabola to within about 1 mm. Half of the depth (1 m) is lost in the first 0.18 days, but the remaining metre takes another 0.44 days, because the outflow weakens as the head falls.</li>
 <li><strong>Linear decline of the outflow.</strong> Since Q ∝ √d and √d falls linearly in time, the outflow falls on a straight line, from about 650 m³/day at the start to zero at 0.62 days. Compare this with a linear reservoir (Q ∝ S), whose outflow decays exponentially and never quite reaches zero.</li>
 <li><strong>A finite emptying time.</strong> A tank draining through an orifice empties completely in finite time, and the last few centimetres drain at a finite rate. Near the end the model departs slightly from the exact solution because of the smoothing term in the depth formula, which matters only when less than a few cubic metres (a few centimetres of depth) remain.</li>
-<li><strong>Mass balance.</strong> The volume lost by the tank equals the time integral of the orifice flow. The Outlet's storage stays at 100,000 m³ because a fixed-head boundary is held constant.</li>
+<li><strong>Mass balance.</strong> The volume lost by the tank equals the time integral of the orifice flow. The Outlet is a boundary with a fixed head, so the 200 m³ it receives does not change the head that drives the orifice.</li>
 </ul>
 <h2>Assumptions and limitations</h2>
 <ul>

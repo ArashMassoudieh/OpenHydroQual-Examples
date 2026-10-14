@@ -10,8 +10,8 @@ keywords: [cstr, stirred tank, completely mixed reactor, reactor, tracer, step i
 extra_files: [exact_tracer.csv, exact_reactive.csv]
 components:
   CSTR: A completely mixed reactor of 1 m³ fed with 0.4 m³/day of water carrying 0.8 g/m³ of both Tracer and Reactive. It starts with clean water. Hydraulic residence time V/Q = 2.5 days.
-  Effluent_Tank: A collection tank, initially empty, that receives the reactor outflow. It is there to give the outflow somewhere to go; its contents are not part of the test.
-  Outflow: Fixed flow of 0.4 m³/day from CSTR to Effluent_Tank, equal to the inflow, so the reactor volume stays at 1 m³.
+  Effluent: The downstream end of the system, a fixed-head boundary at 0 m that accepts the reactor outflow. What happens to the water after it leaves the reactor is not modeled.
+  Outflow: Fixed flow of 0.4 m³/day from CSTR to Effluent, equal to the inflow, so the reactor volume stays at 1 m³.
   Tracer: A conservative (non-reacting) dissolved substance, such as a dye or bromide.
   Reactive: A dissolved substance that decays by first-order kinetics.
   k: First-order decay rate constant of Reactive, 0.7 per day.
@@ -57,15 +57,14 @@ With C_in = 0.8 g/m³, τ = 2.5 days and k = 0.7 per day: the tracer has a time 
 
 ## What to look for in the results
 
-- **Agreement with theory.** Both computed curves lie on the exact solutions. The largest difference is about 0.003 g/m³ during the first day, roughly the change in concentration over one time step. It shrinks in proportion to the time step.
+- **Agreement with theory.** Both computed curves lie on the exact solutions. The largest difference is about 0.0006 g/m³, the time discretization error of the fully implicit (backward Euler) scheme. It shrinks in proportion to the time step.
 - **The residence time.** At t = τ = 2.5 days the tracer has reached 1 − e⁻¹ = 63% of the inflow concentration (0.51 g/m³), and at 10 days (4τ) it has reached 98%. In a real tracer test, this time constant is how the effective volume of a mixed vessel is measured.
 - **Reaction speeds up the approach to steady state.** The reactive compound levels off much sooner than the tracer, because decay and washout act together with a combined rate of 1/τ + k = 1.1 per day.
 - **Steady-state removal.** At steady state the reactor removes 1 − 1/(1 + k·τ) = 64% of the incoming Reactive. The dimensionless group k·τ (a Damköhler number, 1.75 here) controls the removal: a longer residence time or faster kinetics removes more.
-- **Mass balance.** The tracer mass in the CSTR plus the Effluent_Tank grows at exactly 0.32 g/day, the inflow loading.
+- **Mass balance.** The tracer mass held in the CSTR plus the cumulative tracer mass carried out by the Outflow link (the time integral of `Outflow_Tracer:masstransfer`) equals the inflow loading times elapsed time, 0.32 g/day × t: 3.2 g after 10 days.
 
 ## Assumptions and limitations
 
 - The reactor is perfectly mixed: the outflow concentration equals the tank concentration at every instant. Real vessels have dead zones and short-circuiting; the Plug-Flow Reactor Tracer example shows the opposite extreme.
 - Flow and volume are constant. The inflow concentration steps from 0 to 0.8 g/m³ at t = 0 and then stays constant.
 - Decay is first order and independent of temperature (the Arrhenius factor of k is 1).
-- The Decay reaction also acts in the Effluent_Tank, which is why its Reactive concentration is lower than the reactor's. That tank is only a sink and is not part of the comparison.

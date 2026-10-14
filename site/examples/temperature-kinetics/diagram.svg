@@ -8,7 +8,7 @@
 <g class="d-node" data-name="Pond_20C"><title>Pond_20C (Reactor)</title><rect x="0" y="500" width="200" height="200" rx="16"/>
 <image href="icons/reactor.png" x="22" y="522" width="156" height="156"/>
 <text x="100" y="725" font-size="19" text-anchor="middle">Pond_20C</text></g>
-<g class="d-node" data-name="Receiving_Water"><title>Receiving_Water (Reactor)</title><rect x="600" y="250" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="622" y="272" width="156" height="156"/>
+<g class="d-node" data-name="Receiving_Water"><title>Receiving_Water (fixed_head)</title><rect x="600" y="250" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="622" y="272" width="156" height="156"/>
 <text x="700" y="475" font-size="19" text-anchor="middle">Receiving_Water</text></g>
 </svg>

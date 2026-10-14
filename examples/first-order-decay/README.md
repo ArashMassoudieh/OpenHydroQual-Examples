@@ -49,11 +49,11 @@ where C₀ = 2 g/m³ and k = 0.7 per day. The half-life is ln 2 / k = 0.99 days.
 
 **The rate constant.** k is a `ReactionParameter`. Its value is computed as base_value · θ^(T − T_ref). Here θ (the Arrhenius factor) is 1, so k equals its base value of 0.7 per day at all times. The Temperature-Dependent Kinetics example shows what happens when θ is not 1.
 
-**Time stepping.** OpenHydroQual integrates the equations with a fully implicit (backward Euler) scheme. Here the time step is held at 0.01 days (`max_timestep_increase_factor` = 1), which keeps the step-to-step change in C below 1%.
+**Time stepping.** OpenHydroQual integrates the equations with a fully implicit (backward Euler) scheme. Here the time step is held at 0.01 days (`max_timestep_increase_factor` = 1), which keeps the change in C over one step below 1%.
 
 ## What to look for in the results
 
-- **Agreement with theory.** The computed curve lies on the exact solution. The difference is less than 1% of the exact value over the whole run (for example 0.0607 against 0.0604 g/m³ at day 5). It comes from the time discretization: backward Euler multiplies C by 1/(1 + k·Δt) each step, slightly less decay per step than e^(−k·Δt), so the error grows slowly with time and shrinks in proportion to Δt.
+- **Agreement with theory.** The computed curve lies on the exact solution. The computed concentration is slightly higher than the exact value, by about 0.25% per day of simulation, reaching 1.2% at day 5 (0.0611 against 0.0604 g/m³). This is the time discretization error: backward Euler multiplies C by 1/(1 + k·Δt) each step, slightly less decay per step than e^(−k·Δt), so the relative error grows linearly with time and shrinks in proportion to Δt.
 - **Half-life.** C drops to 1 g/m³ at about 1 day, 0.5 g/m³ at 2 days, and 0.25 g/m³ at 3 days.
 - **Straight line on a log scale.** The second plot shows ln C falling linearly with slope −k. This is the usual test for whether measured data follow first-order kinetics.
 

@@ -1,9 +1,9 @@
 loadtemplate; filename = main_components.json
 addtemplate; filename = mass_transfer.json
 create constituent;type=Constituent,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],diffusion_coefficient=0[m~^2/s],dispersivity=0[m],external_mass_flow_timeseries=,external_source=,name=Tracer,stoichiometric_constant=0,time_variable_inflow_concentration=
-create block;type=Reactor,Storage=1000000[m~^3],Tracer:concentration=1[g/m~^3],Tracer:constant_inflow_concentration=0[g/m~^3],Tracer:external_mass_flow_timeseries=,Tracer:external_source=,Tracer:time_variable_inflow_concentration=,_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Influent,time_variable_inflow=,x=0,y=400
+create block;type=fixed_head,Storage=100000[m~^3],Tracer:concentration=1[g/m~^3],_height=200,_width=200,head=0[m],name=Influent,x=0,y=400
 create composite;type=Plug flow reactor,Tracer:concentration=0[g/m~^3],Tracer:constant_inflow_concentration=0[g/m~^3],Tracer:external_mass_flow_timeseries=,Tracer:external_source=,Tracer:time_variable_inflow_concentration=,_height=200,_width=200,area=10[m~^2],bottom_elevation=0[m],flow=100[m~^3/day],length=100[m],name=PFR,x=400,y=400
-create block;type=Reactor,Storage=0[m~^3],Tracer:concentration=0[g/m~^3],Tracer:constant_inflow_concentration=0[g/m~^3],Tracer:external_mass_flow_timeseries=,Tracer:external_source=,Tracer:time_variable_inflow_concentration=,_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Effluent,time_variable_inflow=,x=800,y=400
+create block;type=fixed_head,Storage=100000[m~^3],Tracer:concentration=0[g/m~^3],_height=200,_width=200,head=0[m],name=Effluent,x=800,y=400
 create link;from=Influent,to=PFR,type=Fixed flow,flow=100[m~^3/day],name=Feed
 create link;from=PFR,to=Effluent,type=Fixed flow,flow=100[m~^3/day],name=Discharge
 setvalue; object=system, quantity=alloutputfile, value=output.txt

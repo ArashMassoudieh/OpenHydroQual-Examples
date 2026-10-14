@@ -7,7 +7,7 @@ create reaction_parameter;type=TimeDependent_ReactionParameter,name=T_water,valu
 create reaction;type=Reaction,BOD:stoichiometric_constant=-1,name=BOD_decay,rate_expression=(k20*theta^(T_water-20)*BOD)
 create block;type=Reactor,BOD:concentration=15[g/m~^3],BOD:constant_inflow_concentration=50[g/m~^3],BOD:external_mass_flow_timeseries=,BOD:external_source=,BOD:time_variable_inflow_concentration=,Storage=10000[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=1000[m~^3/day],time_variable_inflow=,T_water:value=water_temperature.csv,name=Pond_Seasonal,x=0,y=0
 create block;type=Reactor,BOD:concentration=15[g/m~^3],BOD:constant_inflow_concentration=50[g/m~^3],BOD:external_mass_flow_timeseries=,BOD:external_source=,BOD:time_variable_inflow_concentration=,Storage=10000[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=1000[m~^3/day],time_variable_inflow=,T_water:value=temperature_20C.csv,name=Pond_20C,x=0,y=500
-create block;type=Reactor,BOD:concentration=0[g/m~^3],BOD:constant_inflow_concentration=0[g/m~^3],BOD:external_mass_flow_timeseries=,BOD:external_source=,BOD:time_variable_inflow_concentration=,Storage=0[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],time_variable_inflow=,T_water:value=water_temperature.csv,name=Receiving_Water,x=600,y=250
+create block;type=fixed_head,BOD:concentration=0[g/m~^3],Storage=100000[m~^3],_height=200,_width=200,head=0[m],name=Receiving_Water,x=600,y=250
 create link;from=Pond_Seasonal,to=Receiving_Water,type=Fixed flow,flow=1000[m~^3/day],name=Outflow_Seasonal
 create link;from=Pond_20C,to=Receiving_Water,type=Fixed flow,flow=1000[m~^3/day],name=Outflow_20C
 setvalue; object=system, quantity=alloutputfile, value=output.txt

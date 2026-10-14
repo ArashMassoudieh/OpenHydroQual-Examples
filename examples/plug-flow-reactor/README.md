@@ -9,11 +9,11 @@ features: [Composite blocks, Cells in series, Tracer transport, Residence time d
 keywords: [pfr, plug flow, plug flow reactor, composite, tanks in series, cells in series, advection, dispersion, numerical dispersion, tracer, step input, breakthrough curve, f curve, residence time distribution, rtd, hydraulic residence time, peclet number, channel, pipe, contact tank]
 extra_files: [exact_outlet.csv, ideal_plug_flow.csv]
 components:
-  Influent: A very large feed tank (10⁶ m³) holding water at a tracer concentration of 1 g/m³. Over the 30-day run it loses only 0.3% of its volume, so it acts as a constant-concentration source.
+  Influent: The upstream boundary, a fixed-head block holding water at a tracer concentration of 1 g/m³. It supplies the feed at a constant concentration.
   PFR: "A 'Plug flow reactor' composite block: a flow path 100 m long with a 10 m² cross section (1,000 m³), carrying 100 m³/day. It expands into ten 100 m³ Reactor cells, PFR__R01 to PFR__R10, joined by nine internal Fixed flow links of 100 m³/day. Hydraulic residence time 10 days, 1 day per cell."
-  Effluent: A collection tank, initially empty, that receives the reactor outflow.
+  Effluent: The downstream boundary, a fixed-head block that accepts the reactor outflow. What happens to the water after it leaves the reactor is not modeled.
   Feed: Fixed flow of 100 m³/day from Influent into the first cell of the PFR.
-  Discharge: Fixed flow of 100 m³/day from the last cell of the PFR to the Effluent tank.
+  Discharge: Fixed flow of 100 m³/day from the last cell of the PFR to the Effluent boundary.
   Tracer: A conservative dissolved substance. It enters at 1 g/m³ from t = 0; the reactor initially holds clean water.
 plots:
   - title: Tracer breakthrough along the reactor
@@ -65,4 +65,4 @@ With N = 10 and τ = 10 days this is tabulated in `exact_outlet.csv`. Ideal plug
 - The composite always uses ten cells. A sharper front, closer to ideal plug flow, needs more cells, which means replacing the composite with an explicit, longer chain of Reactor blocks and links. Conversely, ten cells is a reasonable choice when the real reactor has a dispersion number near 0.05.
 - Physical dispersion, if added through the constituent's dispersivity, adds to the numerical dispersion of the cell chain.
 - Flow is steady and the cross section uniform. The tracer is conservative and the reactor starts clean.
-- The Influent tank is a convenient constant-concentration source. Its concentration stays at exactly 1 g/m³ because nothing enters it.
+- The inflow concentration is a step from 0 to 1 g/m³ at t = 0, set by the concentration of the Influent boundary. The Feed link carries no dispersive flux (dispersivity and diffusion coefficient are zero), so the boundaries exchange tracer with the reactor by advection only.

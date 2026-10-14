@@ -10,7 +10,7 @@ keywords: [first model, rainfall, runoff, precipitation, catchment, outlet, hydr
 components:
   Rainfall: Hourly rainfall depths read from `rainfall.csv`. Any block that names this source as its precipitation receives the intensity multiplied by the block's area.
   Catchment: A 12,000 m² (1.2 ha) paved surface, 100 m wide and 120 m long in the flow direction, with a 0.5% slope and Manning's n of 0.015 (smooth asphalt). 90% of the rain becomes runoff; the other 10% is treated as lost (wetting, small depressions, evaporation).
-  Outlet: The drainage point of the catchment, for example a storm drain inlet. A fixed-head boundary at 0 m that accepts any flow without filling up.
+  Outlet: The drainage point of the catchment, for example a storm drain inlet. A fixed-head boundary at 0 m that accepts any flow without its head changing.
   Runoff: Sheet flow leaving the catchment, computed from Manning's equation with the catchment's ponded water depth. Always directed from Catchment to Outlet.
 inputs:
   rainfall.csv: "Hourly rainfall. Three columns, comma separated, no header: interval start (days), interval end (days), rainfall depth in that interval (mm). Day 0 is 10 August 2011 at 00:00; the record covers 36 days (864 hourly intervals, 381.8 mm in total). Source: NOAA hourly precipitation at Baltimore/Washington International Airport (BWI), Maryland, USA (US public-domain data, 0.01 inch resolution). The window includes Hurricane Irene (27 to 28 August 2011) and Tropical Storm Lee (7 to 8 September 2011)."
@@ -54,7 +54,7 @@ where C_r is the runoff coefficient (0.9 here) and Q is the outflow through the 
 
 with width W = 100 m, Manning's n = 0.015, slope s = 0.005 and depression storage d_s = 0 m. The factor 86400 converts m³/s to m³/day. Because Q grows with depth to the power 5/3, the catchment behaves as a nonlinear reservoir: a deeper sheet drains much faster than a shallow one. Only the catchment's own depth enters the equation, so the outlet cannot back water up onto the catchment.
 
-**Outlet.** The Outlet is a `fixed_head` block. Its head and storage are held constant, so it absorbs any flow it receives. Its only role is to give the runoff somewhere to go.
+**Outlet.** The Outlet is a `fixed_head` block: its head is held at 0 m whatever volume it receives. Its only role is to give the runoff somewhere to go.
 
 ## What to look for in the results
 

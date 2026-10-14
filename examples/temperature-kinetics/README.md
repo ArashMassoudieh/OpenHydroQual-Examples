@@ -10,7 +10,7 @@ keywords: [temperature, temperature correction, arrhenius, theta, van't hoff, se
 components:
   Pond_Seasonal: A completely mixed treatment pond of 10,000 m³ receiving 1,000 m³/day of water with 50 g/m³ BOD (residence time 10 days). Its water temperature follows the seasonal record in `water_temperature.csv`.
   Pond_20C: An identical pond whose temperature is held at the 20 °C reference (`temperature_20C.csv`). It shows what a model with an uncorrected rate constant would predict.
-  Receiving_Water: An initially empty collection volume that receives the outflow of both ponds. It follows the seasonal temperature. It is only a sink and is not part of the comparison.
+  Receiving_Water: The downstream boundary, a fixed-head block that accepts the outflow of both ponds. What happens to the water after it leaves the ponds is not modeled.
   Outflow_Seasonal: Fixed outflow of 1,000 m³/day from Pond_Seasonal, equal to its inflow, so the pond volume stays constant.
   Outflow_20C: Fixed outflow of 1,000 m³/day from Pond_20C.
   BOD: Biochemical oxygen demand, a lumped measure of degradable organic matter (g/m³).
@@ -54,7 +54,7 @@ The example also shows a modeling technique that differs from the one in the Mul
 | theta | ReactionParameter | 1.047 |
 | T_water | TimeDependent_ReactionParameter | a time series per block (°C) |
 
-k20 and theta are plain constants: their own Arrhenius factor is set to 1, so their value equals their base value. T_water has no model-wide value. Instead, each block that holds the constituent carries a property `T_water:value` pointing to a time-series file: `water_temperature.csv` for Pond_Seasonal and Receiving_Water, `temperature_20C.csv` for Pond_20C. When a rate expression in a block uses T_water, OpenHydroQual takes the value from that block's own series at the current time.
+k20 and theta are plain constants: their own Arrhenius factor is set to 1, so their value equals their base value. T_water has no model-wide value. Instead, each block that holds the constituent carries a property `T_water:value` pointing to a time-series file: `water_temperature.csv` for Pond_Seasonal and `temperature_20C.csv` for Pond_20C. When a rate expression in a block uses T_water, OpenHydroQual takes the value from that block's own series at the current time.
 
 **Reaction.** BOD_decay has stoichiometric coefficient −1 for BOD and the rate expression
 
