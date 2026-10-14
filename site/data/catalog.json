@@ -1410,32 +1410,46 @@
   },
   {
    "id": "well-field-network",
-   "title": "Well Field & Water Supply Network",
+   "title": "Well Field and Water Supply Network",
    "track": "soil",
    "level": 3,
-   "status": "planned",
-   "summary": "A supply well pumps from an aquifer into a tank and pipe network serving residential users.",
+   "status": "ready",
+   "summary": "A supply well in an unconfined aquifer pumps into an elevated storage tank, which feeds a looped pipe network serving six residential users with an hourly demand pattern. Groundwater, well hydraulics, pump curve, tank storage and pipe flow are solved together for one month.",
    "plugins": [
     "pipe_pump_tank",
     "unconfined_groundwater"
    ],
    "features": [
     "Pumping well",
-    "Elastic junctions",
+    "Pump curve",
+    "Storage tank",
+    "Hazen-Williams pipes",
     "Demand patterns"
    ],
    "keywords": [
     "well",
+    "water supply well",
     "pumping",
     "drawdown",
+    "thiem",
+    "cone of depression",
+    "unconfined aquifer",
+    "groundwater",
+    "recharge",
     "water supply",
     "distribution network",
-    "pipes",
-    "tank",
-    "demand",
+    "pipe network",
+    "hazen williams",
+    "pump curve",
+    "storage tank",
+    "elevated tank",
     "junction",
-    "cone of depression"
-   ]
+    "pressure",
+    "demand",
+    "diurnal demand",
+    "conjunctive system"
+   ],
+   "thumb": "examples/well-field-network/thumb.svg"
   },
   {
    "id": "culvert-suite",
@@ -1645,26 +1659,41 @@
    "title": "Genetic Algorithm Calibration",
    "track": "calib",
    "level": 2,
-   "status": "planned",
-   "summary": "Estimate column transport parameters from a breakthrough curve with the built-in genetic algorithm.",
+   "status": "ready",
+   "summary": "A copper pulse through a 1 m soil column with kinetic sorption. The genetic algorithm searches the full range of the distribution coefficient and the sorption rate constant and finds both from the effluent breakthrough curve, without a starting guess.",
    "plugins": [
-    "mass_transfer",
-    "groundwater"
+    "groundwater",
+    "mass_transfer"
    ],
    "features": [
     "Genetic algorithm",
-    "Objective functions"
+    "Global search",
+    "Kinetic sorption",
+    "Breakthrough curve",
+    "Observations"
    ],
    "keywords": [
     "genetic algorithm",
     "ga",
+    "evolutionary algorithm",
     "global optimization",
+    "inverse run",
     "calibration",
     "inverse modeling",
     "parameter estimation",
-    "evolutionary",
-    "objective function"
-   ]
+    "breakthrough curve",
+    "soil column",
+    "lysimeter",
+    "sorption",
+    "kinetic sorption",
+    "distribution coefficient",
+    "kd",
+    "retardation",
+    "copper",
+    "heavy metal",
+    "OHQ-GA"
+   ],
+   "thumb": "examples/ga-calibration/thumb.svg"
   },
   {
    "id": "lm-calibration",
@@ -1793,29 +1822,41 @@
    "title": "Running Models from the Console & Python",
    "track": "auto",
    "level": 2,
-   "status": "planned",
-   "summary": "Build, modify and run models from scripts: batch runs, parameter sweeps and post-processing without the GUI.",
+   "status": "ready",
+   "summary": "An .ohq model file is a script: one command per line that loads templates, creates objects and sets values. This example documents those commands and drives the console solver from a short Python script that runs a soil column over a range of distribution coefficients and plots the breakthrough curves.",
    "plugins": [
+    "groundwater",
     "mass_transfer"
    ],
    "features": [
     "Script files",
     "Console solver",
-    "Python bindings"
+    "Python automation",
+    "Parameter sweep",
+    "Batch runs"
    ],
    "keywords": [
     "python",
     "script",
     "scripting",
+    "ohq file format",
     "command line",
     "console",
+    "OpenHydroQual-Console",
     "batch",
     "automation",
-    "api",
     "parameter sweep",
+    "sensitivity",
+    "scenario",
     "headless",
-    "linux"
-   ]
+    "subprocess",
+    "setvalue",
+    "create block",
+    "linux",
+    "pybind11",
+    "python bindings"
+   ],
+   "thumb": "examples/console-python/thumb.svg"
   }
  ]
 }

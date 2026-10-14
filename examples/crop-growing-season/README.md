@@ -72,7 +72,7 @@ plots:
       - {column: "Corn_soil_stress", label: "Soil stress index, Σβα"}
       - {column: "Corn_compensation_factor", label: "Compensation factor"}
     xlabel: Time (serial date, 40269 = 1 April 2010)
-    caption: Stress appears in dry spells, with a minimum of 0.70 in early July, and the compensation factor rises in step to keep total uptake at the potential rate. The brief dip on the last day is the waterlogging limb of the Feddes function, after heavy rain saturates the topsoil.
+    caption: Stress appears in dry spells, with a minimum of 0.81 in early July, and the compensation factor rises in step to keep total uptake at the potential rate. The brief dip on the last day is the waterlogging limb of the Feddes function, after heavy rain saturates the topsoil.
   - title: Exchange with the water table
     ylabel: Flow (m³/day)
     series:
@@ -93,7 +93,7 @@ The download also contains `crop_root_uptake_compensation.ohq`, which runs two i
 
 The expressions below are from `plants.json`, and the formulation follows the technical guide.
 
-**Atmospheric demand.** The crop computes the reference evapotranspiration ET₀ (m/day) from the four weather series with the same Penman combination equation as the `Transpiration_Penman (Soil)` source, using a radiation scale factor of 0.5 and a wind scale factor of 0.28 (the equations are written out in the *Rooted Soil Profile Transpiration* example). The potential transpiration of the crop is
+**Atmospheric demand.** The crop computes the reference evapotranspiration ET₀ (m/day) from the four weather series with the same Penman combination equation as the `Transpiration_Penman (Soil)` source, using a radiation scale factor of 0.5 and a wind scale factor of 0.28 (ET₀ = −(Δ·E_r + γ·E_a)/(Δ + γ), with the slope Δ = 4098·e_s/(237.3 + T)², the radiation term E_r and the aerodynamic term E_a; all terms are written out in the *Rooted Soil Profile Transpiration* example). The potential transpiration of the crop is
 
   T_p = ET₀ · K_cb · f_c · A,  f_c = 1 − exp(−k · LAI)
 
@@ -129,11 +129,11 @@ with c the `compensation` switch (1 here). The crop obtains Σβα from averages
 
 ## What to look for in the results
 
-- **Canopy and roots.** LAI rises from 0 at planting to 5.0 on 1 July and falls to 0.5 at harvest, and the rooting depth grows from 0.2 m to 1.2 m by 1 July. On 17 May (LAI 2.6, Z_r = 0.71 m) the cover fraction is 0.79. On 16 July (LAI 4.2, Z_r = 1.2 m) it is 0.92, and the instantaneous mid-afternoon T_p reaches 15 mm/day.
+- **Canopy and roots.** LAI rises from 0 at planting to 5.0 on 1 July and falls to 0.5 at harvest, and the rooting depth grows from 0.2 m to 1.2 m by 1 July. On 17 May (LAI 2.6, Z_r = 0.71 m) the cover fraction is 0.79. On 16 July (LAI 4.2, Z_r = 1.2 m) it is 0.92, and the instantaneous mid-afternoon T_p reaches 15.5 mm/day.
 - **Root fractions that move downward.** The topsoil holds all of the roots at planting, 0.50 of them on 17 May and 0.33 from July onward, when the four fractions are 0.33, 0.33, 0.28 and 0.06. Their sum stays at 1.000000 throughout, while the roots grow.
-- **Seasonal water balance.** Over the six months the crop transpires 839 mm, which is the full potential amount: compensation keeps actual uptake equal to T_p. Daily T_p is about 4 mm at the end of April, 6 to 7 mm in June and July and 4 mm in late September. The rain supplies 497 mm. The rest comes from 360 mm of capillary rise from the water table, while profile storage ends 19 mm higher than it started. By layer, uptake is 329 mm from the topsoil, 283 mm from the upper subsoil, 196 mm from the lower subsoil and 31 mm from the deep subsoil.
-- **Stress is mild and is compensated.** The soil stress index falls below one in dry spells, to a minimum of 0.70 on 9 July, when the topsoil reaches θ = 0.11. At the same time the compensation factor reaches 1.43, shifting uptake towards the wetter deep layers. A last, short dip on 30 September comes from the opposite end of the Feddes function: 135 mm of rain in the final week nearly saturates the topsoil, and uptake from it is reduced for lack of oxygen.
-- **Capillary rise.** The wet initial profile drains for about three weeks, then the water table starts to supply water (from 21 April). Through the summer about 3 mm/day rises into the profile.
+- **Seasonal water balance.** Over the six months the crop transpires 791 mm, which is the full potential amount: compensation keeps actual uptake equal to T_p. Daily T_p is about 4 mm at the start of May, 5.6 mm on 1 June, 7.4 mm on 1 July, 4.6 mm on 1 August and 4.1 mm on 1 September. The rain supplies 497 mm. The rest comes from 314 mm of capillary rise from the water table, while profile storage ends 22 mm higher than it started. By layer, uptake is 311 mm from the topsoil, 265 mm from the upper subsoil, 185 mm from the lower subsoil and 29 mm from the deep subsoil.
+- **Stress is mild and is compensated.** The soil stress index falls below one in dry spells, to a minimum of 0.81 on 9 July, when the topsoil reaches θ = 0.11. At the same time the compensation factor reaches 1.23, shifting uptake towards the wetter deep layers. A last, short dip on 30 September comes from the opposite end of the Feddes function: 135 mm of rain in the final week nearly saturates the topsoil, and uptake from it is reduced for lack of oxygen.
+- **Capillary rise.** The wet initial profile drains for about three weeks, then the water table starts to supply water (from 22 April). Through the summer about 3 mm/day rises into the profile.
 - **Compensation on and off.** In `crop_root_uptake_compensation.ohq`, at the end of the 135-day drought: the compensated crop is still transpiring at its full 21.9 m³/day, but its soil stress index is 0.062, its compensation factor is 16, and 99.5% of its uptake comes from the deepest layer. Its profile is drawn down to θ = 0.100, 0.100 and 0.112. The uncompensated crop transpires only 12.4 m³/day (57% of potential) with θ = 0.106, 0.139 and 0.182 still in its profile, because most of its roots sit in layers that have dried. Over the run the compensated crop transpires 664 mm and the uncompensated one 614 mm.
 
 ## Assumptions and limitations
@@ -141,7 +141,7 @@ with c the `compensation` switch (1 here). The crop obtains Σβα from averages
 - **Transpiration only.** Soil evaporation is not modelled. K_cb is a basal coefficient, so an evaporation source can be added to the top layer without double counting.
 - **Only uptake links may be attached to the crop block.** The compensation factor is built from averages over all of the crop's links, and any other link type would corrupt it.
 - **Compensation is unlimited.** As the profile dries, C grows without bound and concentrates the entire demand on whichever layer is still wet (a factor of 16 in the drought comparison). Some models cap it. In practice the levers are a higher h₄ or switching compensation off.
-- **Penman ET₀.** The radiation term uses incoming shortwave radiation scaled by 0.5, not net radiation, and should be checked against site data. In addition, the slope Δ is written in the plugin as 4098·e_s/(237.3 + T), without the square in the denominator of the standard FAO-56 expression, which makes the aerodynamic weight γ/(Δ + γ) about 0.001 to 0.003. ET₀ is therefore in practice the scaled radiation term alone, and humidity and wind have almost no effect.
+- **Penman ET₀.** The radiation term uses incoming shortwave radiation scaled by 0.5, not a computed net radiation, and there is no soil heat flux term. The scale factor should be set from site data before the model is used quantitatively. The aerodynamic term carries roughly a quarter of the weight in summer, so the assumed wind speed units (km/h) also matter.
 - The weather is a single 2010 NOAA record from Baltimore/Washington International Airport (BWI), Maryland. The wind speed units are not recorded with the data.
 - The 1.5 m between the base of the profile and the water table is not represented as soil: the link to the water table spans only half the bottom layer. Together with the layer-top head reference of the soil plugin, this makes the capillary supply (about 3 mm/day from a water table 3 m deep) larger than a fully resolved profile would give.
 - The four layers have unequal thicknesses (0.2, 0.3, 0.5 and 0.5 m). Because the soil plugin refers each layer's head to its top, the gravity component of the gradient between layers of unequal thickness is less than one.

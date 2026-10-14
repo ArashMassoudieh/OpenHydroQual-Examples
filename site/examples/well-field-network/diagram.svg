@@ -1,0 +1,195 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -310 1920 2826" class="ohq-diagram" style="max-width:960px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Supply_User_1"><title>Supply_User_1 (Flow_to_user)</title><path d="M450.0 100.0 L450.0 25.0 L450.0 -50.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Supply_User_3"><title>Supply_User_3 (Flow_to_user)</title><path d="M900.0 -16.7 L950.0 -50.0 L1000.0 -83.3" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Supply_User_2"><title>Supply_User_2 (Flow_to_user)</title><path d="M450.0 700.0 L450.0 750.0 L450.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Supply_User_4"><title>Supply_User_4 (Flow_to_user)</title><path d="M900.0 351.4 L975.0 315.0 L1050.0 278.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Supply_User_5"><title>Supply_User_5 (Flow_to_user)</title><path d="M800.0 850.0 L800.0 900.0 L800.0 950.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Supply_User_6"><title>Supply_User_6 (Flow_to_user)</title><path d="M1250.0 580.0 L1325.0 580.0 L1400.0 580.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_Tank_J1"><title>Pipe_Tank_J1 (pipe_2w)</title><path d="M200.0 342.9 L275.0 300.0 L350.0 257.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_Tank_J2"><title>Pipe_Tank_J2 (pipe_2w)</title><path d="M200.0 457.1 L275.0 500.0 L350.0 542.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J1_J3"><title>Pipe_J1_J3 (pipe_2w)</title><path d="M550.0 157.1 L625.0 125.0 L700.0 92.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J1_J4"><title>Pipe_J1_J4 (pipe_2w)</title><path d="M550.0 257.1 L625.0 300.0 L700.0 342.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J2_J4"><title>Pipe_J2_J4 (pipe_2w)</title><path d="M550.0 542.9 L625.0 500.0 L700.0 457.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J2_J5"><title>Pipe_J2_J5 (pipe_2w)</title><path d="M550.0 642.9 L625.0 675.0 L700.0 707.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J5_J6"><title>Pipe_J5_J6 (pipe_2w)</title><path d="M900.0 701.4 L975.0 665.0 L1050.0 628.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J4_J6"><title>Pipe_J4_J6 (pipe_2w)</title><path d="M900.0 451.4 L975.0 490.0 L1050.0 528.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_1_1_2"><title>GW_1_1_1_2 (UC_groundwater_link)</title><path d="M400.0 1450.0 L400.0 1470.0 L400.0 1490.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_2_1_3"><title>GW_1_2_1_3 (UC_groundwater_link)</title><path d="M400.0 1690.0 L400.0 1710.0 L400.0 1730.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_3_1_4"><title>GW_1_3_1_4 (UC_groundwater_link)</title><path d="M400.0 1930.0 L400.0 1950.0 L400.0 1970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_4_1_5"><title>GW_1_4_1_5 (UC_groundwater_link)</title><path d="M400.0 2170.0 L400.0 2190.0 L400.0 2210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_1_2_2"><title>GW_2_1_2_2 (UC_groundwater_link)</title><path d="M640.0 1450.0 L640.0 1470.0 L640.0 1490.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_2_2_3"><title>GW_2_2_2_3 (UC_groundwater_link)</title><path d="M640.0 1690.0 L640.0 1710.0 L640.0 1730.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_3_2_4"><title>GW_2_3_2_4 (UC_groundwater_link)</title><path d="M640.0 1930.0 L640.0 1950.0 L640.0 1970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_4_2_5"><title>GW_2_4_2_5 (UC_groundwater_link)</title><path d="M640.0 2170.0 L640.0 2190.0 L640.0 2210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_1_3_2"><title>GW_3_1_3_2 (UC_groundwater_link)</title><path d="M880.0 1450.0 L880.0 1470.0 L880.0 1490.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_2_3_3"><title>GW_3_2_3_3 (UC_groundwater_link)</title><path d="M880.0 1690.0 L880.0 1710.0 L880.0 1730.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_3_3_4"><title>GW_3_3_3_4 (UC_groundwater_link)</title><path d="M880.0 1930.0 L880.0 1950.0 L880.0 1970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_4_3_5"><title>GW_3_4_3_5 (UC_groundwater_link)</title><path d="M880.0 2170.0 L880.0 2190.0 L880.0 2210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_1_4_2"><title>GW_4_1_4_2 (UC_groundwater_link)</title><path d="M1120.0 1450.0 L1120.0 1470.0 L1120.0 1490.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_2_4_3"><title>GW_4_2_4_3 (UC_groundwater_link)</title><path d="M1120.0 1690.0 L1120.0 1710.0 L1120.0 1730.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_3_4_4"><title>GW_4_3_4_4 (UC_groundwater_link)</title><path d="M1120.0 1930.0 L1120.0 1950.0 L1120.0 1970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_4_4_5"><title>GW_4_4_4_5 (UC_groundwater_link)</title><path d="M1120.0 2170.0 L1120.0 2190.0 L1120.0 2210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_5_1_5_2"><title>GW_5_1_5_2 (UC_groundwater_link)</title><path d="M1360.0 1450.0 L1360.0 1470.0 L1360.0 1490.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_5_2_5_3"><title>GW_5_2_5_3 (UC_groundwater_link)</title><path d="M1360.0 1690.0 L1360.0 1710.0 L1360.0 1730.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_5_3_5_4"><title>GW_5_3_5_4 (UC_groundwater_link)</title><path d="M1360.0 1930.0 L1360.0 1950.0 L1360.0 1970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_5_4_5_5"><title>GW_5_4_5_5 (UC_groundwater_link)</title><path d="M1360.0 2170.0 L1360.0 2190.0 L1360.0 2210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_1_2_1"><title>GW_1_1_2_1 (UC_groundwater_link)</title><path d="M500.0 1350.0 L520.0 1350.0 L540.0 1350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_2_2_2"><title>GW_1_2_2_2 (UC_groundwater_link)</title><path d="M500.0 1590.0 L520.0 1590.0 L540.0 1590.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_3_2_3"><title>GW_1_3_2_3 (UC_groundwater_link)</title><path d="M500.0 1830.0 L520.0 1830.0 L540.0 1830.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_4_2_4"><title>GW_1_4_2_4 (UC_groundwater_link)</title><path d="M500.0 2070.0 L520.0 2070.0 L540.0 2070.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_5_2_5"><title>GW_1_5_2_5 (UC_groundwater_link)</title><path d="M500.0 2310.0 L520.0 2310.0 L540.0 2310.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_1_3_1"><title>GW_2_1_3_1 (UC_groundwater_link)</title><path d="M740.0 1350.0 L760.0 1350.0 L780.0 1350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_2_3_2"><title>GW_2_2_3_2 (UC_groundwater_link)</title><path d="M740.0 1590.0 L760.0 1590.0 L780.0 1590.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_3_3_3"><title>GW_2_3_3_3 (UC_groundwater_link)</title><path d="M740.0 1830.0 L760.0 1830.0 L780.0 1830.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_4_3_4"><title>GW_2_4_3_4 (UC_groundwater_link)</title><path d="M740.0 2070.0 L760.0 2070.0 L780.0 2070.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_5_3_5"><title>GW_2_5_3_5 (UC_groundwater_link)</title><path d="M740.0 2310.0 L760.0 2310.0 L780.0 2310.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_1_4_1"><title>GW_3_1_4_1 (UC_groundwater_link)</title><path d="M980.0 1350.0 L1000.0 1350.0 L1020.0 1350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_2_4_2"><title>GW_3_2_4_2 (UC_groundwater_link)</title><path d="M980.0 1590.0 L1000.0 1590.0 L1020.0 1590.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_3_4_3"><title>GW_3_3_4_3 (UC_groundwater_link)</title><path d="M980.0 1830.0 L1000.0 1830.0 L1020.0 1830.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_4_4_4"><title>GW_3_4_4_4 (UC_groundwater_link)</title><path d="M980.0 2070.0 L1000.0 2070.0 L1020.0 2070.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_5_4_5"><title>GW_3_5_4_5 (UC_groundwater_link)</title><path d="M980.0 2310.0 L1000.0 2310.0 L1020.0 2310.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_1_5_1"><title>GW_4_1_5_1 (UC_groundwater_link)</title><path d="M1220.0 1350.0 L1240.0 1350.0 L1260.0 1350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_2_5_2"><title>GW_4_2_5_2 (UC_groundwater_link)</title><path d="M1220.0 1590.0 L1240.0 1590.0 L1260.0 1590.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_3_5_3"><title>GW_4_3_5_3 (UC_groundwater_link)</title><path d="M1220.0 1830.0 L1240.0 1830.0 L1260.0 1830.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_4_5_4"><title>GW_4_4_5_4 (UC_groundwater_link)</title><path d="M1220.0 2070.0 L1240.0 2070.0 L1260.0 2070.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_5_5_5"><title>GW_4_5_5_5 (UC_groundwater_link)</title><path d="M1220.0 2310.0 L1240.0 2310.0 L1260.0 2310.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Boundary_1_1"><title>Boundary_1_1 (unconfined_groundwater_to_fixedhead)</title><path d="M500.0 1338.3 Q1171.8 1260.0 1607.3 1730.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1112.8 1397.1) rotate(19.5) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_1_2"><title>Boundary_1_2 (unconfined_groundwater_to_fixedhead)</title><path d="M500.0 1560.5 Q1110.9 1380.0 1600.0 1753.6"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1080.5 1518.5) rotate(10.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_1_3"><title>Boundary_1_3 (unconfined_groundwater_to_fixedhead)</title><path d="M500.0 1779.2 Q1050.0 1500.0 1600.0 1779.2"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1050.0 1639.6) rotate(0.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_1_4"><title>Boundary_1_4 (unconfined_groundwater_to_fixedhead)</title><path d="M500.0 1993.6 Q989.1 1620.0 1600.0 1800.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1019.5 1758.5) rotate(-10.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_1_5"><title>Boundary_1_5 (unconfined_groundwater_to_fixedhead)</title><path d="M492.7 2210.0 Q928.2 1740.0 1600.0 1818.3"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(987.2 1877.1) rotate(-19.5) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_5_1"><title>Boundary_5_1 (unconfined_groundwater_to_fixedhead)</title><path d="M1460.0 1373.5 Q1742.2 1439.7 1710.8 1730.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1663.8 1495.7) rotate(54.9) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_5_2"><title>Boundary_5_2 (unconfined_groundwater_to_fixedhead)</title><path d="M1460.0 1660.6 L1530.0 1710.0 L1600.0 1759.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Boundary_5_3"><title>Boundary_5_3 (unconfined_groundwater_to_fixedhead)</title><path d="M1460.0 1830.0 L1530.0 1830.0 L1600.0 1830.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Boundary_5_4"><title>Boundary_5_4 (unconfined_groundwater_to_fixedhead)</title><path d="M1460.0 1999.4 L1530.0 1950.0 L1600.0 1900.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Boundary_5_5"><title>Boundary_5_5 (unconfined_groundwater_to_fixedhead)</title><path d="M1460.0 2286.5 Q1742.2 2220.3 1710.8 1930.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1663.8 2164.3) rotate(-54.9) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_2_1"><title>Boundary_2_1 (unconfined_groundwater_to_fixedhead)</title><path d="M740.0 1347.2 Q1286.8 1332.0 1617.0 1730.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1232.7 1435.3) rotate(23.6) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_3_1"><title>Boundary_3_1 (unconfined_groundwater_to_fixedhead)</title><path d="M980.0 1352.9 Q1421.3 1365.6 1640.0 1730.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1365.7 1453.5) rotate(29.7) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_4_1"><title>Boundary_4_1 (unconfined_groundwater_to_fixedhead)</title><path d="M1220.0 1358.7 Q1575.8 1389.7 1671.8 1730.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1510.8 1467.0) rotate(39.4) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_2_5"><title>Boundary_2_5 (unconfined_groundwater_to_fixedhead)</title><path d="M723.0 2210.0 Q1053.2 1812.0 1600.0 1827.2"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1107.3 1915.3) rotate(-23.6) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_3_5"><title>Boundary_3_5 (unconfined_groundwater_to_fixedhead)</title><path d="M940.0 2210.0 Q1158.7 1845.6 1600.0 1832.9"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1214.3 1933.5) rotate(-29.7) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_4_5"><title>Boundary_4_5 (unconfined_groundwater_to_fixedhead)</title><path d="M1148.2 2210.0 Q1244.2 1869.7 1600.0 1838.7"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1309.2 1947.0) rotate(-39.4) scale(1.6)"/></g>
+<g class="d-link" data-name="Well_inflow"><title>Well_inflow (aquifer2well_link_pump)</title><path d="M841.7 1730.0 Q667.7 1275.2 200.0 1130.9"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(594.3 1352.8) rotate(-137.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Pump"><title>Pump (pump)</title><path d="M100.0 1000.0 L100.0 750.0 L100.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Storage_tank"><title>Storage_tank (Tank)</title><rect x="0" y="300" width="200" height="200" rx="16"/>
+<image href="icons/watertank.png" x="22" y="322" width="156" height="156"/>
+<text x="100" y="555" font-size="43" text-anchor="middle">Storage_tank</text></g>
+<g class="d-node" data-name="J1"><title>J1 (junction_elastic)</title><rect x="350" y="100" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="372" y="122" width="156" height="156"/>
+<text x="450" y="355" font-size="43" text-anchor="middle">J1</text></g>
+<g class="d-node" data-name="J2"><title>J2 (junction_elastic)</title><rect x="350" y="500" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="372" y="522" width="156" height="156"/>
+<text x="450" y="755" font-size="43" text-anchor="middle">J2</text></g>
+<g class="d-node" data-name="J3"><title>J3 (junction_elastic)</title><rect x="700" y="-50" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="722" y="-28" width="156" height="156"/>
+<text x="800" y="205" font-size="43" text-anchor="middle">J3</text></g>
+<g class="d-node" data-name="J4"><title>J4 (junction_elastic)</title><rect x="700" y="300" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="722" y="322" width="156" height="156"/>
+<text x="800" y="555" font-size="43" text-anchor="middle">J4</text></g>
+<g class="d-node" data-name="J5"><title>J5 (junction_elastic)</title><rect x="700" y="650" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="722" y="672" width="156" height="156"/>
+<text x="800" y="905" font-size="43" text-anchor="middle">J5</text></g>
+<g class="d-node" data-name="J6"><title>J6 (junction_elastic)</title><rect x="1050" y="480" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="1072" y="502" width="156" height="156"/>
+<text x="1150" y="735" font-size="43" text-anchor="middle">J6</text></g>
+<g class="d-node" data-name="User_1"><title>User_1 (residential_user)</title><rect x="350" y="-250" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="372" y="-228" width="156" height="156"/>
+<text x="450" y="5" font-size="43" text-anchor="middle">User_1</text></g>
+<g class="d-node" data-name="User_2"><title>User_2 (residential_user)</title><rect x="350" y="800" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="372" y="822" width="156" height="156"/>
+<text x="450" y="1055" font-size="43" text-anchor="middle">User_2</text></g>
+<g class="d-node" data-name="User_3"><title>User_3 (residential_user)</title><rect x="1000" y="-250" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="1022" y="-228" width="156" height="156"/>
+<text x="1100" y="5" font-size="43" text-anchor="middle">User_3</text></g>
+<g class="d-node" data-name="User_4"><title>User_4 (residential_user)</title><rect x="1050" y="130" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="1072" y="152" width="156" height="156"/>
+<text x="1150" y="385" font-size="43" text-anchor="middle">User_4</text></g>
+<g class="d-node" data-name="User_5"><title>User_5 (residential_user)</title><rect x="700" y="950" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="722" y="972" width="156" height="156"/>
+<text x="800" y="1205" font-size="43" text-anchor="middle">User_5</text></g>
+<g class="d-node" data-name="User_6"><title>User_6 (residential_user)</title><rect x="1400" y="480" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="1422" y="502" width="156" height="156"/>
+<text x="1500" y="735" font-size="43" text-anchor="middle">User_6</text></g>
+<g class="d-node" data-name="Regional_aquifer"><title>Regional_aquifer (fixed_head)</title><rect x="1600" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1622" y="1752" width="156" height="156"/>
+<text x="1700" y="1985" font-size="43" text-anchor="middle">Regional_aquifer</text></g>
+<g class="d-node" data-name="Aquifer_1_1"><title>Aquifer_1_1 (Unconfined Groundwater cell)</title><rect x="300" y="1250" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="1272" width="156" height="156"/>
+<text x="400" y="1505" font-size="43" text-anchor="middle">Aquifer_1_1</text></g>
+<g class="d-node" data-name="Aquifer_1_2"><title>Aquifer_1_2 (Unconfined Groundwater cell)</title><rect x="300" y="1490" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="1512" width="156" height="156"/>
+<text x="400" y="1745" font-size="43" text-anchor="middle">Aquifer_1_2</text></g>
+<g class="d-node" data-name="Aquifer_1_3"><title>Aquifer_1_3 (Unconfined Groundwater cell)</title><rect x="300" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="1752" width="156" height="156"/>
+<text x="400" y="1985" font-size="43" text-anchor="middle">Aquifer_1_3</text></g>
+<g class="d-node" data-name="Aquifer_1_4"><title>Aquifer_1_4 (Unconfined Groundwater cell)</title><rect x="300" y="1970" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="1992" width="156" height="156"/>
+<text x="400" y="2225" font-size="43" text-anchor="middle">Aquifer_1_4</text></g>
+<g class="d-node" data-name="Aquifer_1_5"><title>Aquifer_1_5 (Unconfined Groundwater cell)</title><rect x="300" y="2210" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="2232" width="156" height="156"/>
+<text x="400" y="2465" font-size="43" text-anchor="middle">Aquifer_1_5</text></g>
+<g class="d-node" data-name="Aquifer_2_1"><title>Aquifer_2_1 (Unconfined Groundwater cell)</title><rect x="540" y="1250" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="562" y="1272" width="156" height="156"/>
+<text x="640" y="1505" font-size="43" text-anchor="middle">Aquifer_2_1</text></g>
+<g class="d-node" data-name="Aquifer_2_2"><title>Aquifer_2_2 (Unconfined Groundwater cell)</title><rect x="540" y="1490" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="562" y="1512" width="156" height="156"/>
+<text x="640" y="1745" font-size="43" text-anchor="middle">Aquifer_2_2</text></g>
+<g class="d-node" data-name="Aquifer_2_3"><title>Aquifer_2_3 (Unconfined Groundwater cell)</title><rect x="540" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="562" y="1752" width="156" height="156"/>
+<text x="640" y="1985" font-size="43" text-anchor="middle">Aquifer_2_3</text></g>
+<g class="d-node" data-name="Aquifer_2_4"><title>Aquifer_2_4 (Unconfined Groundwater cell)</title><rect x="540" y="1970" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="562" y="1992" width="156" height="156"/>
+<text x="640" y="2225" font-size="43" text-anchor="middle">Aquifer_2_4</text></g>
+<g class="d-node" data-name="Aquifer_2_5"><title>Aquifer_2_5 (Unconfined Groundwater cell)</title><rect x="540" y="2210" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="562" y="2232" width="156" height="156"/>
+<text x="640" y="2465" font-size="43" text-anchor="middle">Aquifer_2_5</text></g>
+<g class="d-node" data-name="Aquifer_3_1"><title>Aquifer_3_1 (Unconfined Groundwater cell)</title><rect x="780" y="1250" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="802" y="1272" width="156" height="156"/>
+<text x="880" y="1505" font-size="43" text-anchor="middle">Aquifer_3_1</text></g>
+<g class="d-node" data-name="Aquifer_3_2"><title>Aquifer_3_2 (Unconfined Groundwater cell)</title><rect x="780" y="1490" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="802" y="1512" width="156" height="156"/>
+<text x="880" y="1745" font-size="43" text-anchor="middle">Aquifer_3_2</text></g>
+<g class="d-node" data-name="Aquifer_3_3"><title>Aquifer_3_3 (Unconfined Groundwater cell)</title><rect x="780" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="802" y="1752" width="156" height="156"/>
+<text x="880" y="1985" font-size="43" text-anchor="middle">Aquifer_3_3</text></g>
+<g class="d-node" data-name="Aquifer_3_4"><title>Aquifer_3_4 (Unconfined Groundwater cell)</title><rect x="780" y="1970" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="802" y="1992" width="156" height="156"/>
+<text x="880" y="2225" font-size="43" text-anchor="middle">Aquifer_3_4</text></g>
+<g class="d-node" data-name="Aquifer_3_5"><title>Aquifer_3_5 (Unconfined Groundwater cell)</title><rect x="780" y="2210" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="802" y="2232" width="156" height="156"/>
+<text x="880" y="2465" font-size="43" text-anchor="middle">Aquifer_3_5</text></g>
+<g class="d-node" data-name="Aquifer_4_1"><title>Aquifer_4_1 (Unconfined Groundwater cell)</title><rect x="1020" y="1250" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1042" y="1272" width="156" height="156"/>
+<text x="1120" y="1505" font-size="43" text-anchor="middle">Aquifer_4_1</text></g>
+<g class="d-node" data-name="Aquifer_4_2"><title>Aquifer_4_2 (Unconfined Groundwater cell)</title><rect x="1020" y="1490" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1042" y="1512" width="156" height="156"/>
+<text x="1120" y="1745" font-size="43" text-anchor="middle">Aquifer_4_2</text></g>
+<g class="d-node" data-name="Aquifer_4_3"><title>Aquifer_4_3 (Unconfined Groundwater cell)</title><rect x="1020" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1042" y="1752" width="156" height="156"/>
+<text x="1120" y="1985" font-size="43" text-anchor="middle">Aquifer_4_3</text></g>
+<g class="d-node" data-name="Aquifer_4_4"><title>Aquifer_4_4 (Unconfined Groundwater cell)</title><rect x="1020" y="1970" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1042" y="1992" width="156" height="156"/>
+<text x="1120" y="2225" font-size="43" text-anchor="middle">Aquifer_4_4</text></g>
+<g class="d-node" data-name="Aquifer_4_5"><title>Aquifer_4_5 (Unconfined Groundwater cell)</title><rect x="1020" y="2210" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1042" y="2232" width="156" height="156"/>
+<text x="1120" y="2465" font-size="43" text-anchor="middle">Aquifer_4_5</text></g>
+<g class="d-node" data-name="Aquifer_5_1"><title>Aquifer_5_1 (Unconfined Groundwater cell)</title><rect x="1260" y="1250" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1282" y="1272" width="156" height="156"/>
+<text x="1360" y="1505" font-size="43" text-anchor="middle">Aquifer_5_1</text></g>
+<g class="d-node" data-name="Aquifer_5_2"><title>Aquifer_5_2 (Unconfined Groundwater cell)</title><rect x="1260" y="1490" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1282" y="1512" width="156" height="156"/>
+<text x="1360" y="1745" font-size="43" text-anchor="middle">Aquifer_5_2</text></g>
+<g class="d-node" data-name="Aquifer_5_3"><title>Aquifer_5_3 (Unconfined Groundwater cell)</title><rect x="1260" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1282" y="1752" width="156" height="156"/>
+<text x="1360" y="1985" font-size="43" text-anchor="middle">Aquifer_5_3</text></g>
+<g class="d-node" data-name="Aquifer_5_4"><title>Aquifer_5_4 (Unconfined Groundwater cell)</title><rect x="1260" y="1970" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1282" y="1992" width="156" height="156"/>
+<text x="1360" y="2225" font-size="43" text-anchor="middle">Aquifer_5_4</text></g>
+<g class="d-node" data-name="Aquifer_5_5"><title>Aquifer_5_5 (Unconfined Groundwater cell)</title><rect x="1260" y="2210" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1282" y="2232" width="156" height="156"/>
+<text x="1360" y="2465" font-size="43" text-anchor="middle">Aquifer_5_5</text></g>
+<g class="d-node" data-name="Supply_well"><title>Supply_well (water_supply_well)</title><rect x="0" y="1000" width="200" height="200" rx="16"/>
+<image href="icons/water_supply_well.png" x="22" y="1022" width="156" height="156"/>
+<text x="100" y="1255" font-size="43" text-anchor="middle">Supply_well</text></g>
+</svg>

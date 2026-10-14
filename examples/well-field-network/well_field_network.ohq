@@ -1,0 +1,122 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = pipe_pump_tank.json
+addtemplate; filename = unconfined_groundwater.json
+create block;type=Tank,_width=200,y=300,name=Storage_tank,x=0,bottom_elevation=20[m],_height=200,area=100[m~^2],Storage=600[m~^3]
+create block;type=junction_elastic,_height=200,_width=200,y=100,name=J1,x=350,elevation=15[m],Storage=11.01[m~^3],elasticity=1[1/m~^2]
+create block;type=junction_elastic,_height=200,_width=200,y=500,name=J2,x=350,elevation=12[m],Storage=14.01[m~^3],elasticity=1[1/m~^2]
+create block;type=junction_elastic,_height=200,_width=200,y=-50,name=J3,x=700,elevation=11[m],Storage=15.01[m~^3],elasticity=1[1/m~^2]
+create block;type=junction_elastic,_height=200,_width=200,y=300,name=J4,x=700,elevation=8[m],Storage=18.01[m~^3],elasticity=1[1/m~^2]
+create block;type=junction_elastic,_height=200,_width=200,y=650,name=J5,x=700,elevation=5[m],Storage=21.01[m~^3],elasticity=1[1/m~^2]
+create block;type=junction_elastic,_height=200,_width=200,y=480,name=J6,x=1050,elevation=2[m],Storage=24.01[m~^3],elasticity=1[1/m~^2]
+create block;type=residential_user,_height=200,_width=200,y=-250,name=User_1,x=350,use_rate=water_demand.txt,constant_use_rate=0[m~^3/day]
+create block;type=residential_user,_height=200,_width=200,y=800,name=User_2,x=350,use_rate=water_demand.txt,constant_use_rate=0[m~^3/day]
+create block;type=residential_user,_height=200,_width=200,y=-250,name=User_3,x=1000,use_rate=water_demand.txt,constant_use_rate=0[m~^3/day]
+create block;type=residential_user,_height=200,_width=200,y=130,name=User_4,x=1050,use_rate=water_demand.txt,constant_use_rate=0[m~^3/day]
+create block;type=residential_user,_height=200,_width=200,y=950,name=User_5,x=700,use_rate=water_demand.txt,constant_use_rate=0[m~^3/day]
+create block;type=residential_user,_height=200,_width=200,y=480,name=User_6,x=1400,use_rate=water_demand.txt,constant_use_rate=0[m~^3/day]
+create block;type=fixed_head,_width=200,y=1730,name=Regional_aquifer,x=1600,head=-7[m],_height=200,Storage=100000[m~^3]
+create block;type=Unconfined Groundwater cell,x=300,piezometric_head=-7[m],y=1250,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_1_1,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=300,piezometric_head=-7[m],y=1490,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_1_2,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=300,piezometric_head=-7[m],y=1730,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_1_3,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=300,piezometric_head=-7[m],y=1970,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_1_4,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=300,piezometric_head=-7[m],y=2210,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_1_5,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=540,piezometric_head=-7[m],y=1250,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_2_1,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=540,piezometric_head=-7[m],y=1490,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_2_2,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=540,piezometric_head=-7[m],y=1730,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_2_3,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=540,piezometric_head=-7[m],y=1970,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_2_4,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=540,piezometric_head=-7[m],y=2210,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_2_5,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=780,piezometric_head=-7[m],y=1250,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_3_1,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=780,piezometric_head=-7[m],y=1490,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_3_2,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=780,piezometric_head=-7[m],y=1730,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_3_3,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=780,piezometric_head=-7[m],y=1970,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_3_4,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=780,piezometric_head=-7[m],y=2210,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_3_5,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=1020,piezometric_head=-7[m],y=1250,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_4_1,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=1020,piezometric_head=-7[m],y=1490,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_4_2,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=1020,piezometric_head=-7[m],y=1730,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_4_3,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=1020,piezometric_head=-7[m],y=1970,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_4_4,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=1020,piezometric_head=-7[m],y=2210,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_4_5,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=1260,piezometric_head=-7[m],y=1250,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_5_1,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=1260,piezometric_head=-7[m],y=1490,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_5_2,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=1260,piezometric_head=-7[m],y=1730,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_5_3,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=1260,piezometric_head=-7[m],y=1970,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_5_4,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=Unconfined Groundwater cell,x=1260,piezometric_head=-7[m],y=2210,area=40000[m~^2],specific_yield=0.3,base_elevation=-20[m],_height=200,name=Aquifer_5_5,_width=200,hydraulic_conductivity=1[m/day],recharge_per_area=recharge.txt
+create block;type=water_supply_well,y=1000,name=Supply_well,_height=200,x=0,_width=200,diameter=2[m],bottom_elevation=-20[m]
+create link;from=J1,to=User_1,type=Flow_to_user,name=Supply_User_1
+create link;from=J3,to=User_3,type=Flow_to_user,name=Supply_User_3
+create link;from=J2,to=User_2,type=Flow_to_user,name=Supply_User_2
+create link;from=J4,to=User_4,type=Flow_to_user,name=Supply_User_4
+create link;from=J5,to=User_5,type=Flow_to_user,name=Supply_User_5
+create link;from=J6,to=User_6,type=Flow_to_user,name=Supply_User_6
+create link;from=Storage_tank,to=J1,type=pipe_2w,name=Pipe_Tank_J1,length=200[m],hz_coeff=100,diameter=0.2[m]
+create link;from=Storage_tank,to=J2,type=pipe_2w,name=Pipe_Tank_J2,length=100[m],hz_coeff=100,diameter=0.15[m]
+create link;from=J1,to=J3,type=pipe_2w,name=Pipe_J1_J3,length=100[m],hz_coeff=100,diameter=0.12[m]
+create link;from=J1,to=J4,type=pipe_2w,name=Pipe_J1_J4,length=100[m],hz_coeff=100,diameter=0.1[m]
+create link;from=J2,to=J4,type=pipe_2w,name=Pipe_J2_J4,length=100[m],hz_coeff=100,diameter=0.1[m]
+create link;from=J2,to=J5,type=pipe_2w,name=Pipe_J2_J5,length=120[m],hz_coeff=100,diameter=0.15[m]
+create link;from=J5,to=J6,type=pipe_2w,name=Pipe_J5_J6,length=100[m],hz_coeff=100,diameter=0.1[m]
+create link;from=J4,to=J6,type=pipe_2w,name=Pipe_J4_J6,length=140[m],hz_coeff=100,diameter=0.1[m]
+create link;from=Aquifer_1_1,to=Aquifer_1_2,type=UC_groundwater_link,width=200[m],name=GW_1_1_1_2,length=200[m]
+create link;from=Aquifer_1_2,to=Aquifer_1_3,type=UC_groundwater_link,width=200[m],name=GW_1_2_1_3,length=200[m]
+create link;from=Aquifer_1_3,to=Aquifer_1_4,type=UC_groundwater_link,width=200[m],name=GW_1_3_1_4,length=200[m]
+create link;from=Aquifer_1_4,to=Aquifer_1_5,type=UC_groundwater_link,width=200[m],name=GW_1_4_1_5,length=200[m]
+create link;from=Aquifer_2_1,to=Aquifer_2_2,type=UC_groundwater_link,width=200[m],name=GW_2_1_2_2,length=200[m]
+create link;from=Aquifer_2_2,to=Aquifer_2_3,type=UC_groundwater_link,width=200[m],name=GW_2_2_2_3,length=200[m]
+create link;from=Aquifer_2_3,to=Aquifer_2_4,type=UC_groundwater_link,width=200[m],name=GW_2_3_2_4,length=200[m]
+create link;from=Aquifer_2_4,to=Aquifer_2_5,type=UC_groundwater_link,width=200[m],name=GW_2_4_2_5,length=200[m]
+create link;from=Aquifer_3_1,to=Aquifer_3_2,type=UC_groundwater_link,width=200[m],name=GW_3_1_3_2,length=200[m]
+create link;from=Aquifer_3_2,to=Aquifer_3_3,type=UC_groundwater_link,width=200[m],name=GW_3_2_3_3,length=200[m]
+create link;from=Aquifer_3_3,to=Aquifer_3_4,type=UC_groundwater_link,width=200[m],name=GW_3_3_3_4,length=200[m]
+create link;from=Aquifer_3_4,to=Aquifer_3_5,type=UC_groundwater_link,width=200[m],name=GW_3_4_3_5,length=200[m]
+create link;from=Aquifer_4_1,to=Aquifer_4_2,type=UC_groundwater_link,width=200[m],name=GW_4_1_4_2,length=200[m]
+create link;from=Aquifer_4_2,to=Aquifer_4_3,type=UC_groundwater_link,width=200[m],name=GW_4_2_4_3,length=200[m]
+create link;from=Aquifer_4_3,to=Aquifer_4_4,type=UC_groundwater_link,width=200[m],name=GW_4_3_4_4,length=200[m]
+create link;from=Aquifer_4_4,to=Aquifer_4_5,type=UC_groundwater_link,width=200[m],name=GW_4_4_4_5,length=200[m]
+create link;from=Aquifer_5_1,to=Aquifer_5_2,type=UC_groundwater_link,width=200[m],name=GW_5_1_5_2,length=200[m]
+create link;from=Aquifer_5_2,to=Aquifer_5_3,type=UC_groundwater_link,width=200[m],name=GW_5_2_5_3,length=200[m]
+create link;from=Aquifer_5_3,to=Aquifer_5_4,type=UC_groundwater_link,width=200[m],name=GW_5_3_5_4,length=200[m]
+create link;from=Aquifer_5_4,to=Aquifer_5_5,type=UC_groundwater_link,width=200[m],name=GW_5_4_5_5,length=200[m]
+create link;from=Aquifer_1_1,to=Aquifer_2_1,type=UC_groundwater_link,width=200[m],name=GW_1_1_2_1,length=200[m]
+create link;from=Aquifer_1_2,to=Aquifer_2_2,type=UC_groundwater_link,width=200[m],name=GW_1_2_2_2,length=200[m]
+create link;from=Aquifer_1_3,to=Aquifer_2_3,type=UC_groundwater_link,width=200[m],name=GW_1_3_2_3,length=200[m]
+create link;from=Aquifer_1_4,to=Aquifer_2_4,type=UC_groundwater_link,width=200[m],name=GW_1_4_2_4,length=200[m]
+create link;from=Aquifer_1_5,to=Aquifer_2_5,type=UC_groundwater_link,width=200[m],name=GW_1_5_2_5,length=200[m]
+create link;from=Aquifer_2_1,to=Aquifer_3_1,type=UC_groundwater_link,width=200[m],name=GW_2_1_3_1,length=200[m]
+create link;from=Aquifer_2_2,to=Aquifer_3_2,type=UC_groundwater_link,width=200[m],name=GW_2_2_3_2,length=200[m]
+create link;from=Aquifer_2_3,to=Aquifer_3_3,type=UC_groundwater_link,width=200[m],name=GW_2_3_3_3,length=200[m]
+create link;from=Aquifer_2_4,to=Aquifer_3_4,type=UC_groundwater_link,width=200[m],name=GW_2_4_3_4,length=200[m]
+create link;from=Aquifer_2_5,to=Aquifer_3_5,type=UC_groundwater_link,width=200[m],name=GW_2_5_3_5,length=200[m]
+create link;from=Aquifer_3_1,to=Aquifer_4_1,type=UC_groundwater_link,width=200[m],name=GW_3_1_4_1,length=200[m]
+create link;from=Aquifer_3_2,to=Aquifer_4_2,type=UC_groundwater_link,width=200[m],name=GW_3_2_4_2,length=200[m]
+create link;from=Aquifer_3_3,to=Aquifer_4_3,type=UC_groundwater_link,width=200[m],name=GW_3_3_4_3,length=200[m]
+create link;from=Aquifer_3_4,to=Aquifer_4_4,type=UC_groundwater_link,width=200[m],name=GW_3_4_4_4,length=200[m]
+create link;from=Aquifer_3_5,to=Aquifer_4_5,type=UC_groundwater_link,width=200[m],name=GW_3_5_4_5,length=200[m]
+create link;from=Aquifer_4_1,to=Aquifer_5_1,type=UC_groundwater_link,width=200[m],name=GW_4_1_5_1,length=200[m]
+create link;from=Aquifer_4_2,to=Aquifer_5_2,type=UC_groundwater_link,width=200[m],name=GW_4_2_5_2,length=200[m]
+create link;from=Aquifer_4_3,to=Aquifer_5_3,type=UC_groundwater_link,width=200[m],name=GW_4_3_5_3,length=200[m]
+create link;from=Aquifer_4_4,to=Aquifer_5_4,type=UC_groundwater_link,width=200[m],name=GW_4_4_5_4,length=200[m]
+create link;from=Aquifer_4_5,to=Aquifer_5_5,type=UC_groundwater_link,width=200[m],name=GW_4_5_5_5,length=200[m]
+create link;from=Aquifer_1_1,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_1_1,length=200[m]
+create link;from=Aquifer_1_2,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_1_2,length=200[m]
+create link;from=Aquifer_1_3,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_1_3,length=200[m]
+create link;from=Aquifer_1_4,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_1_4,length=200[m]
+create link;from=Aquifer_1_5,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_1_5,length=200[m]
+create link;from=Aquifer_5_1,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_5_1,length=200[m]
+create link;from=Aquifer_5_2,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_5_2,length=200[m]
+create link;from=Aquifer_5_3,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_5_3,length=200[m]
+create link;from=Aquifer_5_4,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_5_4,length=200[m]
+create link;from=Aquifer_5_5,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_5_5,length=200[m]
+create link;from=Aquifer_2_1,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_2_1,length=200[m]
+create link;from=Aquifer_3_1,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_3_1,length=200[m]
+create link;from=Aquifer_4_1,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_4_1,length=200[m]
+create link;from=Aquifer_2_5,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_2_5,length=200[m]
+create link;from=Aquifer_3_5,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_3_5,length=200[m]
+create link;from=Aquifer_4_5,to=Regional_aquifer,type=unconfined_groundwater_to_fixedhead,width=200[m],name=Boundary_4_5,length=200[m]
+create link;from=Aquifer_3_3,to=Supply_well,type=aquifer2well_link_pump,name=Well_inflow
+create link;from=Supply_well,to=Storage_tank,type=pump,name=Pump,head_0=43[m],beta=2,alpha=0.0001
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=40179
+setvalue; object=system, quantity=simulation_end_time, value=40210
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-08
+setvalue; object=system, quantity=nr_tolerance, value=0.0001
+setvalue; object=system, quantity=write_interval, value=10

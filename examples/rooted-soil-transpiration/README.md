@@ -83,14 +83,14 @@ For this soil (α = 1.5 1/m, n = 1.4, θᵣ = 0.06, θₛ = 0.42) field capacity
 **Reference evapotranspiration.** Each `Transpiration_Penman (Soil)` source computes ET₀ from the weather series with a Penman combination equation. As implemented in `plants.json`, with T in °C, RH as a fraction and u the wind speed:
 
   e_s = 611 · exp(17.27·T / (237.3 + T))  (saturation vapour pressure, Pa)
-  Δ = 4098 · e_s / (237.3 + T)
+  Δ = 4098 · e_s / (237.3 + T)²  (slope of the saturation vapour pressure curve, Pa/K)
   λ = 2 501 000 − 2370·T  (latent heat, J/kg)
   E_r = −s_R · R_s · 86400 / (1000 · λ)  (radiation term, m/day)
   B = 0.000102 · s_u · u / (ln(z₂/z₀))²
   E_a = B · e_s · (RH − 1)  (aerodynamic term)
   ET₀ = −(Δ·E_r + γ·E_a) / (Δ + γ)
 
-with γ = 66.8 Pa/K, z₂ = 2 m, z₀ = 0.0003 m, the radiation scale factor s_R = 0.5 and the wind scale factor s_u = 0.28. The radiation term uses incoming shortwave radiation; s_R = 0.5 stands in for the conversion to net radiation and is the intended calibration knob.
+with γ = 66.8 Pa/K, z₂ = 2 m, z₀ = 0.0003 m, the radiation scale factor s_R = 0.5 and the wind scale factor s_u = 0.28. The radiation term uses incoming shortwave radiation; s_R = 0.5 stands in for the conversion to net radiation and is the intended calibration knob. The two terms are weighted by Δ/(Δ + γ) and γ/(Δ + γ): at 25 °C, Δ ≈ 189 Pa/K, so the radiation term carries about three quarters of the weight and the aerodynamic (humidity and wind) term about one quarter.
 
 **Soil water flow.** The three layers are `Soil` blocks (`unsaturated_soil.json`) connected by Darcy-Buckingham links, with van Genuchten retention and Mualem-type conductivity (K_sat = 0.6 m/day). Head in each layer is H = z_bottom + d + ψ, the pressure head referred to the top of the layer. Flow between layers is Q = K_eff·(H_upper − H_lower)/L·A, with L the mean of the two thicknesses. The bottom layer exchanges water with the fixed water table through Q = K_eff·(H − H_wt)/(d/2)·A. Rain falls on `Field_surface` and infiltrates into the top layer through the surface-to-soil link. The *1D Infiltration and Soil Boundary Conditions* example sets out these soil equations in full.
 
@@ -98,10 +98,10 @@ with γ = 66.8 Pa/K, z₂ = 2 m, z₀ = 0.0003 m, the radiation scale factor s_R
 
 ## What to look for in the results
 
-- **Water balance over the season.** Over 120 days the field receives 270 mm of rain. The crop transpires 589 mm (276 mm from the upper layer, 179 mm from the middle and 135 mm from the lower), about 4.9 mm/day. The difference is met by 191 mm of capillary rise from the water table and 127 mm drawn from soil storage. All of the rain infiltrates; ponding never exceeds 0.2 mm.
-- **The root-dense layer dries first.** The upper layer drops below field capacity on 8 June, a week into the run, and reaches θ = 0.176 at its driest. It ends the season at θ = 0.193 (K_s = 0.64). The middle layer ends at θ = 0.201 (K_s = 0.69) and the lower layer at θ = 0.231 (K_s = 0.91). Each rain event rewets the upper layer briefly.
-- **Stress reduces transpiration as the season goes on.** Daily transpiration is about 6.3 mm on 6 June, 5.7 mm in early July, 4.7 mm in mid August and 3.2 mm in late September. Part of the decline is weather (shorter days), and part is soil stress.
-- **A diurnal cycle.** Because ET₀ follows the measured radiation, uptake peaks near midday (17.6 mm/day in early June, falling to about 10 mm/day by late September) and is essentially zero at night. A single instantaneous value is therefore not a daily rate.
+- **Water balance over the season.** Over 120 days the field receives 270 mm of rain. The crop transpires 582 mm (273 mm from the upper layer, 177 mm from the middle and 132 mm from the lower), about 4.9 mm/day. The difference is met by 189 mm of capillary rise from the water table and 121 mm drawn from soil storage. All of the rain infiltrates; ponding never exceeds 0.2 mm.
+- **The root-dense layer dries first.** The upper layer drops below field capacity on 8 June, a week into the run, and reaches θ = 0.179 at its driest. It ends the season at θ = 0.197 (K_s = 0.67). The middle layer ends at θ = 0.205 (K_s = 0.72) and the lower layer at θ = 0.235 (K_s = 0.94). Each rain event rewets the upper layer briefly.
+- **Stress reduces transpiration as the season goes on.** Daily transpiration is about 6.4 mm on 6 June, 6.1 mm on 1 July, 4.8 mm on 10 August and 2.9 mm on 19 September. Part of the decline is weather (shorter days), and part is soil stress.
+- **A diurnal cycle.** Because most of ET₀ comes from the measured radiation, uptake peaks near midday (about 17 mm/day in early June, falling to about 10 mm/day by late September) and drops to a small, humidity- and wind-driven rate at night (typically below 1 mm/day). A single instantaneous value is therefore not a daily rate.
 - **Capillary support from below.** After the wet initial profile has drained for a few days (2.5 mm/day downward at the start), the flow at the base reverses and the water table supplies about 1.9 mm/day for the rest of the summer.
 - **Synthetic variant.** With 567 mm of synthetic ET₀ and 174 mm of rain, `rooted_soil_profile_synthetic.ohq` transpires 472 mm and ends at θ = 0.171, 0.191 and 0.220 (K_s = 0.49, 0.62 and 0.83). The pattern is the same: the layer with half of the roots is the most stressed.
 
@@ -109,8 +109,8 @@ with γ = 66.8 Pa/K, z₂ = 2 m, z₀ = 0.0003 m, the radiation scale factor s_R
 
 - **Transpiration only.** Bare-soil evaporation is not included. K_cb is a basal coefficient, so a soil evaporation source can be added to the top layer without double counting. Do not attach a single-coefficient evapotranspiration source to a layer that already has a transpiration source.
 - **Fixed roots, no compensation.** Root fractions are typed in and do not change. A dry layer's share of the demand is lost, so actual transpiration can fall well below potential even when deeper layers are wet. The full FAO-56 stress function, with its depletion fraction p, cannot be expressed in a source (it is equivalent to p = 0 here).
-- **The Penman ET₀ needs checking against site data.** The radiation term uses incoming shortwave radiation scaled by 0.5, not net radiation. In addition, the slope Δ is written in the plugin as 4098·e_s/(237.3 + T); the standard FAO-56 expression divides by (237.3 + T)². With the plugin form Δ is far larger than γ, so the aerodynamic weight γ/(Δ + γ) is about 0.001 to 0.003 and ET₀ is in practice the scaled radiation term alone. Humidity and wind therefore have almost no influence in this model.
-- The wind speed units are not recorded with the data. The scale factor 0.28 assumes km/h.
+- **The Penman ET₀ needs checking against site data.** The radiation term uses incoming shortwave radiation scaled by 0.5, not a computed net radiation, and there is no soil heat flux term. The scale factor should be set from site data before the model is used quantitatively.
+- The wind speed units are not recorded with the data. The scale factor 0.28 assumes km/h; because the aerodynamic term carries about a quarter of the weight, this assumption matters.
 - The weather is a single 2010 NOAA record from Baltimore/Washington International Airport (BWI), Maryland, used here as a representative humid-temperate summer.
 - The 1 m between the base of the profile and the water table is not represented as soil. The link to the water table spans only half the bottom layer, which tends to overstate capillary rise.
 - The soil is homogeneous, and the three layers have different thicknesses (0.3, 0.4 and 0.8 m). Because the soil plugin refers each layer's head to its top, the gravity component of the gradient between layers of unequal thickness is less than one (0.86 between the upper and middle layers, 0.67 between the middle and lower layers). Equal layer thicknesses avoid this.

@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Well Field and Water Supply Network · OpenHydroQual Examples</title>
+<meta name="description" content="A supply well in an unconfined aquifer pumps into an elevated storage tank, which feeds a looped pipe network serving six residential users with an hourly demand pattern. Groundwater, well hydraulics, pump curve, tank storage and pipe flow are solved together for one month.">
+<meta name="keywords" content="well, water supply well, pumping, drawdown, thiem, cone of depression, unconfined aquifer, groundwater, recharge, water supply, distribution network, pipe network, hazen williams, pump curve, storage tank, elevated tank, junction, pressure, demand, diurnal demand, conjunctive system">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#a0702a">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Soil, Plants &amp; Groundwater</div>
+<h1>Well Field and Water Supply Network</h1>
+<p class="lede">A supply well in an unconfined aquifer pumps into an elevated storage tank, which feeds a looped pipe network serving six residential users with an hourly demand pattern. Groundwater, well hydraulics, pump curve, tank storage and pipe flow are solved together for one month.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class='f'></b><span>Advanced</span></span><a class='plug' href='../../?plugin=pipe_pump_tank'>pipe_pump_tank</a><a class='plug' href='../../?plugin=unconfined_groundwater'>unconfined_groundwater</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/well-field-network.zip" download>Download model (.zip)</a>
+    <div class="muted">289 KB · 3 files · open <code>well_field_network.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A small community draws its water from a single well. The well pumps groundwater into an elevated storage tank, and the tank supplies a looped network of pipes that delivers water to six groups of residential users. Demand follows a daily cycle with an evening peak; the pump runs continuously; the tank absorbs the difference.</p>
+<p>Each part of this system limits the others. The aquifer controls how fast water can flow into the well. The pump's head-flow curve and the lift from the well to the tank set how much it delivers. The tank level sets the pressure in the network, and the users' demand drains the tank. Modelling them together answers questions that no single part can, such as whether the well can sustain the demand, how far the water table is drawn down, and what the pressures are at the far end of the network.</p>
+<p>The model runs for January 2010 (31 days), with recharge from the 2010 Baltimore/Washington International Airport rainfall record.</p>
+<h2>How it works</h2>
+<p>The expressions below are from <code>unconfined_groundwater.json</code> and <code>pipe_pump_tank.json</code>.</p>
+<p><strong>Aquifer.</strong> The 25 <code>Unconfined Groundwater cell</code> blocks behave as in the <em>1D Unconfined Aquifer Between Two Rivers</em> example. Each stores water through its specific yield, h = S/(S_y·A) + z_b, receives recharge R·A, and exchanges Dupuit flow with its neighbours:</p>
+<p>Q = ½(K₁ + K₂) · (h₁ − h₂)/L · w · ½(b₁ + b₂)</p>
+<p>where b = h − z_b is the saturated thickness. Each edge cell is connected to the regional aquifer (−7 m) by Q = K·(h − H_regional)/L·w·b, with L = 200 m.</p>
+<p><strong>Well.</strong> The well is a cylinder of diameter D = 2 m. Its water depth is d_w = 4S/(πD²) and its water level is h_w = z_b + d_w, with the bottom z_b = −20 m. Water enters from the aquifer cell through <code>Well_inflow</code>:</p>
+<p>Q_well = π · (b_cell + d_w) · (h_cell − h_w) / ln(√A / D)</p>
+<p>This has the form of the Thiem equation for an unconfined aquifer, Q = π·K·(h_R² − h_w²)/ln(R/r_w), with the radius of influence R taken as the cell size √A = 200 m. As implemented, the link contains no hydraulic conductivity term (it corresponds to K = 1 m/day) and uses the well diameter in place of its radius. The aquifer's K is set to 1 m/day in this model so that the well inflow and the flow between cells use the same conductivity.</p>
+<p><strong>Pump.</strong> The <code>Pump</code> link moves water from the well to the tank according to a quadratic pump curve:</p>
+<p>Q = ((h_well − h_tank + H₀)/α)^(1/β)</p>
+<p>with shutoff head H₀ = 43 m, α = 0.0001 m/(m³/day)² and β = 2. Rearranged, the head the pump adds is H₀ − α·Q², and the flow falls as the lift h_tank − h_well increases. If the well empties, the pump can only deliver what flows into the well.</p>
+<p><strong>Tank.</strong> The tank head is h_tank = z_b + S/A, with its floor at 20 m and A = 100 m².</p>
+<p><strong>Pipes.</strong> Each <code>pipe_2w</code> link carries a Hazen-Williams flow in either direction:</p>
+<p>Q = 24 055 · C · D^2.63 · |S|^0.54 · sign(h₁ − h₂)  (m³/day)</p>
+<p>where S = (h₁ − h₂)/L is the hydraulic gradient and C = 100. The constant is the SI Hazen-Williams coefficient 0.278 converted from m³/s to m³/day. The plugin smooths the expression near zero gradient so that it stays differentiable when a pipe's flow reverses.</p>
+<p><strong>Junctions.</strong> A <code>junction_elastic</code> block has head h = z + E·(S − 0.01), with E = 1 1/m². A junction stores a small, pressure-dependent volume, so the network is solved as a set of storages with the same time-stepping as the rest of the model; at the network's flow rates the stored volumes stay at a few tens of cubic metres.</p>
+<p><strong>Users.</strong> Each <code>Flow_to_user</code> link delivers exactly the user's demand from <code>water_demand.txt</code>, whatever the pressure at the junction.</p>
+<p><strong>Initial state.</strong> The aquifer is at −7 m everywhere, equal to the regional head. The tank holds 600 m³. The well starts empty (its initial storage is computed from its own water depth, so it cannot be preset) and fills from the aquifer within about two hours. The junctions start full, with their heads equal to the tank's 26 m, so the network does not have to fill from the tank at the start.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>The aquifer limits the supply.</strong> After the first hours the well settles about 9 m below the water table in its cell (−16.0 m against −7.0 m on day 1), and the pump delivers about 105 m³/day (103 to 108 m³/day), equal to what flows into the well. The six users draw on average 110 m³/day. The deficit of about 4.5 m³/day comes out of the tank.</li>
+<li><strong>The tank buffers the daily cycle.</strong> Outflow from the tank swings between about 80 m³/day at night and 160 m³/day at the evening peak, while the pump delivers a nearly constant flow. The tank depth falls from 6.0 m at the start to 4.7 m on day 31. With the slowly rising demand in the record, it would eventually empty, and the well would then be pumped dry.</li>
+<li><strong>Drawdown in the aquifer.</strong> The well cell's water table falls by 0.16 m over the month, to −7.16 m, and the well level follows it down to −17.2 m. Meanwhile recharge (about 890 m³/day over the whole grid in January, eight times the pumping) raises the other cells by about 9 cm. The depression is concentrated in the well cell: after a month the four neighbouring cells are only 2 mm lower than the outer ring. Most of the water pumped so far has come out of storage in the well cell itself.</li>
+<li><strong>Pressures in the network.</strong> Head losses are small: the largest pipe flows (about 80 m³/day in the 0.15 and 0.2 m mains) need only centimetres of head. All junction heads follow the tank level (26 m at the start, 24.7 m at the end), so the pressure head at each junction is set mainly by its elevation: about 10 to 11 m at J1 (15 m elevation) and 23 to 24 m at J6 (2 m elevation). The evening peak lowers the heads by a few centimetres.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li><strong>Well inflow.</strong> The well link uses the Thiem form with R equal to the cell size, no conductivity term (equivalent to K = 1 m/day) and the diameter in place of the radius. With a different aquifer K, the well inflow would not change, so K should stay at 1 m/day unless the link is revised. Well losses (screen and skin) are not represented separately.</li>
+<li><strong>Coarse grid.</strong> A 200 m cell cannot resolve the cone of depression near the well: the steep drawdown close to the well is represented only by the 10 m difference between the well and its cell.</li>
+<li><strong>Demand-driven users.</strong> Users always receive their full demand, regardless of pressure. If the tank empties, the model will not reduce deliveries; junction heads simply fall.</li>
+<li><strong>No tank overflow or pump control.</strong> The pump runs continuously and the tank has no overflow or level control.</li>
+<li><strong>Recharge series.</strong> The recharge series follows the rainfall record but its derivation from rainfall is not documented.</li>
+<li><strong>Regional boundary.</strong> The surrounding aquifer is a fixed head 200 m beyond the centre of each edge cell, and the corner cells connect to it on one side only.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -310 1920 2826" class="ohq-diagram" style="max-width:960px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Supply_User_1"><title>Supply_User_1 (Flow_to_user)</title><path d="M450.0 100.0 L450.0 25.0 L450.0 -50.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Supply_User_3"><title>Supply_User_3 (Flow_to_user)</title><path d="M900.0 -16.7 L950.0 -50.0 L1000.0 -83.3" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Supply_User_2"><title>Supply_User_2 (Flow_to_user)</title><path d="M450.0 700.0 L450.0 750.0 L450.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Supply_User_4"><title>Supply_User_4 (Flow_to_user)</title><path d="M900.0 351.4 L975.0 315.0 L1050.0 278.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Supply_User_5"><title>Supply_User_5 (Flow_to_user)</title><path d="M800.0 850.0 L800.0 900.0 L800.0 950.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Supply_User_6"><title>Supply_User_6 (Flow_to_user)</title><path d="M1250.0 580.0 L1325.0 580.0 L1400.0 580.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_Tank_J1"><title>Pipe_Tank_J1 (pipe_2w)</title><path d="M200.0 342.9 L275.0 300.0 L350.0 257.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_Tank_J2"><title>Pipe_Tank_J2 (pipe_2w)</title><path d="M200.0 457.1 L275.0 500.0 L350.0 542.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J1_J3"><title>Pipe_J1_J3 (pipe_2w)</title><path d="M550.0 157.1 L625.0 125.0 L700.0 92.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J1_J4"><title>Pipe_J1_J4 (pipe_2w)</title><path d="M550.0 257.1 L625.0 300.0 L700.0 342.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J2_J4"><title>Pipe_J2_J4 (pipe_2w)</title><path d="M550.0 542.9 L625.0 500.0 L700.0 457.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J2_J5"><title>Pipe_J2_J5 (pipe_2w)</title><path d="M550.0 642.9 L625.0 675.0 L700.0 707.1" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J5_J6"><title>Pipe_J5_J6 (pipe_2w)</title><path d="M900.0 701.4 L975.0 665.0 L1050.0 628.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_J4_J6"><title>Pipe_J4_J6 (pipe_2w)</title><path d="M900.0 451.4 L975.0 490.0 L1050.0 528.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_1_1_2"><title>GW_1_1_1_2 (UC_groundwater_link)</title><path d="M400.0 1450.0 L400.0 1470.0 L400.0 1490.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_2_1_3"><title>GW_1_2_1_3 (UC_groundwater_link)</title><path d="M400.0 1690.0 L400.0 1710.0 L400.0 1730.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_3_1_4"><title>GW_1_3_1_4 (UC_groundwater_link)</title><path d="M400.0 1930.0 L400.0 1950.0 L400.0 1970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_4_1_5"><title>GW_1_4_1_5 (UC_groundwater_link)</title><path d="M400.0 2170.0 L400.0 2190.0 L400.0 2210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_1_2_2"><title>GW_2_1_2_2 (UC_groundwater_link)</title><path d="M640.0 1450.0 L640.0 1470.0 L640.0 1490.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_2_2_3"><title>GW_2_2_2_3 (UC_groundwater_link)</title><path d="M640.0 1690.0 L640.0 1710.0 L640.0 1730.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_3_2_4"><title>GW_2_3_2_4 (UC_groundwater_link)</title><path d="M640.0 1930.0 L640.0 1950.0 L640.0 1970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_4_2_5"><title>GW_2_4_2_5 (UC_groundwater_link)</title><path d="M640.0 2170.0 L640.0 2190.0 L640.0 2210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_1_3_2"><title>GW_3_1_3_2 (UC_groundwater_link)</title><path d="M880.0 1450.0 L880.0 1470.0 L880.0 1490.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_2_3_3"><title>GW_3_2_3_3 (UC_groundwater_link)</title><path d="M880.0 1690.0 L880.0 1710.0 L880.0 1730.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_3_3_4"><title>GW_3_3_3_4 (UC_groundwater_link)</title><path d="M880.0 1930.0 L880.0 1950.0 L880.0 1970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_4_3_5"><title>GW_3_4_3_5 (UC_groundwater_link)</title><path d="M880.0 2170.0 L880.0 2190.0 L880.0 2210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_1_4_2"><title>GW_4_1_4_2 (UC_groundwater_link)</title><path d="M1120.0 1450.0 L1120.0 1470.0 L1120.0 1490.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_2_4_3"><title>GW_4_2_4_3 (UC_groundwater_link)</title><path d="M1120.0 1690.0 L1120.0 1710.0 L1120.0 1730.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_3_4_4"><title>GW_4_3_4_4 (UC_groundwater_link)</title><path d="M1120.0 1930.0 L1120.0 1950.0 L1120.0 1970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_4_4_5"><title>GW_4_4_4_5 (UC_groundwater_link)</title><path d="M1120.0 2170.0 L1120.0 2190.0 L1120.0 2210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_5_1_5_2"><title>GW_5_1_5_2 (UC_groundwater_link)</title><path d="M1360.0 1450.0 L1360.0 1470.0 L1360.0 1490.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_5_2_5_3"><title>GW_5_2_5_3 (UC_groundwater_link)</title><path d="M1360.0 1690.0 L1360.0 1710.0 L1360.0 1730.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_5_3_5_4"><title>GW_5_3_5_4 (UC_groundwater_link)</title><path d="M1360.0 1930.0 L1360.0 1950.0 L1360.0 1970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_5_4_5_5"><title>GW_5_4_5_5 (UC_groundwater_link)</title><path d="M1360.0 2170.0 L1360.0 2190.0 L1360.0 2210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_1_2_1"><title>GW_1_1_2_1 (UC_groundwater_link)</title><path d="M500.0 1350.0 L520.0 1350.0 L540.0 1350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_2_2_2"><title>GW_1_2_2_2 (UC_groundwater_link)</title><path d="M500.0 1590.0 L520.0 1590.0 L540.0 1590.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_3_2_3"><title>GW_1_3_2_3 (UC_groundwater_link)</title><path d="M500.0 1830.0 L520.0 1830.0 L540.0 1830.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_4_2_4"><title>GW_1_4_2_4 (UC_groundwater_link)</title><path d="M500.0 2070.0 L520.0 2070.0 L540.0 2070.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_1_5_2_5"><title>GW_1_5_2_5 (UC_groundwater_link)</title><path d="M500.0 2310.0 L520.0 2310.0 L540.0 2310.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_1_3_1"><title>GW_2_1_3_1 (UC_groundwater_link)</title><path d="M740.0 1350.0 L760.0 1350.0 L780.0 1350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_2_3_2"><title>GW_2_2_3_2 (UC_groundwater_link)</title><path d="M740.0 1590.0 L760.0 1590.0 L780.0 1590.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_3_3_3"><title>GW_2_3_3_3 (UC_groundwater_link)</title><path d="M740.0 1830.0 L760.0 1830.0 L780.0 1830.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_4_3_4"><title>GW_2_4_3_4 (UC_groundwater_link)</title><path d="M740.0 2070.0 L760.0 2070.0 L780.0 2070.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_2_5_3_5"><title>GW_2_5_3_5 (UC_groundwater_link)</title><path d="M740.0 2310.0 L760.0 2310.0 L780.0 2310.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_1_4_1"><title>GW_3_1_4_1 (UC_groundwater_link)</title><path d="M980.0 1350.0 L1000.0 1350.0 L1020.0 1350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_2_4_2"><title>GW_3_2_4_2 (UC_groundwater_link)</title><path d="M980.0 1590.0 L1000.0 1590.0 L1020.0 1590.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_3_4_3"><title>GW_3_3_4_3 (UC_groundwater_link)</title><path d="M980.0 1830.0 L1000.0 1830.0 L1020.0 1830.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_4_4_4"><title>GW_3_4_4_4 (UC_groundwater_link)</title><path d="M980.0 2070.0 L1000.0 2070.0 L1020.0 2070.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_3_5_4_5"><title>GW_3_5_4_5 (UC_groundwater_link)</title><path d="M980.0 2310.0 L1000.0 2310.0 L1020.0 2310.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_1_5_1"><title>GW_4_1_5_1 (UC_groundwater_link)</title><path d="M1220.0 1350.0 L1240.0 1350.0 L1260.0 1350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_2_5_2"><title>GW_4_2_5_2 (UC_groundwater_link)</title><path d="M1220.0 1590.0 L1240.0 1590.0 L1260.0 1590.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_3_5_3"><title>GW_4_3_5_3 (UC_groundwater_link)</title><path d="M1220.0 1830.0 L1240.0 1830.0 L1260.0 1830.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_4_5_4"><title>GW_4_4_5_4 (UC_groundwater_link)</title><path d="M1220.0 2070.0 L1240.0 2070.0 L1260.0 2070.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="GW_4_5_5_5"><title>GW_4_5_5_5 (UC_groundwater_link)</title><path d="M1220.0 2310.0 L1240.0 2310.0 L1260.0 2310.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Boundary_1_1"><title>Boundary_1_1 (unconfined_groundwater_to_fixedhead)</title><path d="M500.0 1338.3 Q1171.8 1260.0 1607.3 1730.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1112.8 1397.1) rotate(19.5) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_1_2"><title>Boundary_1_2 (unconfined_groundwater_to_fixedhead)</title><path d="M500.0 1560.5 Q1110.9 1380.0 1600.0 1753.6"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1080.5 1518.5) rotate(10.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_1_3"><title>Boundary_1_3 (unconfined_groundwater_to_fixedhead)</title><path d="M500.0 1779.2 Q1050.0 1500.0 1600.0 1779.2"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1050.0 1639.6) rotate(0.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_1_4"><title>Boundary_1_4 (unconfined_groundwater_to_fixedhead)</title><path d="M500.0 1993.6 Q989.1 1620.0 1600.0 1800.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1019.5 1758.5) rotate(-10.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_1_5"><title>Boundary_1_5 (unconfined_groundwater_to_fixedhead)</title><path d="M492.7 2210.0 Q928.2 1740.0 1600.0 1818.3"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(987.2 1877.1) rotate(-19.5) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_5_1"><title>Boundary_5_1 (unconfined_groundwater_to_fixedhead)</title><path d="M1460.0 1373.5 Q1742.2 1439.7 1710.8 1730.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1663.8 1495.7) rotate(54.9) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_5_2"><title>Boundary_5_2 (unconfined_groundwater_to_fixedhead)</title><path d="M1460.0 1660.6 L1530.0 1710.0 L1600.0 1759.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Boundary_5_3"><title>Boundary_5_3 (unconfined_groundwater_to_fixedhead)</title><path d="M1460.0 1830.0 L1530.0 1830.0 L1600.0 1830.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Boundary_5_4"><title>Boundary_5_4 (unconfined_groundwater_to_fixedhead)</title><path d="M1460.0 1999.4 L1530.0 1950.0 L1600.0 1900.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Boundary_5_5"><title>Boundary_5_5 (unconfined_groundwater_to_fixedhead)</title><path d="M1460.0 2286.5 Q1742.2 2220.3 1710.8 1930.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1663.8 2164.3) rotate(-54.9) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_2_1"><title>Boundary_2_1 (unconfined_groundwater_to_fixedhead)</title><path d="M740.0 1347.2 Q1286.8 1332.0 1617.0 1730.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1232.7 1435.3) rotate(23.6) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_3_1"><title>Boundary_3_1 (unconfined_groundwater_to_fixedhead)</title><path d="M980.0 1352.9 Q1421.3 1365.6 1640.0 1730.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1365.7 1453.5) rotate(29.7) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_4_1"><title>Boundary_4_1 (unconfined_groundwater_to_fixedhead)</title><path d="M1220.0 1358.7 Q1575.8 1389.7 1671.8 1730.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1510.8 1467.0) rotate(39.4) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_2_5"><title>Boundary_2_5 (unconfined_groundwater_to_fixedhead)</title><path d="M723.0 2210.0 Q1053.2 1812.0 1600.0 1827.2"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1107.3 1915.3) rotate(-23.6) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_3_5"><title>Boundary_3_5 (unconfined_groundwater_to_fixedhead)</title><path d="M940.0 2210.0 Q1158.7 1845.6 1600.0 1832.9"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1214.3 1933.5) rotate(-29.7) scale(1.6)"/></g>
+<g class="d-link" data-name="Boundary_4_5"><title>Boundary_4_5 (unconfined_groundwater_to_fixedhead)</title><path d="M1148.2 2210.0 Q1244.2 1869.7 1600.0 1838.7"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1309.2 1947.0) rotate(-39.4) scale(1.6)"/></g>
+<g class="d-link" data-name="Well_inflow"><title>Well_inflow (aquifer2well_link_pump)</title><path d="M841.7 1730.0 Q667.7 1275.2 200.0 1130.9"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(594.3 1352.8) rotate(-137.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Pump"><title>Pump (pump)</title><path d="M100.0 1000.0 L100.0 750.0 L100.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Storage_tank"><title>Storage_tank (Tank)</title><rect x="0" y="300" width="200" height="200" rx="16"/>
+<image href="icons/watertank.png" x="22" y="322" width="156" height="156"/>
+<text x="100" y="555" font-size="43" text-anchor="middle">Storage_tank</text></g>
+<g class="d-node" data-name="J1"><title>J1 (junction_elastic)</title><rect x="350" y="100" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="372" y="122" width="156" height="156"/>
+<text x="450" y="355" font-size="43" text-anchor="middle">J1</text></g>
+<g class="d-node" data-name="J2"><title>J2 (junction_elastic)</title><rect x="350" y="500" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="372" y="522" width="156" height="156"/>
+<text x="450" y="755" font-size="43" text-anchor="middle">J2</text></g>
+<g class="d-node" data-name="J3"><title>J3 (junction_elastic)</title><rect x="700" y="-50" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="722" y="-28" width="156" height="156"/>
+<text x="800" y="205" font-size="43" text-anchor="middle">J3</text></g>
+<g class="d-node" data-name="J4"><title>J4 (junction_elastic)</title><rect x="700" y="300" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="722" y="322" width="156" height="156"/>
+<text x="800" y="555" font-size="43" text-anchor="middle">J4</text></g>
+<g class="d-node" data-name="J5"><title>J5 (junction_elastic)</title><rect x="700" y="650" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="722" y="672" width="156" height="156"/>
+<text x="800" y="905" font-size="43" text-anchor="middle">J5</text></g>
+<g class="d-node" data-name="J6"><title>J6 (junction_elastic)</title><rect x="1050" y="480" width="200" height="200" rx="16"/>
+<image href="icons/junction.png" x="1072" y="502" width="156" height="156"/>
+<text x="1150" y="735" font-size="43" text-anchor="middle">J6</text></g>
+<g class="d-node" data-name="User_1"><title>User_1 (residential_user)</title><rect x="350" y="-250" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="372" y="-228" width="156" height="156"/>
+<text x="450" y="5" font-size="43" text-anchor="middle">User_1</text></g>
+<g class="d-node" data-name="User_2"><title>User_2 (residential_user)</title><rect x="350" y="800" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="372" y="822" width="156" height="156"/>
+<text x="450" y="1055" font-size="43" text-anchor="middle">User_2</text></g>
+<g class="d-node" data-name="User_3"><title>User_3 (residential_user)</title><rect x="1000" y="-250" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="1022" y="-228" width="156" height="156"/>
+<text x="1100" y="5" font-size="43" text-anchor="middle">User_3</text></g>
+<g class="d-node" data-name="User_4"><title>User_4 (residential_user)</title><rect x="1050" y="130" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="1072" y="152" width="156" height="156"/>
+<text x="1150" y="385" font-size="43" text-anchor="middle">User_4</text></g>
+<g class="d-node" data-name="User_5"><title>User_5 (residential_user)</title><rect x="700" y="950" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="722" y="972" width="156" height="156"/>
+<text x="800" y="1205" font-size="43" text-anchor="middle">User_5</text></g>
+<g class="d-node" data-name="User_6"><title>User_6 (residential_user)</title><rect x="1400" y="480" width="200" height="200" rx="16"/>
+<image href="icons/residential.png" x="1422" y="502" width="156" height="156"/>
+<text x="1500" y="735" font-size="43" text-anchor="middle">User_6</text></g>
+<g class="d-node" data-name="Regional_aquifer"><title>Regional_aquifer (fixed_head)</title><rect x="1600" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1622" y="1752" width="156" height="156"/>
+<text x="1700" y="1985" font-size="43" text-anchor="middle">Regional_aquifer</text></g>
+<g class="d-node" data-name="Aquifer_1_1"><title>Aquifer_1_1 (Unconfined Groundwater cell)</title><rect x="300" y="1250" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="1272" width="156" height="156"/>
+<text x="400" y="1505" font-size="43" text-anchor="middle">Aquifer_1_1</text></g>
+<g class="d-node" data-name="Aquifer_1_2"><title>Aquifer_1_2 (Unconfined Groundwater cell)</title><rect x="300" y="1490" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="1512" width="156" height="156"/>
+<text x="400" y="1745" font-size="43" text-anchor="middle">Aquifer_1_2</text></g>
+<g class="d-node" data-name="Aquifer_1_3"><title>Aquifer_1_3 (Unconfined Groundwater cell)</title><rect x="300" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="1752" width="156" height="156"/>
+<text x="400" y="1985" font-size="43" text-anchor="middle">Aquifer_1_3</text></g>
+<g class="d-node" data-name="Aquifer_1_4"><title>Aquifer_1_4 (Unconfined Groundwater cell)</title><rect x="300" y="1970" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="1992" width="156" height="156"/>
+<text x="400" y="2225" font-size="43" text-anchor="middle">Aquifer_1_4</text></g>
+<g class="d-node" data-name="Aquifer_1_5"><title>Aquifer_1_5 (Unconfined Groundwater cell)</title><rect x="300" y="2210" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="322" y="2232" width="156" height="156"/>
+<text x="400" y="2465" font-size="43" text-anchor="middle">Aquifer_1_5</text></g>
+<g class="d-node" data-name="Aquifer_2_1"><title>Aquifer_2_1 (Unconfined Groundwater cell)</title><rect x="540" y="1250" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="562" y="1272" width="156" height="156"/>
+<text x="640" y="1505" font-size="43" text-anchor="middle">Aquifer_2_1</text></g>
+<g class="d-node" data-name="Aquifer_2_2"><title>Aquifer_2_2 (Unconfined Groundwater cell)</title><rect x="540" y="1490" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="562" y="1512" width="156" height="156"/>
+<text x="640" y="1745" font-size="43" text-anchor="middle">Aquifer_2_2</text></g>
+<g class="d-node" data-name="Aquifer_2_3"><title>Aquifer_2_3 (Unconfined Groundwater cell)</title><rect x="540" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="562" y="1752" width="156" height="156"/>
+<text x="640" y="1985" font-size="43" text-anchor="middle">Aquifer_2_3</text></g>
+<g class="d-node" data-name="Aquifer_2_4"><title>Aquifer_2_4 (Unconfined Groundwater cell)</title><rect x="540" y="1970" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="562" y="1992" width="156" height="156"/>
+<text x="640" y="2225" font-size="43" text-anchor="middle">Aquifer_2_4</text></g>
+<g class="d-node" data-name="Aquifer_2_5"><title>Aquifer_2_5 (Unconfined Groundwater cell)</title><rect x="540" y="2210" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="562" y="2232" width="156" height="156"/>
+<text x="640" y="2465" font-size="43" text-anchor="middle">Aquifer_2_5</text></g>
+<g class="d-node" data-name="Aquifer_3_1"><title>Aquifer_3_1 (Unconfined Groundwater cell)</title><rect x="780" y="1250" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="802" y="1272" width="156" height="156"/>
+<text x="880" y="1505" font-size="43" text-anchor="middle">Aquifer_3_1</text></g>
+<g class="d-node" data-name="Aquifer_3_2"><title>Aquifer_3_2 (Unconfined Groundwater cell)</title><rect x="780" y="1490" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="802" y="1512" width="156" height="156"/>
+<text x="880" y="1745" font-size="43" text-anchor="middle">Aquifer_3_2</text></g>
+<g class="d-node" data-name="Aquifer_3_3"><title>Aquifer_3_3 (Unconfined Groundwater cell)</title><rect x="780" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="802" y="1752" width="156" height="156"/>
+<text x="880" y="1985" font-size="43" text-anchor="middle">Aquifer_3_3</text></g>
+<g class="d-node" data-name="Aquifer_3_4"><title>Aquifer_3_4 (Unconfined Groundwater cell)</title><rect x="780" y="1970" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="802" y="1992" width="156" height="156"/>
+<text x="880" y="2225" font-size="43" text-anchor="middle">Aquifer_3_4</text></g>
+<g class="d-node" data-name="Aquifer_3_5"><title>Aquifer_3_5 (Unconfined Groundwater cell)</title><rect x="780" y="2210" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="802" y="2232" width="156" height="156"/>
+<text x="880" y="2465" font-size="43" text-anchor="middle">Aquifer_3_5</text></g>
+<g class="d-node" data-name="Aquifer_4_1"><title>Aquifer_4_1 (Unconfined Groundwater cell)</title><rect x="1020" y="1250" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1042" y="1272" width="156" height="156"/>
+<text x="1120" y="1505" font-size="43" text-anchor="middle">Aquifer_4_1</text></g>
+<g class="d-node" data-name="Aquifer_4_2"><title>Aquifer_4_2 (Unconfined Groundwater cell)</title><rect x="1020" y="1490" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1042" y="1512" width="156" height="156"/>
+<text x="1120" y="1745" font-size="43" text-anchor="middle">Aquifer_4_2</text></g>
+<g class="d-node" data-name="Aquifer_4_3"><title>Aquifer_4_3 (Unconfined Groundwater cell)</title><rect x="1020" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1042" y="1752" width="156" height="156"/>
+<text x="1120" y="1985" font-size="43" text-anchor="middle">Aquifer_4_3</text></g>
+<g class="d-node" data-name="Aquifer_4_4"><title>Aquifer_4_4 (Unconfined Groundwater cell)</title><rect x="1020" y="1970" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1042" y="1992" width="156" height="156"/>
+<text x="1120" y="2225" font-size="43" text-anchor="middle">Aquifer_4_4</text></g>
+<g class="d-node" data-name="Aquifer_4_5"><title>Aquifer_4_5 (Unconfined Groundwater cell)</title><rect x="1020" y="2210" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1042" y="2232" width="156" height="156"/>
+<text x="1120" y="2465" font-size="43" text-anchor="middle">Aquifer_4_5</text></g>
+<g class="d-node" data-name="Aquifer_5_1"><title>Aquifer_5_1 (Unconfined Groundwater cell)</title><rect x="1260" y="1250" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1282" y="1272" width="156" height="156"/>
+<text x="1360" y="1505" font-size="43" text-anchor="middle">Aquifer_5_1</text></g>
+<g class="d-node" data-name="Aquifer_5_2"><title>Aquifer_5_2 (Unconfined Groundwater cell)</title><rect x="1260" y="1490" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1282" y="1512" width="156" height="156"/>
+<text x="1360" y="1745" font-size="43" text-anchor="middle">Aquifer_5_2</text></g>
+<g class="d-node" data-name="Aquifer_5_3"><title>Aquifer_5_3 (Unconfined Groundwater cell)</title><rect x="1260" y="1730" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1282" y="1752" width="156" height="156"/>
+<text x="1360" y="1985" font-size="43" text-anchor="middle">Aquifer_5_3</text></g>
+<g class="d-node" data-name="Aquifer_5_4"><title>Aquifer_5_4 (Unconfined Groundwater cell)</title><rect x="1260" y="1970" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1282" y="1992" width="156" height="156"/>
+<text x="1360" y="2225" font-size="43" text-anchor="middle">Aquifer_5_4</text></g>
+<g class="d-node" data-name="Aquifer_5_5"><title>Aquifer_5_5 (Unconfined Groundwater cell)</title><rect x="1260" y="2210" width="200" height="200" rx="16"/>
+<image href="icons/unconfined_aquifer.png" x="1282" y="2232" width="156" height="156"/>
+<text x="1360" y="2465" font-size="43" text-anchor="middle">Aquifer_5_5</text></g>
+<g class="d-node" data-name="Supply_well"><title>Supply_well (water_supply_well)</title><rect x="0" y="1000" width="200" height="200" rx="16"/>
+<image href="icons/water_supply_well.png" x="22" y="1022" width="156" height="156"/>
+<text x="100" y="1255" font-size="43" text-anchor="middle">Supply_well</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>40</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Storage-tank'><summary><span class='cname'>Storage_tank</span><span class='ctype'>Tank · pipe_pump_tank</span><span class='crole'><p>An elevated tank with a 100 m² cross-section and its floor at 20 m elevation. It starts with 600 m³ (6 m of water, head 26 m).</p></span></summary><div class='cbody'><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Bottom Elevation</td><td class='v'>20</td><td>m</td><td>Elevation of the bottom of the tank relative to the model&#x27;s vertical datum.</td></tr><tr><td>Base Area</td><td class='v'>100</td><td>m<sup>2</sup></td><td>Horizontal cross-sectional area at the base of the tank, used to compute water depth.</td></tr><tr><td>Initial Storage</td><td class='v'>600</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the tank at the beginning of the simulation.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-J1'><summary><span class='cname'>6 × junction_elastic</span><span class='ctype'>junction_elastic · pipe_pump_tank</span><span class='crole'><p>Six pipe junctions (J1 to J6) at elevations from 15 m down to 2 m. Each holds a small storage whose head rises 1 m per m³ stored, which lets the network be solved as part of the same time-stepping system.</p></span></summary><div class='cbody'><p class='members'>J1, J2, J3, J4, J5, J6</p><p class='muted'>Showing properties of <b>J1</b>.</p><p class=type-help><b>junction_elastic:</b> Elastic Junction</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Elevation</td><td class='v'>15</td><td>m</td><td></td></tr><tr><td>Storage</td><td class='v'>11.01</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Elasticity (d head/d storage)</td><td class='v'>1</td><td>1/m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-User-1'><summary><span class='cname'>6 × residential_user</span><span class='ctype'>residential_user · pipe_pump_tank</span><span class='crole'><p>Six residential users (User_1 to User_6), one at each junction. Each draws the same hourly demand from <code>water_demand.txt</code>.</p></span></summary><div class='cbody'><p class='members'>User_1, User_2, User_3, User_4, User_5, User_6</p><p class='muted'>Showing properties of <b>User_1</b>.</p><p class=type-help><b>residential_user:</b> User</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Use rate time series</td><td class='v'>water_demand.txt</td><td>m^3/day</td><td></td></tr><tr><td>Constant use rate</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Regional-aquifer'><summary><span class='cname'>Regional_aquifer</span><span class='ctype'>fixed_head</span><span class='crole'><p>The surrounding aquifer, represented as a fixed head of −7 m beyond the edges of the grid.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>-7</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Aquifer-1-1'><summary><span class='cname'>25 × Unconfined Groundwater cell</span><span class='ctype'>Unconfined Groundwater cell · unconfined_groundwater</span><span class='crole'><p>25 aquifer cells in a 5 × 5 grid (Aquifer_1_1 to Aquifer_5_5), each 200 m × 200 m (40 000 m²). Base at −20 m, initial water table at −7 m (13 m saturated thickness), hydraulic conductivity 1 m/day, specific yield 0.3. Each receives recharge from <code>recharge.txt</code>. The supply well is in the centre cell, Aquifer_3_3.</p></span></summary><div class='cbody'><p class='members'>Aquifer_1_1, Aquifer_1_2, Aquifer_1_3, Aquifer_1_4, Aquifer_1_5, Aquifer_2_1, Aquifer_2_2, Aquifer_2_3 …</p><p class='muted'>Showing properties of <b>Aquifer_1_1</b>.</p><p class=type-help><b>Unconfined Groundwater cell:</b> Unconfined Aquifer Cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Piezometric head</td><td class='v'>-7</td><td>m</td><td>Initial Piezometric head; Piezometric head</td></tr><tr><td>Cell area</td><td class='v'>40000</td><td>m<sup>2</sup></td><td>Cell area</td></tr><tr><td>Specific Yield</td><td class='v'>0.3</td><td></td><td>Specific Yield</td></tr><tr><td>Base Elevation</td><td class='v'>-20</td><td>m</td><td>Base Elevation</td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>1</td><td>m/day</td><td>Hydraulic Conductivity</td></tr><tr><td>Recharge per unit area</td><td class='v'>recharge.txt</td><td>m/day</td><td>Recharge per unit area</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Supply-well'><summary><span class='cname'>Supply_well</span><span class='ctype'>water_supply_well · unconfined_groundwater</span><span class='crole'><p>A 2 m diameter well with its bottom at −20 m, the base of the aquifer. Its water level is set by the balance between inflow from the aquifer and the pump. It starts empty and fills from the aquifer in about two hours.</p></span></summary><div class='cbody'><p class=type-help><b>water_supply_well:</b> Water Supply Well</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>well diameter</td><td class='v'>2</td><td>m</td><td>well diameter</td></tr><tr><td>The bottom elevation of the well</td><td class='v'>-20</td><td>m</td><td>The bottom elevation of the well</td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>72</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Supply-User-1'><summary><span class='cname'>6 × Flow_to_user</span><span class='ctype'>Flow_to_user · pipe_pump_tank</span><span class='crole'><p>Six links (Supply_User_1 to Supply_User_6) that deliver each user's demand from its junction. The flow equals the demand whatever the pressure.</p></span></summary><div class='cbody'><p class='members'>Supply_User_1, Supply_User_3, Supply_User_2, Supply_User_4, Supply_User_5, Supply_User_6</p><p class='muted'>Showing properties of <b>Supply_User_1</b>.</p><p class=type-help><b>Flow_to_user:</b> Flow link to user</p></div></details>
+<details class='comp' id='c-Pipe-Tank-J1'><summary><span class='cname'>8 × pipe_2w</span><span class='ctype'>pipe_2w · pipe_pump_tank</span><span class='crole'><p>Eight pipes (Pipe_Tank_J1, Pipe_J1_J3 and so on), 100 to 200 m long, 0.10 to 0.20 m in diameter, Hazen-Williams C = 100. Flow can go either way; positive from the first-named to the second-named node.</p></span></summary><div class='cbody'><p class='members'>Pipe_Tank_J1, Pipe_Tank_J2, Pipe_J1_J3, Pipe_J1_J4, Pipe_J2_J4, Pipe_J2_J5, Pipe_J5_J6, Pipe_J4_J6</p><p class='muted'>Showing properties of <b>Pipe_Tank_J1</b>.</p><p class=type-help><b>pipe_2w:</b> Pipe (Hazen-Williams Equation, 2 way)</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Pipe length</td><td class='v'>200</td><td>m</td><td></td></tr><tr><td>Hazen-Williams Coefficient (SI)</td><td class='v'>100</td><td>m</td><td></td></tr><tr><td>Diameter</td><td class='v'>0.2</td><td>m</td><td>Internal diameter of the pipe, used to calculate flow based on the Hazen-Williams equation.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-GW-1-1-1-2'><summary><span class='cname'>40 × UC_groundwater_link</span><span class='ctype'>UC_groundwater_link · unconfined_groundwater</span><span class='crole'><p>40 Dupuit flow links between neighbouring aquifer cells (named GW_r1_c1_r2_c2), each 200 m long and 200 m wide. Positive from the first-named to the second-named cell.</p></span></summary><div class='cbody'><p class='members'>GW_1_1_1_2, GW_1_2_1_3, GW_1_3_1_4, GW_1_4_1_5, GW_2_1_2_2, GW_2_2_2_3, GW_2_3_2_4, GW_2_4_2_5 …</p><p class='muted'>Showing properties of <b>GW_1_1_1_2</b>.</p><p class=type-help><b>UC_groundwater_link:</b> Unconfined Aquifer link</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Width of the connector</td><td class='v'>200</td><td>m</td><td>Width of the connector</td></tr><tr><td>Centroid to centroid length</td><td class='v'>200</td><td>m</td><td>Centroid to centroid length</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Boundary-1-1'><summary><span class='cname'>16 × unconfined_groundwater_to_fixedhead</span><span class='ctype'>unconfined_groundwater_to_fixedhead · unconfined_groundwater</span><span class='crole'><p>16 links (Boundary_r_c) from each edge cell to the regional aquifer, 200 m long and 200 m wide. Positive outward, from the grid to the regional aquifer.</p></span></summary><div class='cbody'><p class='members'>Boundary_1_1, Boundary_1_2, Boundary_1_3, Boundary_1_4, Boundary_1_5, Boundary_5_1, Boundary_5_2, Boundary_5_3 …</p><p class='muted'>Showing properties of <b>Boundary_1_1</b>.</p><p class=type-help><b>unconfined_groundwater_to_fixedhead:</b> Unconfined Groundwater to fixed head</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Interface Width</td><td class='v'>200</td><td>m</td><td>Interface Width</td></tr><tr><td>Length</td><td class='v'>200</td><td>m</td><td>Length</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Well-inflow'><summary><span class='cname'>Well_inflow</span><span class='ctype'>aquifer2well_link_pump · unconfined_groundwater</span><span class='crole'><p>Radial flow from Aquifer_3_3 into the well, driven by the difference between the cell's water table and the well's water level.</p></span></summary><div class='cbody'><p class=type-help><b>aquifer2well_link_pump:</b> Unconfined Aquifer to Well connector (pumped withdrawal)</p></div></details>
+<details class='comp' id='c-Pump'><summary><span class='cname'>Pump</span><span class='ctype'>pump · pipe_pump_tank</span><span class='crole'><p>A pump lifting water from the well into the tank, with a quadratic head-flow curve: shutoff head 43 m, and 1 m of head lost for every 100 m³/day of flow squared, divided by 10 000 (α = 0.0001 m per (m³/day)²).</p></span></summary><div class='cbody'><p class=type-help><b>pump:</b> Pump with a quadratic head-flow relationship</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>pump head at a zero flow (h0)</td><td class='v'>43</td><td>m</td><td></td></tr><tr><td>The exponent beta in h=h0-alpha*Q^beta</td><td class='v'>2</td><td>m</td><td></td></tr><tr><td>The coefficient alpha in h=h0-alpha*Q^beta</td><td class='v'>0.0001</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>water_demand.txt</code></td><td><p>Demand of one residential user (m³/day) versus time (serial date), hourly from 1 January 2010 to the end of 2012. It follows a daily cycle from about 13 m³/day in the early morning and late morning to about 27 m³/day in the evening (mean about 18 m³/day in January 2010), with a slow seasonal change.</p></td></tr><tr><td><code>recharge.txt</code></td><td><p>Recharge per unit area (m/day) versus time (serial date, 40179 = 1 January 2010). The time stamps are those of the 2010 hourly rainfall record from Baltimore/Washington International Airport (BWI), and the series rises and decays after each storm; how it was derived from the rainfall is not documented. Up to about 2 mm/day in January 2010.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>40179</td></tr><tr><td>End time</td><td class='v'>40210</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>0.0001</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Pumping and delivery' loading='lazy'><figcaption><b>Pumping and delivery</b> The pump runs steadily at about 105 m³/day, set by how fast the aquifer can refill the well. The flow out of the tank follows the daily demand cycle; the tank absorbs the difference.</figcaption></figure><figure><img src='plot_2.png' alt='Storage tank' loading='lazy'><figcaption><b>Storage tank</b> The tank rises and falls with the daily demand cycle, and slowly loses water because demand slightly exceeds what the well can supply.</figcaption></figure><figure><img src='plot_3.png' alt='Well water level' loading='lazy'><figcaption><b>Well water level</b> About 9 to 10 m of drawdown separates the water in the well from the water table in its cell. The well level falls slowly as the cell itself is drawn down.</figcaption></figure><figure><img src='plot_4.png' alt='Water table around the well' loading='lazy'><figcaption><b>Water table around the well</b> The well cell is drawn down while recharge raises the rest of the grid, so a depression forms around the well. The neighbour and edge cells track each other closely.</figcaption></figure><figure><img src='plot_5.png' alt='Junction heads' loading='lazy'><figcaption><b>Junction heads</b> Head losses in the pipes are small, so all junction heads follow the tank level, with a dip of a few centimetres at each evening demand peak.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/well-field-network">View source on GitHub</a>.</div></footer>
+</body></html>
