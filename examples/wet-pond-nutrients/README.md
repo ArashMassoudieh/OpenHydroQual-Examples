@@ -9,9 +9,10 @@ features: [Bed sediment exchange, Surface reaeration, Penman ET, Nitrogen cycle,
 keywords: [wet pond, retention pond, stormwater pond, wetland, nutrients, nitrogen, ammonia, ammonium, nitrate, nitrification, denitrification, dom, doc, organic matter, dissolved oxygen, sediment oxygen demand, sediment, reaeration, penman, evaporation, seepage, stormwater, bmp]
 components:
   Pond: "Six pond cells in series, Pond_1 (inlet forebay, 894 m² of surface at the permanent pool) to Pond_6 (small outlet pool, 49 m²). Each has a power-law stage-storage curve S = α·d² and loses water to Penman evaporation. Pond_1 receives the storm inflow and the four pollutant loads. Together they hold 1104 m³ at the permanent pool, whose surface is the weir crest at 0 m."
-  Groundwater cell: "Seven groundwater cells. Bed_1 to Bed_6 are the 0.1 m thick organic bed sediment under each pond cell (porosity 0.4, hydraulic conductivity 0.001 m/day), with the same plan area as the pond above. Aquifer is a large (100 000 m² × 10 m) cell below the pond whose head stays near −2 m and which receives the seepage."
+  Groundwater cell: "Six groundwater cells, Bed_1 to Bed_6: the 0.1 m thick organic bed sediment under each pond cell (porosity 0.4, hydraulic conductivity 0.001 m/day), with the same plan area as the pond above."
+  Groundwater: "Fixed-head boundary at −2 m representing the water table below the pond. It receives the seepage; its concentrations stay at zero."
   Atmosphere: "A very large well-mixed volume (10⁹ m³) holding dissolved oxygen at 8.66 g/m³, the saturation value. It acts as a fixed-concentration boundary for surface reaeration and holds no other constituent."
-  Outlet: "Collection tank downstream of the outlet weir (starts at 1 m³). It accumulates the pond discharge and is used for mass accounting."
+  Outlet: "Fixed-head boundary downstream of the outlet weir. The weir flow depends only on the Pond_6 level, so the boundary head (−1 m) has no effect."
   Channel_12: "Shallow wide-channel connection between Pond_1 and Pond_2 (27.2 m long, 18.2 m wide, Manning n = 0.1). Flow is driven by the water-surface difference and can reverse; positive is downstream."
   Channel_23: "Wide-channel connection Pond_2 to Pond_3 (23.5 m long, 15.6 m wide)."
   Channel_34: "Wide-channel connection Pond_3 to Pond_4 (18.9 m long, 12.6 m wide)."
@@ -19,7 +20,7 @@ components:
   Channel_56: "Wide-channel connection Pond_5 to Pond_6 (12.7 m long, 8.5 m wide)."
   Outlet_weir: "Outlet structure of Pond_6 with a power-law rating Q = 33 000·(h − 0)^2.5 m³/day (h in m), crest at 0 m. No flow when the pond is below the crest."
   surface2groundwater_link: "Six links Pond_i_to_Bed_i between each pond cell and its bed sediment: Darcy flow across 0.05 m (half the bed thickness) with K = 0.001 m/day, plus molecular diffusion of all dissolved constituents across the same distance."
-  groundwater_link: "Six links Seepage_i from each bed cell to the Aquifer over 1 m, with the mean of the two cells' conductivities (0.001 m/day). They carry seepage and the solutes in it to groundwater."
+  groundwater_to_fixedhead: "Six links Seepage_i from each bed cell to the Groundwater boundary over 1 m, using the bed conductivity (0.001 m/day). They carry seepage and the solutes in it to groundwater."
   Time-Dependent flow: "Six links Reaeration_1 to Reaeration_6 from the Atmosphere to each pond cell. They carry no water (no flow series). Their area is the pond cell's surface area at the permanent pool, and an oxygen exchange velocity of 1 m/day on each gives the reaeration flux. Their length is set to 10 000 m so that the molecular-diffusion term is negligible for every constituent."
   Penman_ET: "Penman combination evaporation, driven by the four weather files. Assigned to the Evapotranspiration of all six pond cells."
   DOM: "Dissolved organic matter, expressed as oxygen demand (g O₂-equivalent per m³). One gram of DOM decomposed aerobically consumes one gram of O₂."
@@ -102,7 +103,7 @@ plots:
 
 A wet pond (retention pond) is a stormwater control measure that keeps a permanent pool of water. Runoff entering the pond mixes with the pool and is held for days to weeks, long enough for biological and chemical processes to transform dissolved nutrients and organic matter. The pond bed accumulates organic sediment, which consumes oxygen and supports denitrification.
 
-This model represents a pond with a permanent pool of 1104 m³ divided into six cells that water passes through in series, from a forebay at the inlet to a small pool at the outlet weir. Each cell sits on a 0.1 m layer of organic bed sediment, which leaks slowly to the underlying aquifer. The model tracks water (storm inflow, weir outflow, seepage and Penman evaporation) and five constituents (dissolved organic matter, oxygen, ammonia, nitrate and particulate organic matter in the bed) over 100 days of recorded storms and weather. It can be used to study how a pond's internal processes change the quality of the water it releases, and where the nitrogen goes.
+This model represents a pond with a permanent pool of 1104 m³ divided into six cells that water passes through in series, from a forebay at the inlet to a small pool at the outlet weir. Each cell sits on a 0.1 m layer of organic bed sediment, which leaks slowly to the groundwater below. The model tracks water (storm inflow, weir outflow, seepage and Penman evaporation) and five constituents (dissolved organic matter, oxygen, ammonia, nitrate and particulate organic matter in the bed) over 100 days of recorded storms and weather. It can be used to study how a pond's internal processes change the quality of the water it releases, and where the nitrogen goes.
 
 ## How it works
 
@@ -127,7 +128,7 @@ where d̄ is the mean depth of the two cells, w the width, L the length and n = 
 
 with R_s the solar radiation (W/m²), T the air temperature (°C), RH the relative humidity, U the wind speed, γ = 66.8 Pa/°C, z₂ = 2 m, z₀ = 0.0003 m and scale factors f_s = f_w = 0.5. The radiation term uses the incoming solar radiation scaled by f_s in place of net radiation. Each pond loses E·A_surface·d/(d + 0.001) m³/day; the last factor shuts evaporation off as a cell runs dry. Evaporation removes water but no solutes, so it concentrates them.
 
-**Bed sediment and seepage.** The bed cells and the aquifer are `Groundwater cell` blocks, whose head is h = z_bottom + depth + (θ − n)/S_s. Water moves from each pond into its bed by Darcy's law across half the bed thickness, Q = A·K·(h_pond − h_bed)/0.05, and from the bed to the aquifer, Q = A·K·(h_bed − h_aquifer)/1. With K = 0.001 m/day and the aquifer head near −2 m, about 2 mm/day of water seeps through the bed.
+**Bed sediment and seepage.** The bed cells are `Groundwater cell` blocks, whose head is h = z_bottom + depth + (θ − n)/S_s. Water moves from each pond into its bed by Darcy's law across half the bed thickness, Q = A·K·(h_pond − h_bed)/0.05, and from the bed to the Groundwater boundary, Q = A·K·(h_bed − (−2))/1. With K = 0.001 m/day, about 2 mm/day of water seeps through the bed. Molecular diffusion also acts on the seepage links, D·A/1 m toward the zero concentration of the boundary; this diffusive loss is of the same order as the advective one for the dissolved constituents and is included in the seepage figures below.
 
 **Transport of dissolved constituents.** On every link, a constituent moves with the water (upstream concentration times flow) and by exchange proportional to the concentration difference:
 
@@ -152,12 +153,12 @@ with k_H = 2 g/m³/day, K_s = 20 g/m³, K_o = 0.5 g/m³, η_on = 0.04, k_N = 1 g
 
 ## What to look for in the results
 
-- **Water budget.** Over 100 days 6005 m³ enters. The weir releases 4310 m³, evaporation removes 1680 m³ and seepage 500 m³, together 470 m³ more than the inflow, which the pool supplies from storage. Evaporation averages 6.4 mm/day. After the last weir flow on day 77 the pool falls by 0.2 m, and Pond_1's surface area shrinks from 894 to 675 m².
+- **Water budget.** Over 100 days 6009 m³ enters. The weir releases 4290 m³, evaporation removes 1680 m³ and seepage 505 m³, together 470 m³ more than the inflow, which the pool supplies from storage. Evaporation averages 6.4 mm/day. After the last weir flow on day 77 the pool falls by 0.2 m, and Pond_1's surface area shrinks from 894 to 675 m².
 - **Nitrification.** The inflow carries 1.12 g N/m³ of ammonia (flow-weighted). Ammonia peaks at 1.9 g N/m³ in Pond_1 during storms but stays below 0.2 g N/m³ at the outlet, and the discharge averages 0.08 g N/m³. Nitrate does the opposite: 0.26 g N/m³ in the inflow, 1.08 g N/m³ in the discharge.
 - **Nitrogen budget.** Of 8.3 kg of inorganic nitrogen entering (6.7 kg NH3-N and 1.5 kg NOx-N), the weir releases 5.0 kg (0.35 kg NH3-N and 4.6 kg NOx-N) and seepage 0.6 kg. Ammonia released by organic matter decomposition adds to the total. Nitrate diffusing into the bed (7.6 kg over the run) is removed by sediment denitrification, the main permanent nitrogen sink.
 - **Oxygen.** Reaeration supplies 181 kg of O₂ over the run, far more than the inflow (31 kg). The bed takes 73 kg, a sediment oxygen demand of 0.28 g O₂/m²/day over the 2624 m² of bed. The water stays near the 8.66 g/m³ saturation value except during storms; the bed pore water stays near 0.2 g/m³.
 - **Organic matter.** The bed is a net source of DOM to the water (64 kg over the run, from POM hydrolysis), so the discharge carries more DOM (8.1 g/m³ flow-weighted) than the inflow (4.4 g/m³). In the dry period DOM rises as evaporation concentrates the pool. The bed POM declines by about 9% (20 000 to 18 200 g/m³ in Bed_1).
-- **Groundwater.** Seepage carries 14 kg of DOM, 0.4 kg of NH3-N and 0.2 kg of NOx-N to the aquifer.
+- **Groundwater.** Seepage carries 14 kg of DOM, 0.4 kg of NH3-N and 0.2 kg of NOx-N to the groundwater.
 
 ## Assumptions and limitations
 
@@ -166,4 +167,4 @@ with k_H = 2 g/m³/day, K_s = 20 g/m³, K_o = 0.5 g/m³, η_on = 0.04, k_N = 1 g
 - The reaction parameters are illustrative values chosen to give active, plausible kinetics; they have not been calibrated to this pond. The large DOM release from the bed is a consequence of the chosen POM pool and hydrolysis rate.
 - Settling of particulate matter, phosphorus, algae and plants are not modeled. POM is a fixed initial pool with no deposition from the water column.
 - The inflow and the four load series are synthetic, made up to exercise the model; they do not describe a real pond. The 30-minute series are averages of a finer synthetic series, with totals matching it to within 0.1%.
-- The Atmosphere block and its links are a device for a fixed-saturation boundary; the Outlet tank is a mass-accounting device. Reactions also run in the aquifer, where they have little effect because its large volume keeps concentrations low.
+- The Atmosphere block and its links are a device for a fixed-saturation oxygen boundary.

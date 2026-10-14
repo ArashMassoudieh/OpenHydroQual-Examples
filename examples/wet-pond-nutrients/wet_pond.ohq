@@ -41,8 +41,8 @@ create block;type=Groundwater cell,DOM:concentration=45[g/m~^3],O2:concentration
 create block;type=Groundwater cell,DOM:concentration=45[g/m~^3],O2:concentration=0.5[g/m~^3],NH3:concentration=2[g/m~^3],NOx:concentration=0.1[g/m~^3],POM:concentration=20000[g/m~^3],_height=200,_width=200,area=342[m~^2],bottom_elevation=-1[m],depth=0.1[m],hydraulic_conductivity=0.001[m/day],inflow=,moisture_content=0.4,name=Bed_5,porosity=0.4,specific_storage=0.01[1/m],x=1420,y=650
 create block;type=Groundwater cell,DOM:concentration=45[g/m~^3],O2:concentration=0.5[g/m~^3],NH3:concentration=2[g/m~^3],NOx:concentration=0.1[g/m~^3],POM:concentration=20000[g/m~^3],_height=200,_width=200,area=49[m~^2],bottom_elevation=-1.014[m],depth=0.1[m],hydraulic_conductivity=0.001[m/day],inflow=,moisture_content=0.4,name=Bed_6,porosity=0.4,specific_storage=0.01[1/m],x=1750,y=650
 create block;type=Reactor,DOM:concentration=0[g/m~^3],O2:concentration=8.66[g/m~^3],NH3:concentration=0[g/m~^3],NOx:concentration=0[g/m~^3],POM:concentration=0[g/m~^3],Storage=1000000000[m~^3],_height=200,_width=200,bottom_elevation=1[m],constant_inflow=0[m~^3/day],name=Atmosphere,time_variable_inflow=,x=925,y=50
-create block;type=Reactor,DOM:concentration=0[g/m~^3],O2:concentration=8[g/m~^3],NH3:concentration=0[g/m~^3],NOx:concentration=0[g/m~^3],POM:concentration=0[g/m~^3],Storage=1[m~^3],_height=200,_width=200,bottom_elevation=-1[m],constant_inflow=0[m~^3/day],name=Outlet,time_variable_inflow=,x=2080,y=350
-create block;type=Groundwater cell,DOM:concentration=0[g/m~^3],O2:concentration=0[g/m~^3],NH3:concentration=0[g/m~^3],NOx:concentration=0[g/m~^3],POM:concentration=0[g/m~^3],_height=200,_width=200,area=100000[m~^2],bottom_elevation=-12[m],depth=10[m],hydraulic_conductivity=0.001[m/day],inflow=,moisture_content=0.3,name=Aquifer,porosity=0.3,specific_storage=0.01[1/m],x=925,y=950
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=-1[m],name=Outlet,x=2080,y=350
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=-2[m],name=Groundwater,x=925,y=950
 create link;from=Pond_1,to=Pond_2,type=wide_channel,ManningCoeff=0.1,length=27.23[m],name=Channel_12,width=18.15[m]
 create link;from=Pond_2,to=Pond_3,type=wide_channel,ManningCoeff=0.1,length=23.45[m],name=Channel_23,width=15.63[m]
 create link;from=Pond_3,to=Pond_4,type=wide_channel,ManningCoeff=0.1,length=18.85[m],name=Channel_34,width=12.56[m]
@@ -55,12 +55,12 @@ create link;from=Pond_3,to=Bed_3,type=surface2groundwater_link,area=499[m~^2],hy
 create link;from=Pond_4,to=Bed_4,type=surface2groundwater_link,area=236[m~^2],hydraulic_conductivity=0.001[m/day],length=0.05[m],name=Pond_4_to_Bed_4
 create link;from=Pond_5,to=Bed_5,type=surface2groundwater_link,area=342[m~^2],hydraulic_conductivity=0.001[m/day],length=0.05[m],name=Pond_5_to_Bed_5
 create link;from=Pond_6,to=Bed_6,type=surface2groundwater_link,area=49[m~^2],hydraulic_conductivity=0.001[m/day],length=0.05[m],name=Pond_6_to_Bed_6
-create link;from=Bed_1,to=Aquifer,type=groundwater_link,area=894[m~^2],length=1[m],name=Seepage_1
-create link;from=Bed_2,to=Aquifer,type=groundwater_link,area=604[m~^2],length=1[m],name=Seepage_2
-create link;from=Bed_3,to=Aquifer,type=groundwater_link,area=499[m~^2],length=1[m],name=Seepage_3
-create link;from=Bed_4,to=Aquifer,type=groundwater_link,area=236[m~^2],length=1[m],name=Seepage_4
-create link;from=Bed_5,to=Aquifer,type=groundwater_link,area=342[m~^2],length=1[m],name=Seepage_5
-create link;from=Bed_6,to=Aquifer,type=groundwater_link,area=49[m~^2],length=1[m],name=Seepage_6
+create link;from=Bed_1,to=Groundwater,type=groundwater_to_fixedhead,area=894[m~^2],length=1[m],name=Seepage_1
+create link;from=Bed_2,to=Groundwater,type=groundwater_to_fixedhead,area=604[m~^2],length=1[m],name=Seepage_2
+create link;from=Bed_3,to=Groundwater,type=groundwater_to_fixedhead,area=499[m~^2],length=1[m],name=Seepage_3
+create link;from=Bed_4,to=Groundwater,type=groundwater_to_fixedhead,area=236[m~^2],length=1[m],name=Seepage_4
+create link;from=Bed_5,to=Groundwater,type=groundwater_to_fixedhead,area=342[m~^2],length=1[m],name=Seepage_5
+create link;from=Bed_6,to=Groundwater,type=groundwater_to_fixedhead,area=49[m~^2],length=1[m],name=Seepage_6
 create link;from=Atmosphere,to=Pond_1,type=Time-Dependent flow,O2:exchange_velocity=1[m/day],area=894[m~^2],flow=,length=10000[m],name=Reaeration_1
 create link;from=Atmosphere,to=Pond_2,type=Time-Dependent flow,O2:exchange_velocity=1[m/day],area=604[m~^2],flow=,length=10000[m],name=Reaeration_2
 create link;from=Atmosphere,to=Pond_3,type=Time-Dependent flow,O2:exchange_velocity=1[m/day],area=499[m~^2],flow=,length=10000[m],name=Reaeration_3

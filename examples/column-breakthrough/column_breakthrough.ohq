@@ -29,7 +29,7 @@ create block;type=Groundwater cell,Bromide:concentration=0[g/m~^3],Bromide:time_
 create block;type=Groundwater cell,Bromide:concentration=0[g/m~^3],Bromide:time_variable_inflow_concentration=,Cu_aq:concentration=0[g/m~^3],Cu_aq:time_variable_inflow_concentration=,Cu_s:concentration=0[g/m~^3],_height=120,_width=200,area=1.0[m~^2],bottom_elevation=-0.9[m],depth=0.05[m],hydraulic_conductivity=1[m/day],inflow=,moisture_content=0.4,name=Cell_18,porosity=0.4,specific_storage=0.01[1/m],x=1250,y=540
 create block;type=Groundwater cell,Bromide:concentration=0[g/m~^3],Bromide:time_variable_inflow_concentration=,Cu_aq:concentration=0[g/m~^3],Cu_aq:time_variable_inflow_concentration=,Cu_s:concentration=0[g/m~^3],_height=120,_width=200,area=1.0[m~^2],bottom_elevation=-0.95[m],depth=0.05[m],hydraulic_conductivity=1[m/day],inflow=,moisture_content=0.4,name=Cell_19,porosity=0.4,specific_storage=0.01[1/m],x=1250,y=710
 create block;type=Groundwater cell,Bromide:concentration=0[g/m~^3],Bromide:time_variable_inflow_concentration=,Cu_aq:concentration=0[g/m~^3],Cu_aq:time_variable_inflow_concentration=,Cu_s:concentration=0[g/m~^3],_height=120,_width=200,area=1.0[m~^2],bottom_elevation=-1[m],depth=0.05[m],hydraulic_conductivity=1[m/day],inflow=,moisture_content=0.4,name=Cell_20,porosity=0.4,specific_storage=0.01[1/m],x=1250,y=880
-create block;type=Reactor,Storage=0.01[m~^3],_height=200,_width=200,bottom_elevation=-1.5[m],constant_inflow=0[m~^3/day],time_variable_inflow=,name=Effluent_collector,x=1600,y=840
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=-1.5[m],name=Outlet,x=1600,y=840
 create link;from=Cell_01,to=Cell_02,type=Time-Dependent flow,area=1.0[m~^2],flow=flow.txt,length=0.05[m],name=Flow_01
 create link;from=Cell_02,to=Cell_03,type=Time-Dependent flow,area=1.0[m~^2],flow=flow.txt,length=0.05[m],name=Flow_02
 create link;from=Cell_03,to=Cell_04,type=Time-Dependent flow,area=1.0[m~^2],flow=flow.txt,length=0.05[m],name=Flow_03
@@ -49,7 +49,7 @@ create link;from=Cell_16,to=Cell_17,type=Time-Dependent flow,area=1.0[m~^2],flow
 create link;from=Cell_17,to=Cell_18,type=Time-Dependent flow,area=1.0[m~^2],flow=flow.txt,length=0.05[m],name=Flow_17
 create link;from=Cell_18,to=Cell_19,type=Time-Dependent flow,area=1.0[m~^2],flow=flow.txt,length=0.05[m],name=Flow_18
 create link;from=Cell_19,to=Cell_20,type=Time-Dependent flow,area=1.0[m~^2],flow=flow.txt,length=0.05[m],name=Flow_19
-create link;from=Cell_20,to=Effluent_collector,type=Time-Dependent flow,area=1.0[m~^2],flow=flow.txt,length=10[m],name=Flow_20
+create link;from=Cell_20,to=Outlet,type=Time-Dependent flow,area=1.0[m~^2],flow=flow.txt,length=1000[m],name=Flow_20
 setvalue; object=system, quantity=alloutputfile, value=output.txt
 setvalue; object=system, quantity=simulation_start_time, value=0
 setvalue; object=system, quantity=simulation_end_time, value=80

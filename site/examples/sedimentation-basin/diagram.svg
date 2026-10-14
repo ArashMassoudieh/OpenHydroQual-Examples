@@ -8,7 +8,7 @@
 <g class="d-node composite" data-name="Sed_Basin"><title>Sed_Basin (Clarifier (4 layers))</title><rect x="500" y="200" width="200" height="200" rx="16"/>
 <image href="icons/clarifier_4layer.png" x="522" y="222" width="156" height="156"/>
 <text x="600" y="421" font-size="16" text-anchor="middle">Sed_Basin</text></g>
-<g class="d-node" data-name="Effluent"><title>Effluent (Reactor)</title><rect x="900" y="200" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="922" y="222" width="156" height="156"/>
+<g class="d-node" data-name="Effluent"><title>Effluent (fixed_head)</title><rect x="900" y="200" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="922" y="222" width="156" height="156"/>
 <text x="1000" y="421" font-size="16" text-anchor="middle">Effluent</text></g>
 </svg>

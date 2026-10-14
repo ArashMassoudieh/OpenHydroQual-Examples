@@ -11,9 +11,9 @@ keywords: [sedimentation, settling, clarifier, primary clarifier, sedimentation 
 components:
   Influent: "A small, well-mixed feed tank (200 m³) that receives 2000 m³/day carrying 50 g/m³ of each particle class (200 g/m³ of total suspended solids) and passes it to the basin. It starts at the influent concentration, so the basin sees a constant feed from the first time step."
   Sed_Basin: "The sedimentation basin: a `Clarifier (4 layers)` composite with 400 m² of plan area and 4 m of depth from a floor at −3 m. It creates four stacked Settling compartment blocks (Layer1 at the top to Layer4 at the floor, 400 m³ each) and three interface links between them. The underflow is 0, so nothing is withdrawn from the bottom and solids accumulate in Layer4."
-  Effluent: "A tank that collects the clarified water leaving Layer1. It starts with 1 m³ and fills at 2000 m³/day, so its concentration is the average effluent quality since the start, not the current effluent quality."
+  Effluent: "A fixed-head boundary that receives the clarified water leaving Layer1. Its state is not solved for, so it is a free outfall."
   Influent_to_Basin: "Fixed flow of 2000 m³/day from the feed tank into Layer1."
-  Basin_to_Effluent: "Effluent flow of 2000 m³/day from Layer1 to the effluent tank. Equal to the inflow, so the water level in the basin stays constant."
+  Basin_to_Effluent: "Effluent flow of 2000 m³/day from Layer1 to the Effluent boundary. Equal to the inflow, so the water level in the basin stays constant."
   P1: "Fine particles, settling velocity 0.5 m/day (for example clay flocs)."
   P2: "Particles settling at 2 m/day."
   P3: "Particles settling at 10 m/day."
@@ -90,7 +90,7 @@ Because each layer is fully mixed, this result differs from Hazen's ideal plug-f
 - **Lower layers.** Each lower layer exchanges with its neighbours only by settling, with time constant V/(v_s·A) = 1/v_s days for 1 m thick layers. P4 fills Layer3 within 0.2 day, while P1 needs about 14 days to bring Layer3 within 1% of the Layer1 value.
 - **Accumulation.** Layer4 has no outlet, so its concentration rises without limit at v_s·A·C₁/V per day. After 30 days it holds about 5.9 tonnes of solids, an average of 14.6 kg/m³ (about 1.5% solids).
 - **Mass balance.** At steady state, for P3: 2000 × 50 = 100 000 g/day enters, 2000 × 16.67 = 33 333 g/day leaves with the effluent, and the settling flux into Layer4 is 66 667 g/day.
-- **Reading the output.** Effluent quality is the `Sed_Basin__Layer1_<class>:concentration` column. The concentration in the `Effluent` tank is a running average of everything that has left the basin, which includes the start-up period.
+- **Reading the output.** Effluent quality is the `Sed_Basin__Layer1_<class>:concentration` column. The mass leaving per day is the `Basin_to_Effluent_<class>:masstransfer` column (g/day).
 
 ## Assumptions and limitations
 
@@ -98,4 +98,4 @@ Because each layer is fully mixed, this result differs from Hazen's ideal plug-f
 - There is no resuspension and no short-circuiting; inflow and outflow both attach to the top layer.
 - The underflow is zero. With a sludge draw (a `Sludge flow` link from the basin and `underflow` set to the same rate), Layer4 reaches a steady sludge blanket and the downward water flow adds advection to the settling flux.
 - Four discrete classes stand in for a continuous settling-velocity distribution; more classes give a finer representation.
-- Compared with the PDF guide: the effluent boundary here is a collection tank (a `Reactor`), where the guide uses a fixed-head block, and the run starts at day 0.
+- Compared with the PDF guide, the run starts at day 0 instead of day 36526.

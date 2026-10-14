@@ -12,12 +12,12 @@
 <g class="d-link" data-name="Pond_4_to_Bed_4"><title>Pond_4_to_Bed_4 (surface2groundwater_link)</title><path d="M1190.0 550.0 L1190.0 600.0 L1190.0 650.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Pond_5_to_Bed_5"><title>Pond_5_to_Bed_5 (surface2groundwater_link)</title><path d="M1520.0 550.0 L1520.0 600.0 L1520.0 650.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Pond_6_to_Bed_6"><title>Pond_6_to_Bed_6 (surface2groundwater_link)</title><path d="M1850.0 550.0 L1850.0 600.0 L1850.0 650.0" marker-mid="url(#arr)"/></g>
-<g class="d-link" data-name="Seepage_1"><title>Seepage_1 (groundwater_link)</title><path d="M282.1 850.0 Q523.6 1144.3 925.0 1068.8"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(563.6 1051.9) rotate(18.8) scale(1.6)"/></g>
-<g class="d-link" data-name="Seepage_2"><title>Seepage_2 (groundwater_link)</title><path d="M630.0 810.6 L777.5 900.0 L925.0 989.4" marker-mid="url(#arr)"/></g>
-<g class="d-link" data-name="Seepage_3"><title>Seepage_3 (groundwater_link)</title><path d="M915.0 850.0 L942.5 900.0 L970.0 950.0" marker-mid="url(#arr)"/></g>
-<g class="d-link" data-name="Seepage_4"><title>Seepage_4 (groundwater_link)</title><path d="M1135.0 850.0 L1107.5 900.0 L1080.0 950.0" marker-mid="url(#arr)"/></g>
-<g class="d-link" data-name="Seepage_5"><title>Seepage_5 (groundwater_link)</title><path d="M1420.0 810.6 L1272.5 900.0 L1125.0 989.4" marker-mid="url(#arr)"/></g>
-<g class="d-link" data-name="Seepage_6"><title>Seepage_6 (groundwater_link)</title><path d="M1767.9 850.0 Q1526.4 1144.3 1125.0 1068.8"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1486.4 1051.9) rotate(161.2) scale(1.6)"/></g>
+<g class="d-link" data-name="Seepage_1"><title>Seepage_1 (groundwater_to_fixedhead)</title><path d="M282.1 850.0 Q523.6 1144.3 925.0 1068.8"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(563.6 1051.9) rotate(18.8) scale(1.6)"/></g>
+<g class="d-link" data-name="Seepage_2"><title>Seepage_2 (groundwater_to_fixedhead)</title><path d="M630.0 810.6 L777.5 900.0 L925.0 989.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Seepage_3"><title>Seepage_3 (groundwater_to_fixedhead)</title><path d="M915.0 850.0 L942.5 900.0 L970.0 950.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Seepage_4"><title>Seepage_4 (groundwater_to_fixedhead)</title><path d="M1135.0 850.0 L1107.5 900.0 L1080.0 950.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Seepage_5"><title>Seepage_5 (groundwater_to_fixedhead)</title><path d="M1420.0 810.6 L1272.5 900.0 L1125.0 989.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Seepage_6"><title>Seepage_6 (groundwater_to_fixedhead)</title><path d="M1767.9 850.0 Q1526.4 1144.3 1125.0 1068.8"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1486.4 1051.9) rotate(161.2) scale(1.6)"/></g>
 <g class="d-link" data-name="Reaeration_1"><title>Reaeration_1 (Time-Dependent flow)</title><path d="M925.0 131.2 Q523.6 55.7 282.1 350.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(563.6 148.1) rotate(161.2) scale(1.6)"/></g>
 <g class="d-link" data-name="Reaeration_2"><title>Reaeration_2 (Time-Dependent flow)</title><path d="M925.0 210.6 L777.5 300.0 L630.0 389.4" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Reaeration_3"><title>Reaeration_3 (Time-Dependent flow)</title><path d="M970.0 250.0 L942.5 300.0 L915.0 350.0" marker-mid="url(#arr)"/></g>
@@ -63,10 +63,10 @@
 <g class="d-node" data-name="Atmosphere"><title>Atmosphere (Reactor)</title><rect x="925" y="50" width="200" height="200" rx="16"/>
 <image href="icons/reactor.png" x="947" y="72" width="156" height="156"/>
 <text x="1025" y="293" font-size="33" text-anchor="middle">Atmosphere</text></g>
-<g class="d-node" data-name="Outlet"><title>Outlet (Reactor)</title><rect x="2080" y="350" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="2102" y="372" width="156" height="156"/>
+<g class="d-node" data-name="Outlet"><title>Outlet (fixed_head)</title><rect x="2080" y="350" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="2102" y="372" width="156" height="156"/>
 <text x="2180" y="593" font-size="33" text-anchor="middle">Outlet</text></g>
-<g class="d-node" data-name="Aquifer"><title>Aquifer (Groundwater cell)</title><rect x="925" y="950" width="200" height="200" rx="16"/>
-<image href="icons/Groundwater.png" x="947" y="972" width="156" height="156"/>
-<text x="1025" y="1193" font-size="33" text-anchor="middle">Aquifer</text></g>
+<g class="d-node" data-name="Groundwater"><title>Groundwater (fixed_head)</title><rect x="925" y="950" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="947" y="972" width="156" height="156"/>
+<text x="1025" y="1193" font-size="33" text-anchor="middle">Groundwater</text></g>
 </svg>

@@ -14,8 +14,8 @@ create block;type=Reactor,S_s:concentration=5[g/m~^3],X_bh:concentration=1000[g/
 create block;type=Reactor,S_s:concentration=2[g/m~^3],X_bh:concentration=1000[g/m~^3],Storage=75[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Aeration_3,time_variable_inflow=,x=700,y=200
 create block;type=Reactor,S_s:concentration=1[g/m~^3],X_bh:concentration=1000[g/m~^3],Storage=75[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Aeration_4,time_variable_inflow=,x=1000,y=200
 create composite;type=Clarifier,S_s:concentration=1[g/m~^3],X_bh:concentration=10[g/m~^3],_height=200,_width=200,floor_elevation=-1[m],inflow=,interface_elevation=0[m],lower_storage=30[m~^3],name=Clarifier,surface_area=100[m~^2],underflow=510[m~^3/day],underflow_timeseries=,upper_storage=200[m~^3],x=1300,y=200
-create block;type=Reactor,S_s:concentration=0[g/m~^3],X_bh:concentration=0[g/m~^3],Storage=1[m~^3],_height=200,_width=200,bottom_elevation=0[m],constant_inflow=0[m~^3/day],name=Effluent,time_variable_inflow=,x=1650,y=200
-create block;type=Reactor,S_s:concentration=0[g/m~^3],X_bh:concentration=0[g/m~^3],Storage=1[m~^3],_height=200,_width=200,bottom_elevation=-2[m],constant_inflow=0[m~^3/day],name=Waste_sludge,time_variable_inflow=,x=1650,y=500
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=0[m],name=Effluent,x=1650,y=200
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=-2[m],name=Waste_sludge,x=1650,y=500
 create link;from=Aeration_1,to=Aeration_2,type=Fixed flow,flow=1500[m~^3/day],name=Mixed_liquor_1
 create link;from=Aeration_2,to=Aeration_3,type=Fixed flow,flow=1500[m~^3/day],name=Mixed_liquor_2
 create link;from=Aeration_3,to=Aeration_4,type=Fixed flow,flow=1500[m~^3/day],name=Mixed_liquor_3

@@ -80,7 +80,7 @@
 <g class="d-node" data-name="Cell_20"><title>Cell_20 (Groundwater cell)</title><rect x="1250" y="880" width="200" height="120" rx="10"/>
 <image href="icons/Groundwater.png" x="1303" y="893" width="94" height="94"/>
 <text x="1350" y="1032" font-size="25" text-anchor="middle">Cell_20</text></g>
-<g class="d-node" data-name="Effluent_collector"><title>Effluent_collector (Reactor)</title><rect x="1600" y="840" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="1622" y="862" width="156" height="156"/>
-<text x="1700" y="1072" font-size="25" text-anchor="middle">Effluent_collector</text></g>
+<g class="d-node" data-name="Outlet"><title>Outlet (fixed_head)</title><rect x="1600" y="840" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1622" y="862" width="156" height="156"/>
+<text x="1700" y="1072" font-size="25" text-anchor="middle">Outlet</text></g>
 </svg>

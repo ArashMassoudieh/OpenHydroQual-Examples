@@ -22,10 +22,10 @@
 <g class="d-node composite" data-name="Clarifier"><title>Clarifier (Clarifier)</title><rect x="1300" y="200" width="200" height="200" rx="16"/>
 <image href="icons/clarifier.png" x="1322" y="222" width="156" height="156"/>
 <text x="1400" y="435" font-size="27" text-anchor="middle">Clarifier</text></g>
-<g class="d-node" data-name="Effluent"><title>Effluent (Reactor)</title><rect x="1650" y="200" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="1672" y="222" width="156" height="156"/>
+<g class="d-node" data-name="Effluent"><title>Effluent (fixed_head)</title><rect x="1650" y="200" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1672" y="222" width="156" height="156"/>
 <text x="1750" y="435" font-size="27" text-anchor="middle">Effluent</text></g>
-<g class="d-node" data-name="Waste_sludge"><title>Waste_sludge (Reactor)</title><rect x="1650" y="500" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="1672" y="522" width="156" height="156"/>
+<g class="d-node" data-name="Waste_sludge"><title>Waste_sludge (fixed_head)</title><rect x="1650" y="500" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1672" y="522" width="156" height="156"/>
 <text x="1750" y="735" font-size="27" text-anchor="middle">Waste_sludge</text></g>
 </svg>

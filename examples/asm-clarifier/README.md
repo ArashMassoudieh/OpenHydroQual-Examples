@@ -13,15 +13,15 @@ components:
   Aeration_3: "Third aeration cell (75 m³)."
   Aeration_4: "Fourth aeration cell (75 m³). Its mixed liquor flows to the clarifier. The four cells together (300 m³, 7.2 hours of hydraulic retention at the influent flow) approximate a plug-flow aeration basin."
   Clarifier: "A `Clarifier` composite with 100 m² of plan area: an upper (clarification) compartment of 200 m³ above a lower (thickening) compartment of 30 m³. Mixed liquor enters the upper compartment; biomass settles into the lower one, from which the sludge is drawn. Its `underflow` of 510 m³/day equals the return plus waste flow."
-  Effluent: "Collection tank for the clarified effluent (starts at 1 m³). It accumulates everything that leaves; the effluent quality is read from the clarifier's upper compartment."
-  Waste_sludge: "Collection tank for the wasted sludge (starts at 1 m³)."
+  Effluent: "Fixed-head boundary that receives the clarified effluent. The effluent quality is read from the clarifier's upper compartment."
+  Waste_sludge: "Fixed-head boundary that receives the wasted sludge."
   Mixed_liquor_1: "Fixed flow of 1500 m³/day (influent plus return) from Aeration_1 to Aeration_2."
   Mixed_liquor_2: "Fixed flow of 1500 m³/day from Aeration_2 to Aeration_3."
   Mixed_liquor_3: "Fixed flow of 1500 m³/day from Aeration_3 to Aeration_4."
   To_clarifier: "Fixed flow of 1500 m³/day from Aeration_4 to the clarifier."
   Clarified_effluent: "Effluent flow of 990 m³/day from the clarifier's upper compartment."
   Return_sludge: "The return activated sludge (RAS) line: a Sludge flow of 500 m³/day pumping thickened sludge from the clarifier's lower compartment back to the head of Aeration_1. The recycle ratio is R = Q_RAS/Q_in = 500/1000 = 0.5. The RAS returns the settled biomass to the aeration cells and is what keeps the mixed-liquor concentration far above what growth on the influent alone could sustain."
-  Waste_sludge_pump: "The waste activated sludge (WAS) line: a Sludge flow of 10 m³/day (1% of the influent flow) from the lower compartment to the waste sludge tank. Wasting removes the net biomass growth and sets the sludge retention time."
+  Waste_sludge_pump: "The waste activated sludge (WAS) line: a Sludge flow of 10 m³/day (1% of the influent flow) from the lower compartment to the Waste_sludge boundary. Wasting removes the net biomass growth and sets the sludge retention time."
   S_s: "Readily biodegradable soluble substrate, as COD (g/m³)."
   X_bh: "Active heterotrophic biomass, as COD (g/m³). A `Particle`, so it settles in the clarifier with an effective settling velocity of 1500 m/day."
   mu_max: "Maximum specific growth rate of the heterotrophs (1/day)."
@@ -99,5 +99,5 @@ S_s is an ordinary dissolved `Constituent` and passes through the clarifier with
 - Only soluble substrate and heterotrophic biomass are modeled. Particulate substrate, inert solids, nitrification, oxygen limitation, alkalinity and phosphorus are not; dissolved oxygen is assumed to be non-limiting everywhere.
 - Kinetic parameters are typical 20 °C values and are not corrected for temperature.
 - The clarifier is two fully mixed compartments with a constant effective settling velocity, with no hindered settling or sludge blanket dynamics. The settling velocity is a calibration parameter for effluent solids, not a measured floc velocity.
-- Reactions also run in the clarifier compartments and in the two collection tanks. In the clarifier this is realistic; the collection tanks are only accounting devices.
+- Reactions also run in the clarifier compartments, where biological activity does continue.
 - Influent flow and load are constant.

@@ -10,8 +10,8 @@ keywords: [column, soil column, breakthrough, btc, porous media, transport, adve
 extra_files: [analytical_bromide.csv, analytical_cu_equilibrium.csv]
 components:
   Groundwater cell: "Twenty saturated soil cells, Cell_01 at the top (inlet) to Cell_20 at the bottom (outlet). Each is 1 m² in cross section and 0.05 m long, with porosity and moisture content 0.4, so it holds 0.02 m³ of water. The diagram draws them as four stacks of five, read top to bottom and left to right. Cell_01 receives the inflow from `flow.txt` with the concentrations in `inflow_concentration.txt`."
-  Effluent_collector: "A vessel that receives the column effluent, starting with 0.01 m³ of water. It accumulates all the water and copper that leave the column and is used to check mass recovery. Reactions are evaluated in every block, so the sorption reaction also runs here; this has no effect on the column."
-  Time-Dependent flow: "Twenty links that carry the water downward at 0.1 m³/day (`flow.txt`). Flow_01 to Flow_19 join neighbouring cells, are 0.05 m long and have 1 m² of area, which sets the dispersive exchange between cells. Flow_20 joins Cell_20 to the collector; its length is set to 10 m so that dispersion between the collector and the column is negligible (a free-outflow boundary). Positive flow is downward."
+  Outlet: "A fixed-head boundary below the column that receives the effluent. Its state is not solved for, so it acts as a free outflow."
+  Time-Dependent flow: "Twenty links that carry the water downward at 0.1 m³/day (`flow.txt`). Flow_01 to Flow_19 join neighbouring cells, are 0.05 m long and have 1 m² of area, which sets the dispersive exchange between cells. Flow_20 joins Cell_20 to the Outlet boundary. Its length is set to 1000 m so that the dispersive term α·Q/L, which would otherwise draw solute into the zero-concentration boundary, is negligible and the outflow is purely advective. Positive flow is downward."
   Bromide: "A conservative tracer. It moves with the water and is not sorbed or degraded."
   Cu_aq: "Dissolved copper (g/m³ of pore water). Moves with the water and exchanges with the solid."
   Cu_s: "Copper sorbed on the soil. An Immobile_Constituent: it does not move between cells. Its concentration is mass per volume of pore water (g/m³); the loading per mass of soil is q = θ·Cu_s/ρ_b (g/kg)."
@@ -81,7 +81,7 @@ so copper would need 5 pore volumes, or 20 days, to reach the outlet. With k_s =
 - **Retardation.** Copper reaches half the feed concentration at 18.5 days, close to R = 5 pore volumes. Its curve is much more spread out than the bromide curve, because the same dispersion acts over a five times longer travel time and because sorption is kinetic.
 - **Nonequilibrium.** Compared with the equilibrium solution (dashed), the kinetic copper curve starts earlier (1.2 g/m³ at day 10 against 0.1 g/m³), never reaches the feed concentration (peak 7.1 g/m³ at day 34), and tails far longer (1.2 g/m³ at day 60 against 0.6 g/m³). Early breakthrough with long tailing is the classic signature of rate-limited sorption in column data.
 - **Desorption front.** After day 30 clean water strips copper from the top of the column first. The sorbed concentration at 0.25 m depth falls while the deepest cell is still near its peak (28 g/m³ at day 36). The peak value of about 32 g/m³ of pore water corresponds to q = 0.4 × 32/1600 = 0.008 g/kg (8 mg/kg), which is K_d × 8 g/m³.
-- **Mass recovery.** The feed delivers 0.1 m³/day × 8 g/m³ × 30 days = 24 g of each constituent. At day 80 the collector holds 24.00 g of bromide and 23.95 g of copper, and 0.05 g of copper is still sorbed in the column.
+- **Mass recovery.** The feed delivers 0.1 m³/day × 8 g/m³ × 30 days = 24 g of each constituent. Integrating the mass transfer through Flow_20 gives 24.00 g of bromide and 23.95 g of copper leaving the column by day 80, and 0.05 g of copper is still sorbed in the column. The dispersive part of the outlet flux is 0.0006 g.
 
 ## Assumptions and limitations
 
@@ -89,4 +89,4 @@ so copper would need 5 pore volumes, or 20 days, to reach the outlet. With k_s =
 - Sorption is linear, reversible and first order, with a single sorption site. Two-site models (an equilibrium fraction plus a kinetic fraction) or nonlinear isotherms are common refinements.
 - The 20-cell grid adds numerical dispersion of about Δx/2. The physical dispersivity was reduced by this amount so that the total matches the target value of 0.05 m; when refining the grid, increase the input dispersivity accordingly.
 - Bromide and copper use the same dispersivity; molecular diffusion is neglected.
-- The collector is only a mass-accounting device. The effluent concentration is read from Cell_20.
+- The effluent concentration is read from Cell_20, the well-mixed bottom cell.
