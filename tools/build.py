@@ -135,6 +135,15 @@ def make_plots(meta, series, out_dir, ex_dir):
                     continue
                 t, v = read_xy(fp)
                 label = s.get("label", s["file"])
+            elif "columns" in s:  # sum of several outputs, e.g. total outflow
+                missing = [c for c in s["columns"] if c not in series]
+                if missing:
+                    print(f"    ! plot '{p.get('title')}': columns {missing} not in output", file=sys.stderr)
+                    continue
+                t = series[s["columns"][0]][0]
+                n = min(len(series[c][1]) for c in s["columns"])
+                t, v = t[:n], [sum(series[c][1][i] for c in s["columns"]) for i in range(n)]
+                label = s.get("label", " + ".join(s["columns"]))
             else:
                 col = s["column"]
                 label = s.get("label", col)

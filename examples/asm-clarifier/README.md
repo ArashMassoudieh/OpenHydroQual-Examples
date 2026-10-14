@@ -20,8 +20,8 @@ components:
   Mixed_liquor_3: "Fixed flow of 1500 m³/day from Aeration_3 to Aeration_4."
   To_clarifier: "Fixed flow of 1500 m³/day from Aeration_4 to the clarifier."
   Clarified_effluent: "Effluent flow of 990 m³/day from the clarifier's upper compartment."
-  Return_sludge: "Sludge flow of 500 m³/day from the clarifier's lower compartment back to Aeration_1 (return activated sludge, a recycle ratio of 0.5)."
-  Waste_sludge_pump: "Sludge flow of 10 m³/day from the lower compartment to the waste sludge tank (waste activated sludge). This flow controls the sludge age."
+  Return_sludge: "The return activated sludge (RAS) line: a Sludge flow of 500 m³/day pumping thickened sludge from the clarifier's lower compartment back to the head of Aeration_1. The recycle ratio is R = Q_RAS/Q_in = 500/1000 = 0.5. The RAS returns the settled biomass to the aeration cells and is what keeps the mixed-liquor concentration far above what growth on the influent alone could sustain."
+  Waste_sludge_pump: "The waste activated sludge (WAS) line: a Sludge flow of 10 m³/day (1% of the influent flow) from the lower compartment to the waste sludge tank. Wasting removes the net biomass growth and sets the sludge retention time."
   S_s: "Readily biodegradable soluble substrate, as COD (g/m³)."
   X_bh: "Active heterotrophic biomass, as COD (g/m³). A `Particle`, so it settles in the clarifier with an effective settling velocity of 1500 m/day."
   mu_max: "Maximum specific growth rate of the heterotrophs (1/day)."
@@ -31,14 +31,14 @@ components:
   Growth: "Monod growth of biomass on substrate, rate μ_max·S_s/(K_s + S_s)·X_bh. Consumes 1/Y grams of substrate per gram of biomass formed."
   Decay: "First-order decay of biomass, rate b·X_bh, converting biomass COD back to substrate COD."
 plots:
-  - title: Biomass in the system
+  - title: Return sludge (RAS) and mixed liquor
     ylabel: X_bh (g COD/m³)
     logy: true
     series:
       - {column: "Aeration_4_X_bh:concentration", label: "Mixed liquor (Aeration_4)"}
-      - {column: "Clarifier__Lower_X_bh:concentration", label: "Underflow (clarifier lower compartment)"}
+      - {column: "Clarifier__Lower_X_bh:concentration", label: "Return sludge, RAS (clarifier lower compartment)"}
       - {column: "Clarifier__Upper_X_bh:concentration", label: "Effluent (clarifier upper compartment)"}
-    caption: After a brief dip while the clarifier fills with sludge, the biomass grows from 1000 to about 2200 g/m³ and levels off as growth comes into balance with wasting and effluent losses. The underflow is about 2.9 times as concentrated as the mixed liquor.
+    caption: After a brief dip while the clarifier fills with sludge, the biomass grows from 1000 to about 2200 g/m³ and levels off as growth comes into balance with wasting and effluent losses. The return sludge is about 2.9 times as concentrated as the mixed liquor, close to (1 + R)/R = 3 for R = 0.5.
   - title: Substrate along the treatment train
     ylabel: S_s (g COD/m³)
     logy: true
@@ -59,6 +59,11 @@ This model contains each of those elements with a deliberately small set of stat
 ## How it works
 
 **Flows.** The influent (1000 m³/day) and the return sludge (500 m³/day) enter Aeration_1. The combined 1500 m³/day passes through the four aeration cells and into the clarifier's upper compartment. The upper compartment discharges 990 m³/day of clarified effluent; the remaining 510 m³/day passes down through the compartment interface (the composite's `underflow`) and is drawn from the lower compartment as 500 m³/day of return sludge and 10 m³/day of waste sludge. All flows are fixed, so the water volumes stay constant.
+
+**Return and waste sludge.** The return activated sludge (RAS, link `Return_sludge`) closes the loop of the activated sludge process. Its recycle ratio is R = Q_RAS/Q_in = 0.5, and the waste activated sludge (WAS, link `Waste_sludge_pump`) is Q_WAS = 10 m³/day. Two balances follow:
+
+- *Mixed-liquor and RAS concentration.* Nearly all biomass entering the clarifier leaves through its bottom, so (Q_in + Q_RAS)·X_ml ≈ (Q_RAS + Q_WAS)·X_RAS, or X_RAS/X_ml ≈ (1 + R)/R when Q_WAS is small. With R = 0.5 the return sludge is about three times as concentrated as the mixed liquor. A higher R gives a thinner return sludge and loads the clarifier more; a lower R leaves more sludge in the clarifier.
+- *Sludge retention time.* The biomass that leaves the system is only what is wasted plus what escapes with the effluent: SRT = (biomass in the system) / (Q_WAS·X_RAS + Q_eff·X_eff). Because the RAS returns the rest, the SRT (about 10 days here) is far longer than the hydraulic retention time of the aeration cells, HRT = V/Q_in = 300/1000 day = 7.2 hours. Decoupling the SRT from the HRT is what allows slow-growing biomass to be held in a small tank. At steady state the mixed-liquor concentration follows from the SRT: X_ml ≈ (SRT/HRT)·Y·(S_in − S_s)/(1 + b·SRT), which for SRT = 10 days and HRT = 0.3 day gives about 2000 g/m³, close to the simulated 2200 g/m³ (the decayed biomass that is recycled as substrate accounts for most of the difference).
 
 **Kinetics.** Two reactions act in every block that holds water, including the clarifier compartments:
 
@@ -84,7 +89,7 @@ S_s is an ordinary dissolved `Constituent` and passes through the clarifier with
 ## What to look for in the results
 
 - **Start-up.** In the first 5 hours the mixed liquor in Aeration_4 drops from 1000 to about 820 g/m³ while the empty lower compartment of the clarifier fills with settled sludge. From then on the biomass grows, reaching 85% of its final value by day 10 and 2200 g/m³ by day 40. The time scale is set by the sludge age.
-- **Thickening.** The underflow is about 6400 g/m³, 2.9 times the mixed-liquor concentration. By mass balance on the clarifier, X_underflow ≈ (1500·X_ml − 990·X_effluent)/510.
+- **Return sludge.** The RAS concentration is about 6400 g/m³, 2.9 times the mixed-liquor concentration. By mass balance on the clarifier, X_RAS ≈ (1500·X_ml − 990·X_effluent)/510.
 - **Substrate profile.** In Aeration_1 the substrate is diluted by the return flow and quickly consumed, giving 4.7 g/m³. It falls to 0.43 g/m³ in Aeration_2 and reaches the floor S_s* = 0.30 g/m³ in Aeration_3 and 4, which is also the effluent concentration. Removal of soluble substrate is 99.8%.
 - **Effluent solids.** The effluent carries 22 g/m³ of biomass COD. This is a quarter of the solids leaving the system each day, so effluent quality also affects the sludge age.
 - **Process control.** Increasing the waste flow lowers the sludge age and the mixed-liquor concentration; decreasing it does the opposite. The effluent substrate hardly changes, because it is pinned at S_s* as long as the sludge age is well above its washout value (roughly 1/(Y·μ_max − b), about half a day).

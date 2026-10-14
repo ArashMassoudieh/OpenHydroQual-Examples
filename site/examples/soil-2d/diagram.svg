@@ -1,0 +1,244 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 2070 2166" class="ohq-diagram" style="max-width:1035px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Furrow_infiltration"><title>Furrow_infiltration (surfacewater_to_soil_link)</title><path d="M100.0 200.0 L100.0 250.0 L100.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_1"><title>H_12_1 (soil_to_soil_H_link)</title><path d="M200.0 400.0 L225.0 400.0 L250.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_1"><title>H_23_1 (soil_to_soil_H_link)</title><path d="M450.0 400.0 L475.0 400.0 L500.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_1"><title>H_34_1 (soil_to_soil_H_link)</title><path d="M700.0 400.0 L725.0 400.0 L750.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_1"><title>H_45_1 (soil_to_soil_H_link)</title><path d="M950.0 400.0 L975.0 400.0 L1000.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_1"><title>H_56_1 (soil_to_soil_H_link)</title><path d="M1200.0 400.0 L1225.0 400.0 L1250.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_1"><title>H_67_1 (soil_to_soil_H_link)</title><path d="M1450.0 400.0 L1475.0 400.0 L1500.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_1"><title>H_78_1 (soil_to_soil_H_link)</title><path d="M1700.0 400.0 L1725.0 400.0 L1750.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_2"><title>H_12_2 (soil_to_soil_H_link)</title><path d="M200.0 650.0 L225.0 650.0 L250.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_2"><title>H_23_2 (soil_to_soil_H_link)</title><path d="M450.0 650.0 L475.0 650.0 L500.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_2"><title>H_34_2 (soil_to_soil_H_link)</title><path d="M700.0 650.0 L725.0 650.0 L750.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_2"><title>H_45_2 (soil_to_soil_H_link)</title><path d="M950.0 650.0 L975.0 650.0 L1000.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_2"><title>H_56_2 (soil_to_soil_H_link)</title><path d="M1200.0 650.0 L1225.0 650.0 L1250.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_2"><title>H_67_2 (soil_to_soil_H_link)</title><path d="M1450.0 650.0 L1475.0 650.0 L1500.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_2"><title>H_78_2 (soil_to_soil_H_link)</title><path d="M1700.0 650.0 L1725.0 650.0 L1750.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_3"><title>H_12_3 (soil_to_soil_H_link)</title><path d="M200.0 900.0 L225.0 900.0 L250.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_3"><title>H_23_3 (soil_to_soil_H_link)</title><path d="M450.0 900.0 L475.0 900.0 L500.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_3"><title>H_34_3 (soil_to_soil_H_link)</title><path d="M700.0 900.0 L725.0 900.0 L750.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_3"><title>H_45_3 (soil_to_soil_H_link)</title><path d="M950.0 900.0 L975.0 900.0 L1000.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_3"><title>H_56_3 (soil_to_soil_H_link)</title><path d="M1200.0 900.0 L1225.0 900.0 L1250.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_3"><title>H_67_3 (soil_to_soil_H_link)</title><path d="M1450.0 900.0 L1475.0 900.0 L1500.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_3"><title>H_78_3 (soil_to_soil_H_link)</title><path d="M1700.0 900.0 L1725.0 900.0 L1750.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_4"><title>H_12_4 (soil_to_soil_H_link)</title><path d="M200.0 1150.0 L225.0 1150.0 L250.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_4"><title>H_23_4 (soil_to_soil_H_link)</title><path d="M450.0 1150.0 L475.0 1150.0 L500.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_4"><title>H_34_4 (soil_to_soil_H_link)</title><path d="M700.0 1150.0 L725.0 1150.0 L750.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_4"><title>H_45_4 (soil_to_soil_H_link)</title><path d="M950.0 1150.0 L975.0 1150.0 L1000.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_4"><title>H_56_4 (soil_to_soil_H_link)</title><path d="M1200.0 1150.0 L1225.0 1150.0 L1250.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_4"><title>H_67_4 (soil_to_soil_H_link)</title><path d="M1450.0 1150.0 L1475.0 1150.0 L1500.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_4"><title>H_78_4 (soil_to_soil_H_link)</title><path d="M1700.0 1150.0 L1725.0 1150.0 L1750.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_5"><title>H_12_5 (soil_to_soil_H_link)</title><path d="M200.0 1400.0 L225.0 1400.0 L250.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_5"><title>H_23_5 (soil_to_soil_H_link)</title><path d="M450.0 1400.0 L475.0 1400.0 L500.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_5"><title>H_34_5 (soil_to_soil_H_link)</title><path d="M700.0 1400.0 L725.0 1400.0 L750.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_5"><title>H_45_5 (soil_to_soil_H_link)</title><path d="M950.0 1400.0 L975.0 1400.0 L1000.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_5"><title>H_56_5 (soil_to_soil_H_link)</title><path d="M1200.0 1400.0 L1225.0 1400.0 L1250.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_5"><title>H_67_5 (soil_to_soil_H_link)</title><path d="M1450.0 1400.0 L1475.0 1400.0 L1500.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_5"><title>H_78_5 (soil_to_soil_H_link)</title><path d="M1700.0 1400.0 L1725.0 1400.0 L1750.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_6"><title>H_12_6 (soil_to_soil_H_link)</title><path d="M200.0 1650.0 L225.0 1650.0 L250.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_6"><title>H_23_6 (soil_to_soil_H_link)</title><path d="M450.0 1650.0 L475.0 1650.0 L500.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_6"><title>H_34_6 (soil_to_soil_H_link)</title><path d="M700.0 1650.0 L725.0 1650.0 L750.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_6"><title>H_45_6 (soil_to_soil_H_link)</title><path d="M950.0 1650.0 L975.0 1650.0 L1000.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_6"><title>H_56_6 (soil_to_soil_H_link)</title><path d="M1200.0 1650.0 L1225.0 1650.0 L1250.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_6"><title>H_67_6 (soil_to_soil_H_link)</title><path d="M1450.0 1650.0 L1475.0 1650.0 L1500.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_6"><title>H_78_6 (soil_to_soil_H_link)</title><path d="M1700.0 1650.0 L1725.0 1650.0 L1750.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_1_12"><title>V_1_12 (soil_to_soil_link)</title><path d="M100.0 500.0 L100.0 525.0 L100.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_2_12"><title>V_2_12 (soil_to_soil_link)</title><path d="M350.0 500.0 L350.0 525.0 L350.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_3_12"><title>V_3_12 (soil_to_soil_link)</title><path d="M600.0 500.0 L600.0 525.0 L600.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_4_12"><title>V_4_12 (soil_to_soil_link)</title><path d="M850.0 500.0 L850.0 525.0 L850.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_5_12"><title>V_5_12 (soil_to_soil_link)</title><path d="M1100.0 500.0 L1100.0 525.0 L1100.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_6_12"><title>V_6_12 (soil_to_soil_link)</title><path d="M1350.0 500.0 L1350.0 525.0 L1350.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_7_12"><title>V_7_12 (soil_to_soil_link)</title><path d="M1600.0 500.0 L1600.0 525.0 L1600.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_8_12"><title>V_8_12 (soil_to_soil_link)</title><path d="M1850.0 500.0 L1850.0 525.0 L1850.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_1_23"><title>V_1_23 (soil_to_soil_link)</title><path d="M100.0 750.0 L100.0 775.0 L100.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_2_23"><title>V_2_23 (soil_to_soil_link)</title><path d="M350.0 750.0 L350.0 775.0 L350.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_3_23"><title>V_3_23 (soil_to_soil_link)</title><path d="M600.0 750.0 L600.0 775.0 L600.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_4_23"><title>V_4_23 (soil_to_soil_link)</title><path d="M850.0 750.0 L850.0 775.0 L850.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_5_23"><title>V_5_23 (soil_to_soil_link)</title><path d="M1100.0 750.0 L1100.0 775.0 L1100.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_6_23"><title>V_6_23 (soil_to_soil_link)</title><path d="M1350.0 750.0 L1350.0 775.0 L1350.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_7_23"><title>V_7_23 (soil_to_soil_link)</title><path d="M1600.0 750.0 L1600.0 775.0 L1600.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_8_23"><title>V_8_23 (soil_to_soil_link)</title><path d="M1850.0 750.0 L1850.0 775.0 L1850.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_1_34"><title>V_1_34 (soil_to_soil_link)</title><path d="M100.0 1000.0 L100.0 1025.0 L100.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_2_34"><title>V_2_34 (soil_to_soil_link)</title><path d="M350.0 1000.0 L350.0 1025.0 L350.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_3_34"><title>V_3_34 (soil_to_soil_link)</title><path d="M600.0 1000.0 L600.0 1025.0 L600.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_4_34"><title>V_4_34 (soil_to_soil_link)</title><path d="M850.0 1000.0 L850.0 1025.0 L850.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_5_34"><title>V_5_34 (soil_to_soil_link)</title><path d="M1100.0 1000.0 L1100.0 1025.0 L1100.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_6_34"><title>V_6_34 (soil_to_soil_link)</title><path d="M1350.0 1000.0 L1350.0 1025.0 L1350.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_7_34"><title>V_7_34 (soil_to_soil_link)</title><path d="M1600.0 1000.0 L1600.0 1025.0 L1600.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_8_34"><title>V_8_34 (soil_to_soil_link)</title><path d="M1850.0 1000.0 L1850.0 1025.0 L1850.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_1_45"><title>V_1_45 (soil_to_soil_link)</title><path d="M100.0 1250.0 L100.0 1275.0 L100.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_2_45"><title>V_2_45 (soil_to_soil_link)</title><path d="M350.0 1250.0 L350.0 1275.0 L350.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_3_45"><title>V_3_45 (soil_to_soil_link)</title><path d="M600.0 1250.0 L600.0 1275.0 L600.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_4_45"><title>V_4_45 (soil_to_soil_link)</title><path d="M850.0 1250.0 L850.0 1275.0 L850.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_5_45"><title>V_5_45 (soil_to_soil_link)</title><path d="M1100.0 1250.0 L1100.0 1275.0 L1100.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_6_45"><title>V_6_45 (soil_to_soil_link)</title><path d="M1350.0 1250.0 L1350.0 1275.0 L1350.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_7_45"><title>V_7_45 (soil_to_soil_link)</title><path d="M1600.0 1250.0 L1600.0 1275.0 L1600.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_8_45"><title>V_8_45 (soil_to_soil_link)</title><path d="M1850.0 1250.0 L1850.0 1275.0 L1850.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_1_56"><title>V_1_56 (soil_to_soil_link)</title><path d="M100.0 1500.0 L100.0 1525.0 L100.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_2_56"><title>V_2_56 (soil_to_soil_link)</title><path d="M350.0 1500.0 L350.0 1525.0 L350.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_3_56"><title>V_3_56 (soil_to_soil_link)</title><path d="M600.0 1500.0 L600.0 1525.0 L600.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_4_56"><title>V_4_56 (soil_to_soil_link)</title><path d="M850.0 1500.0 L850.0 1525.0 L850.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_5_56"><title>V_5_56 (soil_to_soil_link)</title><path d="M1100.0 1500.0 L1100.0 1525.0 L1100.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_6_56"><title>V_6_56 (soil_to_soil_link)</title><path d="M1350.0 1500.0 L1350.0 1525.0 L1350.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_7_56"><title>V_7_56 (soil_to_soil_link)</title><path d="M1600.0 1500.0 L1600.0 1525.0 L1600.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_8_56"><title>V_8_56 (soil_to_soil_link)</title><path d="M1850.0 1500.0 L1850.0 1525.0 L1850.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="WT_1"><title>WT_1 (soil_to_fixedhead_link)</title><path d="M200.0 1625.4 Q608.9 1525.0 877.4 1800.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(573.8 1618.9) rotate(14.5) scale(1.6)"/></g>
+<g class="d-link" data-name="WT_2"><title>WT_2 (soil_to_fixedhead_link)</title><path d="M408.9 1750.0 Q565.9 2016.4 875.0 1928.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(604.0 1927.8) rotate(21.0) scale(1.6)"/></g>
+<g class="d-link" data-name="WT_3"><title>WT_3 (soil_to_fixedhead_link)</title><path d="M612.7 1750.0 Q643.3 1991.3 875.0 1927.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(693.6 1915.0) rotate(34.1) scale(1.6)"/></g>
+<g class="d-link" data-name="WT_4"><title>WT_4 (soil_to_fixedhead_link)</title><path d="M900.0 1750.0 L912.5 1775.0 L925.0 1800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="WT_5"><title>WT_5 (soil_to_fixedhead_link)</title><path d="M1050.0 1750.0 L1037.5 1775.0 L1025.0 1800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="WT_6"><title>WT_6 (soil_to_fixedhead_link)</title><path d="M1337.3 1750.0 Q1306.7 1991.3 1075.0 1927.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1256.4 1915.0) rotate(145.9) scale(1.6)"/></g>
+<g class="d-link" data-name="WT_7"><title>WT_7 (soil_to_fixedhead_link)</title><path d="M1541.1 1750.0 Q1384.1 2016.4 1075.0 1928.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1346.0 1927.8) rotate(159.0) scale(1.6)"/></g>
+<g class="d-link" data-name="WT_8"><title>WT_8 (soil_to_fixedhead_link)</title><path d="M1750.0 1625.4 Q1341.1 1525.0 1072.6 1800.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1376.2 1618.9) rotate(165.5) scale(1.6)"/></g>
+<g class="d-node" data-name="Furrow"><title>Furrow (Catchment)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="260" font-size="46" text-anchor="middle">Furrow</text></g>
+<g class="d-node" data-name="Soil_1_1"><title>Soil_1_1 (Soil)</title><rect x="0" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="322" width="156" height="156"/>
+<text x="100" y="560" font-size="46" text-anchor="middle">Soil_1_1</text></g>
+<g class="d-node" data-name="Soil_2_1"><title>Soil_2_1 (Soil)</title><rect x="250" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="322" width="156" height="156"/>
+<text x="350" y="560" font-size="46" text-anchor="middle">Soil_2_1</text></g>
+<g class="d-node" data-name="Soil_3_1"><title>Soil_3_1 (Soil)</title><rect x="500" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="322" width="156" height="156"/>
+<text x="600" y="560" font-size="46" text-anchor="middle">Soil_3_1</text></g>
+<g class="d-node" data-name="Soil_4_1"><title>Soil_4_1 (Soil)</title><rect x="750" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="322" width="156" height="156"/>
+<text x="850" y="560" font-size="46" text-anchor="middle">Soil_4_1</text></g>
+<g class="d-node" data-name="Soil_5_1"><title>Soil_5_1 (Soil)</title><rect x="1000" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="322" width="156" height="156"/>
+<text x="1100" y="560" font-size="46" text-anchor="middle">Soil_5_1</text></g>
+<g class="d-node" data-name="Soil_6_1"><title>Soil_6_1 (Soil)</title><rect x="1250" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="322" width="156" height="156"/>
+<text x="1350" y="560" font-size="46" text-anchor="middle">Soil_6_1</text></g>
+<g class="d-node" data-name="Soil_7_1"><title>Soil_7_1 (Soil)</title><rect x="1500" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="322" width="156" height="156"/>
+<text x="1600" y="560" font-size="46" text-anchor="middle">Soil_7_1</text></g>
+<g class="d-node" data-name="Soil_8_1"><title>Soil_8_1 (Soil)</title><rect x="1750" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="322" width="156" height="156"/>
+<text x="1850" y="560" font-size="46" text-anchor="middle">Soil_8_1</text></g>
+<g class="d-node" data-name="Soil_1_2"><title>Soil_1_2 (Soil)</title><rect x="0" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="572" width="156" height="156"/>
+<text x="100" y="810" font-size="46" text-anchor="middle">Soil_1_2</text></g>
+<g class="d-node" data-name="Soil_2_2"><title>Soil_2_2 (Soil)</title><rect x="250" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="572" width="156" height="156"/>
+<text x="350" y="810" font-size="46" text-anchor="middle">Soil_2_2</text></g>
+<g class="d-node" data-name="Soil_3_2"><title>Soil_3_2 (Soil)</title><rect x="500" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="572" width="156" height="156"/>
+<text x="600" y="810" font-size="46" text-anchor="middle">Soil_3_2</text></g>
+<g class="d-node" data-name="Soil_4_2"><title>Soil_4_2 (Soil)</title><rect x="750" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="572" width="156" height="156"/>
+<text x="850" y="810" font-size="46" text-anchor="middle">Soil_4_2</text></g>
+<g class="d-node" data-name="Soil_5_2"><title>Soil_5_2 (Soil)</title><rect x="1000" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="572" width="156" height="156"/>
+<text x="1100" y="810" font-size="46" text-anchor="middle">Soil_5_2</text></g>
+<g class="d-node" data-name="Soil_6_2"><title>Soil_6_2 (Soil)</title><rect x="1250" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="572" width="156" height="156"/>
+<text x="1350" y="810" font-size="46" text-anchor="middle">Soil_6_2</text></g>
+<g class="d-node" data-name="Soil_7_2"><title>Soil_7_2 (Soil)</title><rect x="1500" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="572" width="156" height="156"/>
+<text x="1600" y="810" font-size="46" text-anchor="middle">Soil_7_2</text></g>
+<g class="d-node" data-name="Soil_8_2"><title>Soil_8_2 (Soil)</title><rect x="1750" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="572" width="156" height="156"/>
+<text x="1850" y="810" font-size="46" text-anchor="middle">Soil_8_2</text></g>
+<g class="d-node" data-name="Soil_1_3"><title>Soil_1_3 (Soil)</title><rect x="0" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="822" width="156" height="156"/>
+<text x="100" y="1060" font-size="46" text-anchor="middle">Soil_1_3</text></g>
+<g class="d-node" data-name="Soil_2_3"><title>Soil_2_3 (Soil)</title><rect x="250" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="822" width="156" height="156"/>
+<text x="350" y="1060" font-size="46" text-anchor="middle">Soil_2_3</text></g>
+<g class="d-node" data-name="Soil_3_3"><title>Soil_3_3 (Soil)</title><rect x="500" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="822" width="156" height="156"/>
+<text x="600" y="1060" font-size="46" text-anchor="middle">Soil_3_3</text></g>
+<g class="d-node" data-name="Soil_4_3"><title>Soil_4_3 (Soil)</title><rect x="750" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="822" width="156" height="156"/>
+<text x="850" y="1060" font-size="46" text-anchor="middle">Soil_4_3</text></g>
+<g class="d-node" data-name="Soil_5_3"><title>Soil_5_3 (Soil)</title><rect x="1000" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="822" width="156" height="156"/>
+<text x="1100" y="1060" font-size="46" text-anchor="middle">Soil_5_3</text></g>
+<g class="d-node" data-name="Soil_6_3"><title>Soil_6_3 (Soil)</title><rect x="1250" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="822" width="156" height="156"/>
+<text x="1350" y="1060" font-size="46" text-anchor="middle">Soil_6_3</text></g>
+<g class="d-node" data-name="Soil_7_3"><title>Soil_7_3 (Soil)</title><rect x="1500" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="822" width="156" height="156"/>
+<text x="1600" y="1060" font-size="46" text-anchor="middle">Soil_7_3</text></g>
+<g class="d-node" data-name="Soil_8_3"><title>Soil_8_3 (Soil)</title><rect x="1750" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="822" width="156" height="156"/>
+<text x="1850" y="1060" font-size="46" text-anchor="middle">Soil_8_3</text></g>
+<g class="d-node" data-name="Soil_1_4"><title>Soil_1_4 (Soil)</title><rect x="0" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="1072" width="156" height="156"/>
+<text x="100" y="1310" font-size="46" text-anchor="middle">Soil_1_4</text></g>
+<g class="d-node" data-name="Soil_2_4"><title>Soil_2_4 (Soil)</title><rect x="250" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="1072" width="156" height="156"/>
+<text x="350" y="1310" font-size="46" text-anchor="middle">Soil_2_4</text></g>
+<g class="d-node" data-name="Soil_3_4"><title>Soil_3_4 (Soil)</title><rect x="500" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="1072" width="156" height="156"/>
+<text x="600" y="1310" font-size="46" text-anchor="middle">Soil_3_4</text></g>
+<g class="d-node" data-name="Soil_4_4"><title>Soil_4_4 (Soil)</title><rect x="750" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="1072" width="156" height="156"/>
+<text x="850" y="1310" font-size="46" text-anchor="middle">Soil_4_4</text></g>
+<g class="d-node" data-name="Soil_5_4"><title>Soil_5_4 (Soil)</title><rect x="1000" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1072" width="156" height="156"/>
+<text x="1100" y="1310" font-size="46" text-anchor="middle">Soil_5_4</text></g>
+<g class="d-node" data-name="Soil_6_4"><title>Soil_6_4 (Soil)</title><rect x="1250" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="1072" width="156" height="156"/>
+<text x="1350" y="1310" font-size="46" text-anchor="middle">Soil_6_4</text></g>
+<g class="d-node" data-name="Soil_7_4"><title>Soil_7_4 (Soil)</title><rect x="1500" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="1072" width="156" height="156"/>
+<text x="1600" y="1310" font-size="46" text-anchor="middle">Soil_7_4</text></g>
+<g class="d-node" data-name="Soil_8_4"><title>Soil_8_4 (Soil)</title><rect x="1750" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="1072" width="156" height="156"/>
+<text x="1850" y="1310" font-size="46" text-anchor="middle">Soil_8_4</text></g>
+<g class="d-node" data-name="Soil_1_5"><title>Soil_1_5 (Soil)</title><rect x="0" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="1322" width="156" height="156"/>
+<text x="100" y="1560" font-size="46" text-anchor="middle">Soil_1_5</text></g>
+<g class="d-node" data-name="Soil_2_5"><title>Soil_2_5 (Soil)</title><rect x="250" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="1322" width="156" height="156"/>
+<text x="350" y="1560" font-size="46" text-anchor="middle">Soil_2_5</text></g>
+<g class="d-node" data-name="Soil_3_5"><title>Soil_3_5 (Soil)</title><rect x="500" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="1322" width="156" height="156"/>
+<text x="600" y="1560" font-size="46" text-anchor="middle">Soil_3_5</text></g>
+<g class="d-node" data-name="Soil_4_5"><title>Soil_4_5 (Soil)</title><rect x="750" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="1322" width="156" height="156"/>
+<text x="850" y="1560" font-size="46" text-anchor="middle">Soil_4_5</text></g>
+<g class="d-node" data-name="Soil_5_5"><title>Soil_5_5 (Soil)</title><rect x="1000" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1322" width="156" height="156"/>
+<text x="1100" y="1560" font-size="46" text-anchor="middle">Soil_5_5</text></g>
+<g class="d-node" data-name="Soil_6_5"><title>Soil_6_5 (Soil)</title><rect x="1250" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="1322" width="156" height="156"/>
+<text x="1350" y="1560" font-size="46" text-anchor="middle">Soil_6_5</text></g>
+<g class="d-node" data-name="Soil_7_5"><title>Soil_7_5 (Soil)</title><rect x="1500" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="1322" width="156" height="156"/>
+<text x="1600" y="1560" font-size="46" text-anchor="middle">Soil_7_5</text></g>
+<g class="d-node" data-name="Soil_8_5"><title>Soil_8_5 (Soil)</title><rect x="1750" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="1322" width="156" height="156"/>
+<text x="1850" y="1560" font-size="46" text-anchor="middle">Soil_8_5</text></g>
+<g class="d-node" data-name="Soil_1_6"><title>Soil_1_6 (Soil)</title><rect x="0" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="1572" width="156" height="156"/>
+<text x="100" y="1810" font-size="46" text-anchor="middle">Soil_1_6</text></g>
+<g class="d-node" data-name="Soil_2_6"><title>Soil_2_6 (Soil)</title><rect x="250" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="1572" width="156" height="156"/>
+<text x="350" y="1810" font-size="46" text-anchor="middle">Soil_2_6</text></g>
+<g class="d-node" data-name="Soil_3_6"><title>Soil_3_6 (Soil)</title><rect x="500" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="1572" width="156" height="156"/>
+<text x="600" y="1810" font-size="46" text-anchor="middle">Soil_3_6</text></g>
+<g class="d-node" data-name="Soil_4_6"><title>Soil_4_6 (Soil)</title><rect x="750" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="1572" width="156" height="156"/>
+<text x="850" y="1810" font-size="46" text-anchor="middle">Soil_4_6</text></g>
+<g class="d-node" data-name="Soil_5_6"><title>Soil_5_6 (Soil)</title><rect x="1000" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1572" width="156" height="156"/>
+<text x="1100" y="1810" font-size="46" text-anchor="middle">Soil_5_6</text></g>
+<g class="d-node" data-name="Soil_6_6"><title>Soil_6_6 (Soil)</title><rect x="1250" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="1572" width="156" height="156"/>
+<text x="1350" y="1810" font-size="46" text-anchor="middle">Soil_6_6</text></g>
+<g class="d-node" data-name="Soil_7_6"><title>Soil_7_6 (Soil)</title><rect x="1500" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="1572" width="156" height="156"/>
+<text x="1600" y="1810" font-size="46" text-anchor="middle">Soil_7_6</text></g>
+<g class="d-node" data-name="Soil_8_6"><title>Soil_8_6 (Soil)</title><rect x="1750" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="1572" width="156" height="156"/>
+<text x="1850" y="1810" font-size="46" text-anchor="middle">Soil_8_6</text></g>
+<g class="d-node" data-name="Water_table"><title>Water_table (fixed_head)</title><rect x="875" y="1800" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="897" y="1822" width="156" height="156"/>
+<text x="975" y="2060" font-size="46" text-anchor="middle">Water_table</text></g>
+</svg>

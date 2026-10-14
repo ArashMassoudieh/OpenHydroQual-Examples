@@ -1271,28 +1271,42 @@
   },
   {
    "id": "soil-2d",
-   "title": "2D Soil Cross-Section",
+   "title": "2D Soil Cross-Section Under a Furrow",
    "track": "soil",
    "level": 2,
-   "status": "planned",
-   "summary": "A two-dimensional grid of soil cells showing lateral and vertical flow.",
+   "status": "ready",
+   "summary": "A vertical cross-section of loam soil, 2 m wide and 1.2 m deep, built as a grid of 48 soil cells. Water ponded in an irrigation furrow infiltrates and spreads both downward and sideways as a wetting bulb, then slowly recharges the water table.",
    "plugins": [
     "unsaturated_soil"
    ],
    "features": [
-    "Grid generator",
-    "2D flow"
+    "2D grid",
+    "Lateral flow",
+    "Capillary spreading",
+    "Furrow infiltration",
+    "Water table"
    ],
    "keywords": [
     "2d",
     "two dimensional",
     "grid",
-    "cross section",
-    "lateral flow",
     "mesh",
     "grid generator",
-    "unsaturated"
-   ]
+    "cross section",
+    "lateral flow",
+    "capillarity",
+    "wetting bulb",
+    "furrow irrigation",
+    "infiltration trench",
+    "unsaturated flow",
+    "richards equation",
+    "van genuchten",
+    "symmetry boundary",
+    "recharge",
+    "water table",
+    "anisotropy"
+   ],
+   "thumb": "examples/soil-2d/thumb.svg"
   },
   {
    "id": "crop-growing-season",

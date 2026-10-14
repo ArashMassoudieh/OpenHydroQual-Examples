@@ -71,7 +71,7 @@ plots:
 Plot series can also come from a file in the example folder, to overlay an analytical solution or
 observed data: `{file: "exact_solution.csv", label: "Analytical", style: points}` (two numeric columns,
 non-numeric header lines skipped). `style` is `line` (default), `dashed` or `points`; `color` is optional, and `scale` multiplies values (unit conversion, e.g. `scale: 1.157e-5` for m³/day to m³/s).
-Per plot: `xlim: [a, b]`, `ylim: [a, b]`, `logy: true`, and `hlines: [{y: 4.0e6, label: "S_min"}]` for reference levels.
+Per plot: `xlim: [a, b]`, `ylim: [a, b]`, `logy: true`, and `hlines: [{y: 4.0e6, label: "S_min"}]` for reference levels. A series `{columns: [a, b, c], label: "Total outflow"}` plots the sum of several outputs.
 
 Figures that the forward run cannot produce (calibration fits, posterior histograms) go in a
 `results/` subfolder. The build copies it to the site and into the zip. Reference such figures from the README body as

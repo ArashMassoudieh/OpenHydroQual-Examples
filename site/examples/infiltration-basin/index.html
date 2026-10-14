@@ -30,7 +30,7 @@
   <nav class="toc"><b>On this page</b>
     <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
     <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
-    
+    <a href="#results">Results</a>
   </nav>
 </aside>
 <article class="ex-body">
@@ -149,7 +149,7 @@
 </div></section>
 <section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>rainfall.txt</code></td><td><p>Rainfall in the three-column precipitation format: interval start (day), interval end (day), rainfall depth in the interval (m). Hourly intervals; day 0 is 1 August 2010; dry hours are omitted. Source: NOAA hourly precipitation record at Baltimore/Washington International Airport (BWI), Maryland, USA (US public domain, 0.01 in = 0.254 mm resolution).</p></td></tr></tbody></table></section>
 <section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>72</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
-
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Runoff, infiltration and overflow' loading='lazy'><figcaption><b>Runoff, infiltration and overflow</b> Infiltration is limited to a few hundred m³/day, so runoff peaks are stored in the basin. Only the 118 mm storm on day 60 overfills it.</figcaption></figure><figure><img src='plot_2.png' alt='Ponding depth in the basin' loading='lazy'><figcaption><b>Ponding depth in the basin</b> Most storms pond less than 0.35 m, which drains within a day. The day 60 storm fills the basin past the 1.0 m overflow crest and keeps it ponded for about two days.</figcaption></figure><figure><img src='plot_3.png' alt='Water content through the unsaturated zone' loading='lazy'><figcaption><b>Water content through the unsaturated zone</b> Each storm sends a wetting front down the profile; deeper layers respond later and more smoothly. In the day 60 storm the whole profile saturates.</figcaption></figure><figure><img src='plot_4.png' alt='Recharge to the water table' loading='lazy'><figcaption><b>Recharge to the water table</b> Recharge is a damped, delayed version of the infiltration, except in the day 60 storm, when the saturated column passes the infiltration almost immediately.</figcaption></figure></section>
 </article></main>
 <footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
 <a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/infiltration-basin">View source on GitHub</a>.</div></footer>

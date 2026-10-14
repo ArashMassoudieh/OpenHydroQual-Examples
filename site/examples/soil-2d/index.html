@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2D Soil Cross-Section Under a Furrow · OpenHydroQual Examples</title>
+<meta name="description" content="A vertical cross-section of loam soil, 2 m wide and 1.2 m deep, built as a grid of 48 soil cells. Water ponded in an irrigation furrow infiltrates and spreads both downward and sideways as a wetting bulb, then slowly recharges the water table.">
+<meta name="keywords" content="2d, two dimensional, grid, mesh, grid generator, cross section, lateral flow, capillarity, wetting bulb, furrow irrigation, infiltration trench, unsaturated flow, richards equation, van genuchten, symmetry boundary, recharge, water table, anisotropy">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#a0702a">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Soil, Plants &amp; Groundwater</div>
+<h1>2D Soil Cross-Section Under a Furrow</h1>
+<p class="lede">A vertical cross-section of loam soil, 2 m wide and 1.2 m deep, built as a grid of 48 soil cells. Water ponded in an irrigation furrow infiltrates and spreads both downward and sideways as a wetting bulb, then slowly recharges the water table.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=unsaturated_soil'>unsaturated_soil</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/soil-2d.zip" download>Download model (.zip)</a>
+    <div class="muted">9 KB · 1 files · open <code>furrow_cross_section.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>When water infiltrates from a narrow source, such as an irrigation furrow, a drip line, an infiltration trench or a leaking pipe, it does not move straight down. Capillary suction in the drier soil around the source pulls water sideways while gravity pulls it down, and the wetted zone takes the shape of a bulb. How wide the bulb gets decides, for example, how far apart furrows or drip lines can be, and how much of the applied water ends up below the root zone.</p>
+<p>A one-dimensional column cannot show this. This model is a vertical cross-section through the soil perpendicular to a furrow, 2 m wide and 1.2 m deep, discretized into a grid of 8 × 6 soil cells that are connected both vertically and horizontally. Because a furrow is symmetric about its centreline, only half of it is modelled: the left edge of the grid is the furrow centreline and carries no flow. All results are per metre of furrow length.</p>
+<p>Grids like this one can be generated in the OpenHydroQual interface with the grid generator, which creates the cells and the horizontal and vertical links in one step.</p>
+<h2>How it works</h2>
+<p>The expressions below are from <code>unsaturated_soil.json</code>, the current soil plugin.</p>
+<p><strong>Soil cells.</strong> Every cell is a <code>Soil</code> block with the same loam properties (θₛ = 0.43, θᵣ = 0.078, α = 3.6 1/m, n = 1.56, K_sat = 0.25 m/day). Moisture content, effective saturation and pressure head follow the van Genuchten relationships:</p>
+<p>θ = S/(A·d),  Sₑ = (θ − θᵣ)/(θₛ − θᵣ) limited to 0.001 to 0.999
+  ψ = −(1/α)·(Sₑ^(−1/m) − 1)^(1/n),  m = 1 − 1/n</p>
+<p>and the total head is H = z_bottom + d + ψ (pressure head referred to the top of the cell). In this model A is the cell's plan area (0.25 m × 1 m) and d its height (0.2 m). The <em>1D Infiltration and Soil Boundary Conditions</em> example gives the full set of soil equations, including the treatment of saturation.</p>
+<p><strong>Vertical links</strong> (<code>soil_to_soil_link</code>) compute their length and area from the two cells:</p>
+<p>Q = K_eff · (H_upper − H_lower)/L · A,  L = (d₁ + d₂)/2</p>
+<p><strong>Horizontal links</strong> (<code>soil_to_soil_H_link</code>) take the face area and the distance between cell centres as properties (0.2 m² and 0.25 m):</p>
+<p>Q = K_eff · (H₁ − H₂)/L · A_face</p>
+<p>Both cells in a row have the same elevation, so a horizontal flow is driven only by the difference in pressure head: water moves sideways by capillarity. In both link types</p>
+<p>K_eff = K_sat · [1 − (1 − Sₑ^(1/m))^m]²</p>
+<p>using the larger of the two cells' Sₑ and the mean of their m. For the horizontal link K_sat is the mean of the two cells' K_sat multiplied by their <code>aniso_ratio</code>. The anisotropy ratio is 1 here (isotropic soil); setting it above 1 makes horizontal flow easier, as in a layered soil.</p>
+<p><strong>Furrow.</strong> The furrow is a <code>Catchment</code> block over the first column, connected to Soil_1_1 by a <code>surfacewater_to_soil_link</code>:</p>
+<p>Q = K_sat · (H_furrow − H_cell)/(d/2) · A · h_p/(h_p + 0.001 m)</p>
+<p>where H_furrow = 0 m + h_p and h_p is the ponded depth. It starts with h_p = 0.1 m.</p>
+<p><strong>Boundaries.</strong> The left edge (the furrow centreline) and the right edge (2 m away) have no links, so no water crosses them. The soil surface outside the furrow is closed: there is no rain and no evaporation. Each bottom cell exchanges water with the water table at −1.2 m through Q = K_eff·(H − H_wt)/(d/2)·A.</p>
+<p><strong>Initial condition.</strong> All cells start in hydrostatic equilibrium with the water table (H = −1.2 m everywhere, given the top-of-cell head reference), so nothing moves until the furrow is filled.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Furrow infiltration.</strong> The 25 L in the half-furrow infiltrates in about 6 hours (the furrow is empty at day 0.26). The initial rate is 0.68 m³/day per metre of furrow, falling as the soil under the furrow wets up.</li>
+<li><strong>Shape of the wetting bulb.</strong> Six hours after irrigation, the cell under the furrow is nearly saturated (θ = 0.41), the wetting has reached about 0.6 m deep and 0.5 m sideways, and the soil 0.75 m from the centreline has not yet changed. After one day the top row reads θ = 0.327, 0.303, 0.258, 0.230 in columns 1 to 4. The bulb is about as wide as it is deep: in this fine-textured soil with a moderately dry start, capillary spreading is comparable to gravity drainage over the first day.</li>
+<li><strong>Redistribution.</strong> After the furrow empties, the cells nearest the source drain and the water spreads further out and down. By day 5 the top row has evened out (θ = 0.271 under the furrow down to 0.238 at 0.75 to 1.0 m), and cells beyond 1.25 m from the centre are still at their initial moisture.</li>
+<li><strong>Delayed and widened recharge.</strong> Almost nothing reaches the water table during the first day. Recharge under the furrow peaks after about 3 days, and by day 5 it is spread across the first five columns (1.25 m), five times the width of the half-furrow. By day 5, 5.5 L of the 25 L applied (22%) has reached the water table and the rest is still held in the soil.</li>
+<li><strong>Water balance.</strong> Water applied (24.7 L in the half-furrow) = change in soil storage (19.1 L) + recharge (5.5 L).</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The cross-section is two dimensional: flow along the furrow is ignored, and the furrow is assumed long and uniform.</li>
+<li>The grid is coarse (0.25 m × 0.2 m). The wetting front is smeared over one or two cells, and finer cells near the furrow would sharpen it at the cost of run time.</li>
+<li>The soil is homogeneous and isotropic, with no root uptake, no evaporation and no rain.</li>
+<li>The furrow is filled once and instantly, and its wetted perimeter is represented only by its flat bottom over the first column. Infiltration through the furrow side walls is not represented.</li>
+<li>Because the soil plugin refers each cell's head to its top, the link to the water table and the furrow link use a distance of half a cell thickness from that reference. The internal links are unaffected because all cells have the same size.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 2070 2166" class="ohq-diagram" style="max-width:1035px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Furrow_infiltration"><title>Furrow_infiltration (surfacewater_to_soil_link)</title><path d="M100.0 200.0 L100.0 250.0 L100.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_1"><title>H_12_1 (soil_to_soil_H_link)</title><path d="M200.0 400.0 L225.0 400.0 L250.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_1"><title>H_23_1 (soil_to_soil_H_link)</title><path d="M450.0 400.0 L475.0 400.0 L500.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_1"><title>H_34_1 (soil_to_soil_H_link)</title><path d="M700.0 400.0 L725.0 400.0 L750.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_1"><title>H_45_1 (soil_to_soil_H_link)</title><path d="M950.0 400.0 L975.0 400.0 L1000.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_1"><title>H_56_1 (soil_to_soil_H_link)</title><path d="M1200.0 400.0 L1225.0 400.0 L1250.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_1"><title>H_67_1 (soil_to_soil_H_link)</title><path d="M1450.0 400.0 L1475.0 400.0 L1500.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_1"><title>H_78_1 (soil_to_soil_H_link)</title><path d="M1700.0 400.0 L1725.0 400.0 L1750.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_2"><title>H_12_2 (soil_to_soil_H_link)</title><path d="M200.0 650.0 L225.0 650.0 L250.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_2"><title>H_23_2 (soil_to_soil_H_link)</title><path d="M450.0 650.0 L475.0 650.0 L500.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_2"><title>H_34_2 (soil_to_soil_H_link)</title><path d="M700.0 650.0 L725.0 650.0 L750.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_2"><title>H_45_2 (soil_to_soil_H_link)</title><path d="M950.0 650.0 L975.0 650.0 L1000.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_2"><title>H_56_2 (soil_to_soil_H_link)</title><path d="M1200.0 650.0 L1225.0 650.0 L1250.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_2"><title>H_67_2 (soil_to_soil_H_link)</title><path d="M1450.0 650.0 L1475.0 650.0 L1500.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_2"><title>H_78_2 (soil_to_soil_H_link)</title><path d="M1700.0 650.0 L1725.0 650.0 L1750.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_3"><title>H_12_3 (soil_to_soil_H_link)</title><path d="M200.0 900.0 L225.0 900.0 L250.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_3"><title>H_23_3 (soil_to_soil_H_link)</title><path d="M450.0 900.0 L475.0 900.0 L500.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_3"><title>H_34_3 (soil_to_soil_H_link)</title><path d="M700.0 900.0 L725.0 900.0 L750.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_3"><title>H_45_3 (soil_to_soil_H_link)</title><path d="M950.0 900.0 L975.0 900.0 L1000.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_3"><title>H_56_3 (soil_to_soil_H_link)</title><path d="M1200.0 900.0 L1225.0 900.0 L1250.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_3"><title>H_67_3 (soil_to_soil_H_link)</title><path d="M1450.0 900.0 L1475.0 900.0 L1500.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_3"><title>H_78_3 (soil_to_soil_H_link)</title><path d="M1700.0 900.0 L1725.0 900.0 L1750.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_4"><title>H_12_4 (soil_to_soil_H_link)</title><path d="M200.0 1150.0 L225.0 1150.0 L250.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_4"><title>H_23_4 (soil_to_soil_H_link)</title><path d="M450.0 1150.0 L475.0 1150.0 L500.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_4"><title>H_34_4 (soil_to_soil_H_link)</title><path d="M700.0 1150.0 L725.0 1150.0 L750.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_4"><title>H_45_4 (soil_to_soil_H_link)</title><path d="M950.0 1150.0 L975.0 1150.0 L1000.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_4"><title>H_56_4 (soil_to_soil_H_link)</title><path d="M1200.0 1150.0 L1225.0 1150.0 L1250.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_4"><title>H_67_4 (soil_to_soil_H_link)</title><path d="M1450.0 1150.0 L1475.0 1150.0 L1500.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_4"><title>H_78_4 (soil_to_soil_H_link)</title><path d="M1700.0 1150.0 L1725.0 1150.0 L1750.0 1150.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_5"><title>H_12_5 (soil_to_soil_H_link)</title><path d="M200.0 1400.0 L225.0 1400.0 L250.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_5"><title>H_23_5 (soil_to_soil_H_link)</title><path d="M450.0 1400.0 L475.0 1400.0 L500.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_5"><title>H_34_5 (soil_to_soil_H_link)</title><path d="M700.0 1400.0 L725.0 1400.0 L750.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_5"><title>H_45_5 (soil_to_soil_H_link)</title><path d="M950.0 1400.0 L975.0 1400.0 L1000.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_5"><title>H_56_5 (soil_to_soil_H_link)</title><path d="M1200.0 1400.0 L1225.0 1400.0 L1250.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_5"><title>H_67_5 (soil_to_soil_H_link)</title><path d="M1450.0 1400.0 L1475.0 1400.0 L1500.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_5"><title>H_78_5 (soil_to_soil_H_link)</title><path d="M1700.0 1400.0 L1725.0 1400.0 L1750.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_12_6"><title>H_12_6 (soil_to_soil_H_link)</title><path d="M200.0 1650.0 L225.0 1650.0 L250.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_23_6"><title>H_23_6 (soil_to_soil_H_link)</title><path d="M450.0 1650.0 L475.0 1650.0 L500.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_34_6"><title>H_34_6 (soil_to_soil_H_link)</title><path d="M700.0 1650.0 L725.0 1650.0 L750.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_45_6"><title>H_45_6 (soil_to_soil_H_link)</title><path d="M950.0 1650.0 L975.0 1650.0 L1000.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_56_6"><title>H_56_6 (soil_to_soil_H_link)</title><path d="M1200.0 1650.0 L1225.0 1650.0 L1250.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_67_6"><title>H_67_6 (soil_to_soil_H_link)</title><path d="M1450.0 1650.0 L1475.0 1650.0 L1500.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="H_78_6"><title>H_78_6 (soil_to_soil_H_link)</title><path d="M1700.0 1650.0 L1725.0 1650.0 L1750.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_1_12"><title>V_1_12 (soil_to_soil_link)</title><path d="M100.0 500.0 L100.0 525.0 L100.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_2_12"><title>V_2_12 (soil_to_soil_link)</title><path d="M350.0 500.0 L350.0 525.0 L350.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_3_12"><title>V_3_12 (soil_to_soil_link)</title><path d="M600.0 500.0 L600.0 525.0 L600.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_4_12"><title>V_4_12 (soil_to_soil_link)</title><path d="M850.0 500.0 L850.0 525.0 L850.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_5_12"><title>V_5_12 (soil_to_soil_link)</title><path d="M1100.0 500.0 L1100.0 525.0 L1100.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_6_12"><title>V_6_12 (soil_to_soil_link)</title><path d="M1350.0 500.0 L1350.0 525.0 L1350.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_7_12"><title>V_7_12 (soil_to_soil_link)</title><path d="M1600.0 500.0 L1600.0 525.0 L1600.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_8_12"><title>V_8_12 (soil_to_soil_link)</title><path d="M1850.0 500.0 L1850.0 525.0 L1850.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_1_23"><title>V_1_23 (soil_to_soil_link)</title><path d="M100.0 750.0 L100.0 775.0 L100.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_2_23"><title>V_2_23 (soil_to_soil_link)</title><path d="M350.0 750.0 L350.0 775.0 L350.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_3_23"><title>V_3_23 (soil_to_soil_link)</title><path d="M600.0 750.0 L600.0 775.0 L600.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_4_23"><title>V_4_23 (soil_to_soil_link)</title><path d="M850.0 750.0 L850.0 775.0 L850.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_5_23"><title>V_5_23 (soil_to_soil_link)</title><path d="M1100.0 750.0 L1100.0 775.0 L1100.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_6_23"><title>V_6_23 (soil_to_soil_link)</title><path d="M1350.0 750.0 L1350.0 775.0 L1350.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_7_23"><title>V_7_23 (soil_to_soil_link)</title><path d="M1600.0 750.0 L1600.0 775.0 L1600.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_8_23"><title>V_8_23 (soil_to_soil_link)</title><path d="M1850.0 750.0 L1850.0 775.0 L1850.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_1_34"><title>V_1_34 (soil_to_soil_link)</title><path d="M100.0 1000.0 L100.0 1025.0 L100.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_2_34"><title>V_2_34 (soil_to_soil_link)</title><path d="M350.0 1000.0 L350.0 1025.0 L350.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_3_34"><title>V_3_34 (soil_to_soil_link)</title><path d="M600.0 1000.0 L600.0 1025.0 L600.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_4_34"><title>V_4_34 (soil_to_soil_link)</title><path d="M850.0 1000.0 L850.0 1025.0 L850.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_5_34"><title>V_5_34 (soil_to_soil_link)</title><path d="M1100.0 1000.0 L1100.0 1025.0 L1100.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_6_34"><title>V_6_34 (soil_to_soil_link)</title><path d="M1350.0 1000.0 L1350.0 1025.0 L1350.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_7_34"><title>V_7_34 (soil_to_soil_link)</title><path d="M1600.0 1000.0 L1600.0 1025.0 L1600.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_8_34"><title>V_8_34 (soil_to_soil_link)</title><path d="M1850.0 1000.0 L1850.0 1025.0 L1850.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_1_45"><title>V_1_45 (soil_to_soil_link)</title><path d="M100.0 1250.0 L100.0 1275.0 L100.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_2_45"><title>V_2_45 (soil_to_soil_link)</title><path d="M350.0 1250.0 L350.0 1275.0 L350.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_3_45"><title>V_3_45 (soil_to_soil_link)</title><path d="M600.0 1250.0 L600.0 1275.0 L600.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_4_45"><title>V_4_45 (soil_to_soil_link)</title><path d="M850.0 1250.0 L850.0 1275.0 L850.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_5_45"><title>V_5_45 (soil_to_soil_link)</title><path d="M1100.0 1250.0 L1100.0 1275.0 L1100.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_6_45"><title>V_6_45 (soil_to_soil_link)</title><path d="M1350.0 1250.0 L1350.0 1275.0 L1350.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_7_45"><title>V_7_45 (soil_to_soil_link)</title><path d="M1600.0 1250.0 L1600.0 1275.0 L1600.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_8_45"><title>V_8_45 (soil_to_soil_link)</title><path d="M1850.0 1250.0 L1850.0 1275.0 L1850.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_1_56"><title>V_1_56 (soil_to_soil_link)</title><path d="M100.0 1500.0 L100.0 1525.0 L100.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_2_56"><title>V_2_56 (soil_to_soil_link)</title><path d="M350.0 1500.0 L350.0 1525.0 L350.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_3_56"><title>V_3_56 (soil_to_soil_link)</title><path d="M600.0 1500.0 L600.0 1525.0 L600.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_4_56"><title>V_4_56 (soil_to_soil_link)</title><path d="M850.0 1500.0 L850.0 1525.0 L850.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_5_56"><title>V_5_56 (soil_to_soil_link)</title><path d="M1100.0 1500.0 L1100.0 1525.0 L1100.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_6_56"><title>V_6_56 (soil_to_soil_link)</title><path d="M1350.0 1500.0 L1350.0 1525.0 L1350.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_7_56"><title>V_7_56 (soil_to_soil_link)</title><path d="M1600.0 1500.0 L1600.0 1525.0 L1600.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="V_8_56"><title>V_8_56 (soil_to_soil_link)</title><path d="M1850.0 1500.0 L1850.0 1525.0 L1850.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="WT_1"><title>WT_1 (soil_to_fixedhead_link)</title><path d="M200.0 1625.4 Q608.9 1525.0 877.4 1800.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(573.8 1618.9) rotate(14.5) scale(1.6)"/></g>
+<g class="d-link" data-name="WT_2"><title>WT_2 (soil_to_fixedhead_link)</title><path d="M408.9 1750.0 Q565.9 2016.4 875.0 1928.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(604.0 1927.8) rotate(21.0) scale(1.6)"/></g>
+<g class="d-link" data-name="WT_3"><title>WT_3 (soil_to_fixedhead_link)</title><path d="M612.7 1750.0 Q643.3 1991.3 875.0 1927.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(693.6 1915.0) rotate(34.1) scale(1.6)"/></g>
+<g class="d-link" data-name="WT_4"><title>WT_4 (soil_to_fixedhead_link)</title><path d="M900.0 1750.0 L912.5 1775.0 L925.0 1800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="WT_5"><title>WT_5 (soil_to_fixedhead_link)</title><path d="M1050.0 1750.0 L1037.5 1775.0 L1025.0 1800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="WT_6"><title>WT_6 (soil_to_fixedhead_link)</title><path d="M1337.3 1750.0 Q1306.7 1991.3 1075.0 1927.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1256.4 1915.0) rotate(145.9) scale(1.6)"/></g>
+<g class="d-link" data-name="WT_7"><title>WT_7 (soil_to_fixedhead_link)</title><path d="M1541.1 1750.0 Q1384.1 2016.4 1075.0 1928.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1346.0 1927.8) rotate(159.0) scale(1.6)"/></g>
+<g class="d-link" data-name="WT_8"><title>WT_8 (soil_to_fixedhead_link)</title><path d="M1750.0 1625.4 Q1341.1 1525.0 1072.6 1800.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1376.2 1618.9) rotate(165.5) scale(1.6)"/></g>
+<g class="d-node" data-name="Furrow"><title>Furrow (Catchment)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="260" font-size="46" text-anchor="middle">Furrow</text></g>
+<g class="d-node" data-name="Soil_1_1"><title>Soil_1_1 (Soil)</title><rect x="0" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="322" width="156" height="156"/>
+<text x="100" y="560" font-size="46" text-anchor="middle">Soil_1_1</text></g>
+<g class="d-node" data-name="Soil_2_1"><title>Soil_2_1 (Soil)</title><rect x="250" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="322" width="156" height="156"/>
+<text x="350" y="560" font-size="46" text-anchor="middle">Soil_2_1</text></g>
+<g class="d-node" data-name="Soil_3_1"><title>Soil_3_1 (Soil)</title><rect x="500" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="322" width="156" height="156"/>
+<text x="600" y="560" font-size="46" text-anchor="middle">Soil_3_1</text></g>
+<g class="d-node" data-name="Soil_4_1"><title>Soil_4_1 (Soil)</title><rect x="750" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="322" width="156" height="156"/>
+<text x="850" y="560" font-size="46" text-anchor="middle">Soil_4_1</text></g>
+<g class="d-node" data-name="Soil_5_1"><title>Soil_5_1 (Soil)</title><rect x="1000" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="322" width="156" height="156"/>
+<text x="1100" y="560" font-size="46" text-anchor="middle">Soil_5_1</text></g>
+<g class="d-node" data-name="Soil_6_1"><title>Soil_6_1 (Soil)</title><rect x="1250" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="322" width="156" height="156"/>
+<text x="1350" y="560" font-size="46" text-anchor="middle">Soil_6_1</text></g>
+<g class="d-node" data-name="Soil_7_1"><title>Soil_7_1 (Soil)</title><rect x="1500" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="322" width="156" height="156"/>
+<text x="1600" y="560" font-size="46" text-anchor="middle">Soil_7_1</text></g>
+<g class="d-node" data-name="Soil_8_1"><title>Soil_8_1 (Soil)</title><rect x="1750" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="322" width="156" height="156"/>
+<text x="1850" y="560" font-size="46" text-anchor="middle">Soil_8_1</text></g>
+<g class="d-node" data-name="Soil_1_2"><title>Soil_1_2 (Soil)</title><rect x="0" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="572" width="156" height="156"/>
+<text x="100" y="810" font-size="46" text-anchor="middle">Soil_1_2</text></g>
+<g class="d-node" data-name="Soil_2_2"><title>Soil_2_2 (Soil)</title><rect x="250" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="572" width="156" height="156"/>
+<text x="350" y="810" font-size="46" text-anchor="middle">Soil_2_2</text></g>
+<g class="d-node" data-name="Soil_3_2"><title>Soil_3_2 (Soil)</title><rect x="500" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="572" width="156" height="156"/>
+<text x="600" y="810" font-size="46" text-anchor="middle">Soil_3_2</text></g>
+<g class="d-node" data-name="Soil_4_2"><title>Soil_4_2 (Soil)</title><rect x="750" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="572" width="156" height="156"/>
+<text x="850" y="810" font-size="46" text-anchor="middle">Soil_4_2</text></g>
+<g class="d-node" data-name="Soil_5_2"><title>Soil_5_2 (Soil)</title><rect x="1000" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="572" width="156" height="156"/>
+<text x="1100" y="810" font-size="46" text-anchor="middle">Soil_5_2</text></g>
+<g class="d-node" data-name="Soil_6_2"><title>Soil_6_2 (Soil)</title><rect x="1250" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="572" width="156" height="156"/>
+<text x="1350" y="810" font-size="46" text-anchor="middle">Soil_6_2</text></g>
+<g class="d-node" data-name="Soil_7_2"><title>Soil_7_2 (Soil)</title><rect x="1500" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="572" width="156" height="156"/>
+<text x="1600" y="810" font-size="46" text-anchor="middle">Soil_7_2</text></g>
+<g class="d-node" data-name="Soil_8_2"><title>Soil_8_2 (Soil)</title><rect x="1750" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="572" width="156" height="156"/>
+<text x="1850" y="810" font-size="46" text-anchor="middle">Soil_8_2</text></g>
+<g class="d-node" data-name="Soil_1_3"><title>Soil_1_3 (Soil)</title><rect x="0" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="822" width="156" height="156"/>
+<text x="100" y="1060" font-size="46" text-anchor="middle">Soil_1_3</text></g>
+<g class="d-node" data-name="Soil_2_3"><title>Soil_2_3 (Soil)</title><rect x="250" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="822" width="156" height="156"/>
+<text x="350" y="1060" font-size="46" text-anchor="middle">Soil_2_3</text></g>
+<g class="d-node" data-name="Soil_3_3"><title>Soil_3_3 (Soil)</title><rect x="500" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="822" width="156" height="156"/>
+<text x="600" y="1060" font-size="46" text-anchor="middle">Soil_3_3</text></g>
+<g class="d-node" data-name="Soil_4_3"><title>Soil_4_3 (Soil)</title><rect x="750" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="822" width="156" height="156"/>
+<text x="850" y="1060" font-size="46" text-anchor="middle">Soil_4_3</text></g>
+<g class="d-node" data-name="Soil_5_3"><title>Soil_5_3 (Soil)</title><rect x="1000" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="822" width="156" height="156"/>
+<text x="1100" y="1060" font-size="46" text-anchor="middle">Soil_5_3</text></g>
+<g class="d-node" data-name="Soil_6_3"><title>Soil_6_3 (Soil)</title><rect x="1250" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="822" width="156" height="156"/>
+<text x="1350" y="1060" font-size="46" text-anchor="middle">Soil_6_3</text></g>
+<g class="d-node" data-name="Soil_7_3"><title>Soil_7_3 (Soil)</title><rect x="1500" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="822" width="156" height="156"/>
+<text x="1600" y="1060" font-size="46" text-anchor="middle">Soil_7_3</text></g>
+<g class="d-node" data-name="Soil_8_3"><title>Soil_8_3 (Soil)</title><rect x="1750" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="822" width="156" height="156"/>
+<text x="1850" y="1060" font-size="46" text-anchor="middle">Soil_8_3</text></g>
+<g class="d-node" data-name="Soil_1_4"><title>Soil_1_4 (Soil)</title><rect x="0" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="1072" width="156" height="156"/>
+<text x="100" y="1310" font-size="46" text-anchor="middle">Soil_1_4</text></g>
+<g class="d-node" data-name="Soil_2_4"><title>Soil_2_4 (Soil)</title><rect x="250" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="1072" width="156" height="156"/>
+<text x="350" y="1310" font-size="46" text-anchor="middle">Soil_2_4</text></g>
+<g class="d-node" data-name="Soil_3_4"><title>Soil_3_4 (Soil)</title><rect x="500" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="1072" width="156" height="156"/>
+<text x="600" y="1310" font-size="46" text-anchor="middle">Soil_3_4</text></g>
+<g class="d-node" data-name="Soil_4_4"><title>Soil_4_4 (Soil)</title><rect x="750" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="1072" width="156" height="156"/>
+<text x="850" y="1310" font-size="46" text-anchor="middle">Soil_4_4</text></g>
+<g class="d-node" data-name="Soil_5_4"><title>Soil_5_4 (Soil)</title><rect x="1000" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1072" width="156" height="156"/>
+<text x="1100" y="1310" font-size="46" text-anchor="middle">Soil_5_4</text></g>
+<g class="d-node" data-name="Soil_6_4"><title>Soil_6_4 (Soil)</title><rect x="1250" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="1072" width="156" height="156"/>
+<text x="1350" y="1310" font-size="46" text-anchor="middle">Soil_6_4</text></g>
+<g class="d-node" data-name="Soil_7_4"><title>Soil_7_4 (Soil)</title><rect x="1500" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="1072" width="156" height="156"/>
+<text x="1600" y="1310" font-size="46" text-anchor="middle">Soil_7_4</text></g>
+<g class="d-node" data-name="Soil_8_4"><title>Soil_8_4 (Soil)</title><rect x="1750" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="1072" width="156" height="156"/>
+<text x="1850" y="1310" font-size="46" text-anchor="middle">Soil_8_4</text></g>
+<g class="d-node" data-name="Soil_1_5"><title>Soil_1_5 (Soil)</title><rect x="0" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="1322" width="156" height="156"/>
+<text x="100" y="1560" font-size="46" text-anchor="middle">Soil_1_5</text></g>
+<g class="d-node" data-name="Soil_2_5"><title>Soil_2_5 (Soil)</title><rect x="250" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="1322" width="156" height="156"/>
+<text x="350" y="1560" font-size="46" text-anchor="middle">Soil_2_5</text></g>
+<g class="d-node" data-name="Soil_3_5"><title>Soil_3_5 (Soil)</title><rect x="500" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="1322" width="156" height="156"/>
+<text x="600" y="1560" font-size="46" text-anchor="middle">Soil_3_5</text></g>
+<g class="d-node" data-name="Soil_4_5"><title>Soil_4_5 (Soil)</title><rect x="750" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="1322" width="156" height="156"/>
+<text x="850" y="1560" font-size="46" text-anchor="middle">Soil_4_5</text></g>
+<g class="d-node" data-name="Soil_5_5"><title>Soil_5_5 (Soil)</title><rect x="1000" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1322" width="156" height="156"/>
+<text x="1100" y="1560" font-size="46" text-anchor="middle">Soil_5_5</text></g>
+<g class="d-node" data-name="Soil_6_5"><title>Soil_6_5 (Soil)</title><rect x="1250" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="1322" width="156" height="156"/>
+<text x="1350" y="1560" font-size="46" text-anchor="middle">Soil_6_5</text></g>
+<g class="d-node" data-name="Soil_7_5"><title>Soil_7_5 (Soil)</title><rect x="1500" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="1322" width="156" height="156"/>
+<text x="1600" y="1560" font-size="46" text-anchor="middle">Soil_7_5</text></g>
+<g class="d-node" data-name="Soil_8_5"><title>Soil_8_5 (Soil)</title><rect x="1750" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="1322" width="156" height="156"/>
+<text x="1850" y="1560" font-size="46" text-anchor="middle">Soil_8_5</text></g>
+<g class="d-node" data-name="Soil_1_6"><title>Soil_1_6 (Soil)</title><rect x="0" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="22" y="1572" width="156" height="156"/>
+<text x="100" y="1810" font-size="46" text-anchor="middle">Soil_1_6</text></g>
+<g class="d-node" data-name="Soil_2_6"><title>Soil_2_6 (Soil)</title><rect x="250" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="272" y="1572" width="156" height="156"/>
+<text x="350" y="1810" font-size="46" text-anchor="middle">Soil_2_6</text></g>
+<g class="d-node" data-name="Soil_3_6"><title>Soil_3_6 (Soil)</title><rect x="500" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="522" y="1572" width="156" height="156"/>
+<text x="600" y="1810" font-size="46" text-anchor="middle">Soil_3_6</text></g>
+<g class="d-node" data-name="Soil_4_6"><title>Soil_4_6 (Soil)</title><rect x="750" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="772" y="1572" width="156" height="156"/>
+<text x="850" y="1810" font-size="46" text-anchor="middle">Soil_4_6</text></g>
+<g class="d-node" data-name="Soil_5_6"><title>Soil_5_6 (Soil)</title><rect x="1000" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1022" y="1572" width="156" height="156"/>
+<text x="1100" y="1810" font-size="46" text-anchor="middle">Soil_5_6</text></g>
+<g class="d-node" data-name="Soil_6_6"><title>Soil_6_6 (Soil)</title><rect x="1250" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1272" y="1572" width="156" height="156"/>
+<text x="1350" y="1810" font-size="46" text-anchor="middle">Soil_6_6</text></g>
+<g class="d-node" data-name="Soil_7_6"><title>Soil_7_6 (Soil)</title><rect x="1500" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1522" y="1572" width="156" height="156"/>
+<text x="1600" y="1810" font-size="46" text-anchor="middle">Soil_7_6</text></g>
+<g class="d-node" data-name="Soil_8_6"><title>Soil_8_6 (Soil)</title><rect x="1750" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="1772" y="1572" width="156" height="156"/>
+<text x="1850" y="1810" font-size="46" text-anchor="middle">Soil_8_6</text></g>
+<g class="d-node" data-name="Water_table"><title>Water_table (fixed_head)</title><rect x="875" y="1800" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="897" y="1822" width="156" height="156"/>
+<text x="975" y="2060" font-size="46" text-anchor="middle">Water_table</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>50</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Furrow'><summary><span class='cname'>Furrow</span><span class='ctype'>Catchment</span><span class='crole'><p>Half of a 0.5 m wide irrigation furrow, seen in cross-section (the model uses the symmetry plane through the furrow centre as its left edge). It starts with 0.1 m of water over its 0.25 m² footprint per metre of furrow length (25 L), which is the only water added. It is a Catchment block with no outlet; the Manning coefficient is required by the block type but unused.</p></span></summary><div class='cbody'><p class=type-help><b>Catchment:</b> Catchment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.03</td><td></td><td>The Manning&#x27;s roughness coefficient representing surface resistance to flow. Typical values vary by land cover type.</td></tr><tr><td>Catchment area</td><td class='v'>0.25</td><td>m<sup>2</sup></td><td>Total horizontal surface area of the catchment. Used to compute initial storage and flow-related parameters.</td></tr><tr><td>Average water depth</td><td class='v'>0.1</td><td>m</td><td>The initial depth of the standing water before the simulation start time. Most of the times, this value is zero</td></tr><tr><td>Mean elevation of the catchment</td><td class='v'>0</td><td>m</td><td>The elevation of the centroid of the catchment based on the model datum.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Soil-1-1'><summary><span class='cname'>48 × Soil</span><span class='ctype'>Soil · unsaturated_soil</span><span class='crole'><p>48 loam cells in 8 columns and 6 rows, named Soil_column_row (Soil_1_1 is under the furrow at the surface, Soil_8_6 is at the far bottom corner). Each is 0.25 m wide, 0.2 m tall and 1 m deep into the page. Loam van Genuchten parameters from Carsel and Parrish (1988). The initial moisture is in hydrostatic equilibrium with the water table, from θ = 0.228 in the top row to θ = 0.375 in the bottom row.</p></span></summary><div class='cbody'><p class='members'>Soil_1_1, Soil_2_1, Soil_3_1, Soil_4_1, Soil_5_1, Soil_6_1, Soil_7_1, Soil_8_1 …</p><p class='muted'>Showing properties of <b>Soil_1_1</b>.</p><p class=type-help><b>Soil:</b> Variably Saturated Soil Block</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Saturated Hydraulic Conductivity</td><td class='v'>0.25</td><td>m/day</td><td>Saturated Hydraulc Conductivity</td></tr><tr><td>Van Genuchten&#x27;s alpha parameter</td><td class='v'>3.6</td><td>1/m</td><td>Van Genuchten&#x27;s alpha parameter</td></tr><tr><td>Bottom Area of the soil block</td><td class='v'>0.25</td><td>m<sup>2</sup></td><td>Bottom Area of the soil block</td></tr><tr><td>Bottom Elevation of the soil block</td><td class='v'>-0.2</td><td>m</td><td>Bottom Elevation of the soil block</td></tr><tr><td>Depth of the soil block</td><td class='v'>0.2</td><td>m</td><td>Depth of the soil block</td></tr><tr><td>Van Genuchten&#x27;s n parameter</td><td class='v'>1.56</td><td></td><td>Van Genuchten&#x27;s n parameter</td></tr><tr><td>Specific storage</td><td class='v'>0.01</td><td>1/m</td><td>Specific storage</td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.2278</td><td></td><td>Initial Moisture Content; Moisture Content</td></tr><tr><td>Residual Moisture Content</td><td class='v'>0.078</td><td></td><td>Residual Moisture Content</td></tr><tr><td>Saturated Moisture Content</td><td class='v'>0.43</td><td></td><td>Saturated Moisture Content</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Water-table'><summary><span class='cname'>Water_table</span><span class='ctype'>fixed_head</span><span class='crole'><p>A fixed water table at −1.2 m elevation, the base of the domain.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Head</td><td class='v'>-1.2</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>91</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Furrow-infiltration'><summary><span class='cname'>Furrow_infiltration</span><span class='ctype'>surfacewater_to_soil_link · unsaturated_soil</span><span class='crole'><p>Moves ponded water from the furrow into Soil_1_1. Positive downward.</p></span></summary><div class='cbody'><p class=type-help><b>surfacewater_to_soil_link:</b> Surfacewater to soil connector</p></div></details>
+<details class='comp' id='c-H-12-1'><summary><span class='cname'>42 × soil_to_soil_H_link</span><span class='ctype'>soil_to_soil_H_link · unsaturated_soil</span><span class='crole'><p>35 horizontal links between neighbouring cells in the same row (named H_12_1 for columns 1 to 2 in row 1, and so on). Face area 0.2 m² (cell height × 1 m), length 0.25 m. Positive from the lower-numbered to the higher-numbered column, i.e. away from the furrow.</p></span></summary><div class='cbody'><p class='members'>H_12_1, H_23_1, H_34_1, H_45_1, H_56_1, H_67_1, H_78_1, H_12_2 …</p><p class='muted'>Showing properties of <b>H_12_1</b>.</p><p class=type-help><b>soil_to_soil_H_link:</b> Horizontal soil to soil connector</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Interface area</td><td class='v'>0.2</td><td>m<sup>2</sup></td><td>Interface area</td></tr><tr><td>Length</td><td class='v'>0.25</td><td>m</td><td>Length</td></tr></tbody></table></div></details>
+<details class='comp' id='c-V-1-12'><summary><span class='cname'>40 × soil_to_soil_link</span><span class='ctype'>soil_to_soil_link · unsaturated_soil</span><span class='crole'><p>40 vertical links between neighbouring cells in the same column (named V_1_12 for rows 1 to 2 in column 1, and so on). Positive downward.</p></span></summary><div class='cbody'><p class='members'>V_1_12, V_2_12, V_3_12, V_4_12, V_5_12, V_6_12, V_7_12, V_8_12 …</p><p class='muted'>Showing properties of <b>V_1_12</b>.</p><p class=type-help><b>soil_to_soil_link:</b> Vertical soil to soil connector</p></div></details>
+<details class='comp' id='c-WT-1'><summary><span class='cname'>8 × soil_to_fixedhead_link</span><span class='ctype'>soil_to_fixedhead_link · unsaturated_soil</span><span class='crole'><p>Eight links (WT_1 to WT_8) from the bottom row to the water table. Positive downward (recharge).</p></span></summary><div class='cbody'><p class='members'>WT_1, WT_2, WT_3, WT_4, WT_5, WT_6, WT_7, WT_8</p><p class='muted'>Showing properties of <b>WT_1</b>.</p><p class=type-help><b>soil_to_fixedhead_link:</b> Soil to fixed head connector</p></div></details>
+</div></section>
+
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>5</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>5</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>0.0001</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Water in the furrow' loading='lazy'><figcaption><b>Water in the furrow</b> The furrow drains in about 6 hours. Infiltration is fastest at the start, when the soil below is driest.</figcaption></figure><figure><img src='plot_2.png' alt='Lateral spreading in the top row' loading='lazy'><figcaption><b>Lateral spreading in the top row</b> Water spreads sideways from the furrow by capillarity alone. The front arrives later and weaker in each successive column, and the soil beyond 1 m is barely touched.</figcaption></figure><figure><img src='plot_3.png' alt='Downward movement under the furrow' loading='lazy'><figcaption><b>Downward movement under the furrow</b> Under the furrow the wetting front moves down and dampens with depth. The shallow cells drain back as the water moves deeper and outward.</figcaption></figure><figure><img src='plot_4.png' alt='Recharge to the water table' loading='lazy'><figcaption><b>Recharge to the water table</b> Recharge starts about a day after irrigation and is spread over a wider strip than the furrow, because the water has moved sideways on its way down.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/soil-2d">View source on GitHub</a>.</div></footer>
+</body></html>

@@ -72,7 +72,7 @@ plots:
       - {column: "Corn_soil_stress", label: "Soil stress index, Σβα"}
       - {column: "Corn_compensation_factor", label: "Compensation factor"}
     xlabel: Time (serial date, 40269 = 1 April 2010)
-    caption: Stress appears only in dry spells and never drops below 0.70. Whenever it does, the compensation factor rises to keep total uptake at the potential rate.
+    caption: Stress appears in dry spells, with a minimum of 0.70 in early July, and the compensation factor rises in step to keep total uptake at the potential rate. The brief dip on the last day is the waterlogging limb of the Feddes function, after heavy rain saturates the topsoil.
   - title: Exchange with the water table
     ylabel: Flow (m³/day)
     series:
@@ -132,7 +132,7 @@ with c the `compensation` switch (1 here). The crop obtains Σβα from averages
 - **Canopy and roots.** LAI rises from 0 at planting to 5.0 on 1 July and falls to 0.5 at harvest, and the rooting depth grows from 0.2 m to 1.2 m by 1 July. On 17 May (LAI 2.6, Z_r = 0.71 m) the cover fraction is 0.79. On 16 July (LAI 4.2, Z_r = 1.2 m) it is 0.92, and the instantaneous mid-afternoon T_p reaches 15 mm/day.
 - **Root fractions that move downward.** The topsoil holds all of the roots at planting, 0.50 of them on 17 May and 0.33 from July onward, when the four fractions are 0.33, 0.33, 0.28 and 0.06. Their sum stays at 1.000000 throughout, while the roots grow.
 - **Seasonal water balance.** Over the six months the crop transpires 839 mm, which is the full potential amount: compensation keeps actual uptake equal to T_p. Daily T_p is about 4 mm at the end of April, 6 to 7 mm in June and July and 4 mm in late September. The rain supplies 497 mm. The rest comes from 360 mm of capillary rise from the water table, while profile storage ends 19 mm higher than it started. By layer, uptake is 329 mm from the topsoil, 283 mm from the upper subsoil, 196 mm from the lower subsoil and 31 mm from the deep subsoil.
-- **Stress is mild and is compensated.** The soil stress index falls below one in dry spells, to a minimum of 0.70 on 9 July. At the same time the compensation factor reaches 1.43, shifting uptake towards the wetter deep layers.
+- **Stress is mild and is compensated.** The soil stress index falls below one in dry spells, to a minimum of 0.70 on 9 July, when the topsoil reaches θ = 0.11. At the same time the compensation factor reaches 1.43, shifting uptake towards the wetter deep layers. A last, short dip on 30 September comes from the opposite end of the Feddes function: 135 mm of rain in the final week nearly saturates the topsoil, and uptake from it is reduced for lack of oxygen.
 - **Capillary rise.** The wet initial profile drains for about three weeks, then the water table starts to supply water (from 21 April). Through the summer about 3 mm/day rises into the profile.
 - **Compensation on and off.** In `crop_root_uptake_compensation.ohq`, at the end of the 135-day drought: the compensated crop is still transpiring at its full 21.9 m³/day, but its soil stress index is 0.062, its compensation factor is 16, and 99.5% of its uptake comes from the deepest layer. Its profile is drawn down to θ = 0.100, 0.100 and 0.112. The uncompensated crop transpires only 12.4 m³/day (57% of potential) with θ = 0.106, 0.139 and 0.182 still in its profile, because most of its roots sit in layers that have dried. Over the run the compensated crop transpires 664 mm and the uncompensated one 614 mm.
 

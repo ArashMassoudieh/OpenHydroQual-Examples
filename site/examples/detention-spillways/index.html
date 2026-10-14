@@ -30,7 +30,7 @@
   <nav class="toc"><b>On this page</b>
     <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
     <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
-    
+    <a href="#results">Results</a>
   </nav>
 </aside>
 <article class="ex-body">
@@ -152,7 +152,7 @@
 </div></section>
 <section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>inflow.csv</code></td><td><p>Synthetic inflow hydrograph: time (day), inflow (m³/day), at 5-minute spacing. Two SCS-type (gamma-shaped) hydrographs with a 45-minute time to peak: a 2.0 m³/s peak starting at 6 h (7,200 m³) and a 5.0 m³/s peak starting at 36 h (18,000 m³).</p></td></tr></tbody></table></section>
 <section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>3</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>1</td></tr></tbody></table></section>
-
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Inflow and outflow through each outlet' loading='lazy'><figcaption><b>Inflow and outflow through each outlet</b> The first storm passes through the orifice and the riser weir only. In the second, the riser flattens at its conduit capacity (1.35 m³/s = 116,600 m³/day) and the emergency spillway takes the excess near the peak.</figcaption></figure><figure><img src='plot_2.png' alt='Pond water level' loading='lazy'><figcaption><b>Pond water level</b> The level rises above the riser crest (101.5 m) in both storms and above the emergency spillway crest (102.2 m) only in the second. Between and after the storms the orifice draws the pond down to its centre (100.125 m).</figcaption></figure><figure><img src='plot_3.png' alt='Stored volume' loading='lazy'><figcaption><b>Stored volume</b> Storage peaks at about 4,800 m³ in the first storm and 9,200 m³ in the second, at the moment the total outflow equals the inflow.</figcaption></figure></section>
 </article></main>
 <footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
 <a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/detention-spillways">View source on GitHub</a>.</div></footer>
