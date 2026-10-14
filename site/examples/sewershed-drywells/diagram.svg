@@ -383,8 +383,8 @@
 <g class="d-node" data-name="Pond"><title>Pond (Pond)</title><rect x="0" y="495" width="200" height="200" rx="16"/>
 <image href="icons/stormwaterpond.png" x="22" y="517" width="156" height="156"/>
 <text x="100" y="797" font-size="78" text-anchor="middle">Pond</text></g>
-<g class="d-node" data-name="Overflow"><title>Overflow (Pond)</title><rect x="0" y="60" width="200" height="200" rx="16"/>
-<image href="icons/stormwaterpond.png" x="22" y="82" width="156" height="156"/>
+<g class="d-node" data-name="Overflow"><title>Overflow (fixed_head)</title><rect x="0" y="60" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="22" y="82" width="156" height="156"/>
 <text x="100" y="362" font-size="78" text-anchor="middle">Overflow</text></g>
 <g class="d-node" data-name="Drywell"><title>Drywell (Well)</title><rect x="0" y="1450" width="200" height="2000" rx="16"/>
 <image href="icons/Well.png" x="22" y="2372" width="156" height="156"/>
@@ -788,7 +788,7 @@
 <g class="d-node" data-name="L13_R10"><title>L13_R10 (Soil)</title><rect x="3200" y="3970" width="200" height="110" rx="9"/>
 <image href="icons/Soil.png" x="3257" y="3982" width="86" height="86"/>
 <text x="3300" y="4182" font-size="78" text-anchor="middle">L13_R10</text></g>
-<g class="d-node" data-name="Water_Table"><title>Water_Table (Pond)</title><rect x="0" y="4240" width="3400" height="100" rx="8"/>
-<image href="icons/stormwaterpond.png" x="1661" y="4251" width="78" height="78"/>
+<g class="d-node" data-name="Water_Table"><title>Water_Table (fixed_head)</title><rect x="0" y="4240" width="3400" height="100" rx="8"/>
+<image href="icons/fixedhead.png" x="1661" y="4251" width="78" height="78"/>
 <text x="1700" y="4442" font-size="78" text-anchor="middle">Water_Table</text></g>
 </svg>

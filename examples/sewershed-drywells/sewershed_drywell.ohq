@@ -39,7 +39,7 @@ create block;type=Sewerchannelsegment,name=Sewer_07,x=800,y=660,_width=200,_heig
 create block;type=Catchment,name=Catch_06,x=400,y=990,_width=200,_height=200,area=4986.94[m~^2],Width=89.8246[m],Slope=0.015,ManningCoeff=0.2,depression_storage=0[m],Runoff_coeff=1,loss_coefficient=0[1/day],elevation=0[m],depth=0[m],Precipitation=Rain,Pollutant_surface:external_source=Buildup,Pollutant_surface:concentration=1[g/m~^2],Washoff:exponent_of_depth=2,Washoff:release_coefficient=1
 create block;type=Sewerchannelsegment,name=Sewer_06,x=400,y=660,_width=200,_height=200,diameter=0.9144[m],length=9.16[m],bottom_elevation=2.37[m],ManningCoeff=0.1,depth=0[m]
 create block;type=Pond,name=Pond,x=0,y=495,_width=200,_height=200,alpha=86.061,beta=2.766,bottom_elevation=0[m],Storage=0[m~^3]
-create block;type=Pond,name=Overflow,x=0,y=60,_width=200,_height=200,alpha=1e+08,beta=1,bottom_elevation=-1[m],Storage=0[m~^3]
+create block;type=fixed_head,name=Overflow,x=0,y=60,_width=200,_height=200,head=0[m],Storage=100000[m~^3]
 create block;type=Well,name=Drywell,x=0,y=1450,_width=200,_height=2000,diameter=2[m],bottom_elevation=-41.95[m],depth=0[m]
 create block;type=Soil,name=L01_R01,x=320,y=1450,_width=200,_height=110,area=8.96471[m~^2],depth=4.2[m],bottom_elevation=-4.2[m],K_sat_original=0.07[m/day],K_sat_scale_factor=40,alpha=2.49[1/m],n=1.1689,theta_sat=0.392,theta_res=0.001,theta=0.2,specific_storage=0.001[1/m],Evapotranspiration=Soil_ET
 create block;type=Soil,name=L01_R02,x=640,y=1450,_width=200,_height=110,area=18.4499[m~^2],depth=4.2[m],bottom_elevation=-4.2[m],K_sat_original=0.07[m/day],K_sat_scale_factor=40,alpha=2.49[1/m],n=1.1689,theta_sat=0.392,theta_res=0.001,theta=0.2,specific_storage=0.001[1/m],Evapotranspiration=Soil_ET
@@ -174,7 +174,7 @@ create block;type=Soil,name=L13_R07,x=2240,y=3970,_width=200,_height=110,area=21
 create block;type=Soil,name=L13_R08,x=2560,y=3970,_width=200,_height=110,area=328.788[m~^2],depth=10.46[m],bottom_elevation=-70.28[m],K_sat_original=0.000276[m/day],K_sat_scale_factor=40,alpha=4.3[1/m],n=1.5206,theta_sat=0.366,theta_res=0.001,theta=0.2,specific_storage=0.001[1/m]
 create block;type=Soil,name=L13_R09,x=2880,y=3970,_width=200,_height=110,area=493.309[m~^2],depth=10.46[m],bottom_elevation=-70.28[m],K_sat_original=0.000276[m/day],K_sat_scale_factor=40,alpha=4.3[1/m],n=1.5206,theta_sat=0.366,theta_res=0.001,theta=0.2,specific_storage=0.001[1/m]
 create block;type=Soil,name=L13_R10,x=3200,y=3970,_width=200,_height=110,area=734.189[m~^2],depth=10.46[m],bottom_elevation=-70.28[m],K_sat_original=0.000276[m/day],K_sat_scale_factor=40,alpha=4.3[1/m],n=1.5206,theta_sat=0.366,theta_res=0.001,theta=0.2,specific_storage=0.001[1/m]
-create block;type=Pond,name=Water_Table,x=0,y=4240,_width=3400,_height=100,alpha=1e+08,beta=1,bottom_elevation=-70.28[m],Storage=0[m~^3]
+create block;type=fixed_head,name=Water_Table,x=0,y=4240,_width=3400,_height=100,head=-70.28[m],Storage=100000[m~^3]
 create link;type=Catchment_link,from=Catch_05,to=Sewer_05,name=Runoff_05
 create link;type=Catchment_link,from=Catch_04,to=Sewer_04,name=Runoff_04
 create link;type=Catchment_link,from=Catch_03,to=Sewer_03,name=Runoff_03

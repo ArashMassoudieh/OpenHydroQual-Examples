@@ -18,9 +18,9 @@ components:
   Catchment: "13 paved sub-catchments, Catch_01 to Catch_13 (2,600 to 33,300 m², 11.3 ha in total), each draining along one sewer segment (overland flow width equal to the segment length, slope 0.015, Manning n = 0.2, no depression storage, no infiltration)."
   Sewerchannelsegment: "13 segments of 0.914 m (36 inch) storm sewer, 9 to 116 m long, Manning n = 0.1, in two lines: Sewer_05 to Sewer_01 (inverts 7.5 to 2.2 m) and Sewer_13 to Sewer_06 (inverts 10.7 to 2.4 m)."
   Pond: "Infiltration pond receiving both sewer lines. Stage-storage S = 86.06·d^2.766: 519 m³ and about 750 m² of water surface at the 1.914 m spillway crest. It drains into the drywell, into the soil beneath it and over its spillway."
-  Overflow: "Very large, flat reservoir (bottom −1 m) that collects the spillway overflow, so its storage and pollutant mass are the cumulative volume and load leaving the site."
+  Overflow: "Fixed-head boundary (0 m) that receives the spillway overflow and carries it off site. The spillway flow depends only on the pond level, so this head does not affect the result."
   Drywell: "Drywell 2 m in diameter and 41.95 m deep (bottom at −41.95 m), starting empty. Water leaves through its wall into the ten soil layers it penetrates and through its bottom."
-  Water_Table: "Very large, flat reservoir with its bottom at −70.28 m. It holds the water table at −70.28 m and records the cumulative recharge (volume and pollutant mass) that reaches it."
+  Water_Table: "Fixed-head boundary at −70.28 m: the regional water table at the base of the soil grid."
   Soil: "133 van Genuchten soil cells in an axisymmetric grid around the drywell: 13 layers (L01 to L13) by 10 rings (R01 to R10, outer radii 1.96 to 26.0 m) plus a column under the well (R00, layers 11 to 13 only). Cell Lii_Rjj is layer ii of ring jj. Layer properties are listed in the table under How it works."
   Catchment_link: "Kinematic sheet flow from each catchment into its sewer segment."
   Sewer2Sewer_link: "Manning flow between consecutive sewer segments, driven by the head difference."
@@ -78,13 +78,19 @@ plots:
     series:
       - {column: "Catch_04_Pollutant_surface:concentration", label: "Catch_04"}
     caption: "The first storm washes off nearly all of the accumulated 1 g/m². Between storms the load rebuilds at 0.01 g/m²/day, so the later, larger storms carry much less pollutant."
-  - title: Where the pollutant goes
+  - title: Pollutant load into and out of the pond
+    ylabel: Load (g/day)
+    series:
+      - {column: "Outfall_01_Pollutant:masstransfer", label: "Sewer line 1 (outfall 01)"}
+      - {column: "Outfall_06_Pollutant:masstransfer", label: "Sewer line 2 (outfall 06)"}
+      - {column: "Overflow_weir_Pollutant:masstransfer", label: "Over the spillway"}
+    caption: "The first flush (day 4) delivers up to 150 kg/day per sewer line and none of it spills. The spillway carries 10.5 kg off site, 9.8 kg of it in the third storm."
+  - title: Pollutant stored in the drywell and the pond
     ylabel: Mass (g)
     series:
-      - {column: "Overflow_Pollutant:mass", label: "Left over the spillway (cumulative)"}
       - {column: "Drywell_Pollutant:mass", label: "In the drywell"}
       - {column: "Pond_Pollutant:mass", label: "In the pond"}
-    caption: "The first flush goes into the drywell and, through the pond floor and the drywell wall, into the soil (121 kg by the end, not plotted). The spillway carries 10.5 kg off site, mostly in the third storm."
+    caption: "The first flush fills the drywell with 12.8 kg of pollutant, which then moves into the surrounding soil (121 kg are in the soil by the end, not plotted)."
 ---
 
 ## What this model represents
@@ -155,7 +161,7 @@ with L_s the surface load and d the water depth on the surface. With k_washoff =
 - **The drywell saturates its surroundings.** In the first storm (day 4) the empty drywell takes 940 m³/day and fills to 39 m within a day. The ring-1 cells beside it saturate in hours. Almost all of the drywell's outflow goes into layer 9, the only permeable stratum it reaches (510 m³ over the run, against 10 to 60 m³ for each of the tight layers). The well then drains slowly and is still 14 m deep a week later.
 - **Back-flow into the well.** Layers 1 and 2 are wetted from above by infiltration through the pond floor. Once their pressure head is positive they drain back into the drywell (about 570 m³ over the run, shown by the negative injection in those layers). The drywell is then partly a conduit that carries water from the shallow soil down to layer 9.
 - **The pond becomes perched.** Pond infiltration saturates layers 1 and 2, but layer 3 (K_sat = 0.011 m/day) lets water through at only about 20 m³/day across the 2,120 m² grid. From the 30 mm storm on day 11, the pond stays near its crest and the drywell stays full, so the 61 mm storm of days 17 to 19 mostly overflows: 6,420 m³ (55 % of the inflow over the whole run, almost all of it in that storm) leaves over the spillway. Floor infiltration takes 4,490 m³ (38 %) and the drywell only 300 m³ (3 %).
-- **First flush.** The first storm washes almost all of the initial 113 kg of surface pollutant off the catchments; the sewer outfalls carry up to 150 kg/day and the pond concentration exceeds 100 g/m³. This load arrives while the pond and drywell still have room: by day 5, 83 kg have entered the soil under the pond and around the drywell and 12.7 kg are in the drywell. Only 10.5 kg (8 % of the 138 kg supplied, including build-up) leaves over the spillway, mostly in the third storm, which washes off the 5 to 6 kg rebuilt since the first storm together with pollutant left in the pond. The pollutant mass balance closes: at the end 121 kg are in the soil, 1.9 kg in the drywell and 1.2 kg in the pond.
+- **First flush.** The first storm washes almost all of the initial 113 kg of surface pollutant off the catchments; the sewer outfalls carry up to 150 kg/day and the pond concentration exceeds 100 g/m³. This load arrives while the pond and drywell still have room: by day 5, 83 kg have entered the soil under the pond and around the drywell and 12.7 kg are in the drywell. Only 10.5 kg (8 % of the 138 kg supplied, including build-up) leaves over the spillway, mostly in the third storm, which washes off the 5 to 6 kg rebuilt since the first storm together with pollutant left in the pond. The pollutant mass balance closes to 0.03 %: at the end 121 kg are in the soil, 1.9 kg in the drywell, 1.2 kg in the pond and 3.1 kg still on or over the catchments, and 10.5 kg have left over the spillway.
 - **Nothing reaches the water table yet.** Only 3.7 m³ of water and practically no pollutant reach −70 m in 22 days; this drainage comes from the initial moisture of the deep layers. Travel times through the tight layers are years.
 
 ## Assumptions and limitations
@@ -165,7 +171,6 @@ with L_s the surface load and d the water depth on the surface. With k_washoff =
 - **Pond infiltration area.** Each pond-to-soil link uses the smaller of the pond surface and the ring area. Summed over the ten rings this exceeds the actual pond surface (at the crest, 2,120 m² against about 750 m²), so floor infiltration is overestimated while the pond is shallow.
 - **Closed outer boundary.** No water leaves the grid sideways beyond 26 m. Lateral spreading in layer 9 is therefore limited, which keeps the drywell full longer than in an unbounded formation.
 - **Uniform initial moisture.** All cells start at θ = 0.2, which is not in equilibrium with the layering; the deep layers drain slowly during the run.
-- **Water table and overflow as reservoirs.** Both boundaries are very large reservoirs whose level does not change appreciably; they act as fixed heads and record cumulative volume and pollutant mass.
 - **Paved catchments.** All catchment area is impervious and connected; there is no pervious area or interception.
 - **Generic pollutant.** The pollutant is conservative and dissolved; no sorption to soil, decay or particle settling in the pond.
 - **Evapotranspiration** uses incoming shortwave radiation without albedo or long-wave losses, which overestimates the radiation term.
