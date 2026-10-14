@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 65 1870 741" class="ohq-diagram" style="max-width:935px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Mixed_liquor_1"><title>Mixed_liquor_1 (Fixed flow)</title><path d="M300.0 300.0 L350.0 300.0 L400.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Mixed_liquor_2"><title>Mixed_liquor_2 (Fixed flow)</title><path d="M600.0 300.0 L650.0 300.0 L700.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Mixed_liquor_3"><title>Mixed_liquor_3 (Fixed flow)</title><path d="M900.0 300.0 L950.0 300.0 L1000.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="To_clarifier"><title>To_clarifier (Fixed flow)</title><path d="M1200.0 300.0 L1250.0 300.0 L1300.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Clarified_effluent"><title>Clarified_effluent (Effluent flow)</title><path d="M1500.0 300.0 L1575.0 300.0 L1650.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Return_sludge"><title>Return_sludge (Sludge flow)</title><path d="M1300.0 250.0 Q800.0 0.0 300.0 250.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(800.0 125.0) rotate(180.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Waste_sludge_pump"><title>Waste_sludge_pump (Sludge flow)</title><path d="M1500.0 385.7 L1575.0 450.0 L1650.0 514.3" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Aeration_1"><title>Aeration_1 (Reactor)</title><rect x="100" y="200" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="122" y="222" width="156" height="156"/>
+<text x="200" y="435" font-size="27" text-anchor="middle">Aeration_1</text></g>
+<g class="d-node" data-name="Aeration_2"><title>Aeration_2 (Reactor)</title><rect x="400" y="200" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="422" y="222" width="156" height="156"/>
+<text x="500" y="435" font-size="27" text-anchor="middle">Aeration_2</text></g>
+<g class="d-node" data-name="Aeration_3"><title>Aeration_3 (Reactor)</title><rect x="700" y="200" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="722" y="222" width="156" height="156"/>
+<text x="800" y="435" font-size="27" text-anchor="middle">Aeration_3</text></g>
+<g class="d-node" data-name="Aeration_4"><title>Aeration_4 (Reactor)</title><rect x="1000" y="200" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="1022" y="222" width="156" height="156"/>
+<text x="1100" y="435" font-size="27" text-anchor="middle">Aeration_4</text></g>
+<g class="d-node composite" data-name="Clarifier"><title>Clarifier (Clarifier)</title><rect x="1300" y="200" width="200" height="200" rx="16"/>
+<image href="icons/clarifier.png" x="1322" y="222" width="156" height="156"/>
+<text x="1400" y="435" font-size="27" text-anchor="middle">Clarifier</text></g>
+<g class="d-node" data-name="Effluent"><title>Effluent (Reactor)</title><rect x="1650" y="200" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="1672" y="222" width="156" height="156"/>
+<text x="1750" y="435" font-size="27" text-anchor="middle">Effluent</text></g>
+<g class="d-node" data-name="Waste_sludge"><title>Waste_sludge (Reactor)</title><rect x="1650" y="500" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="1672" y="522" width="156" height="156"/>
+<text x="1750" y="735" font-size="27" text-anchor="middle">Waste_sludge</text></g>
+</svg>

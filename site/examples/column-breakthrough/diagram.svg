@@ -4,17 +4,17 @@
 <g class="d-link" data-name="Flow_02"><title>Flow_02 (Time-Dependent flow)</title><path d="M300.0 490.0 L300.0 515.0 L300.0 540.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Flow_03"><title>Flow_03 (Time-Dependent flow)</title><path d="M300.0 660.0 L300.0 685.0 L300.0 710.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Flow_04"><title>Flow_04 (Time-Dependent flow)</title><path d="M300.0 830.0 L300.0 855.0 L300.0 880.0" marker-mid="url(#arr)"/></g>
-<g class="d-link" data-name="Flow_05"><title>Flow_05 (Time-Dependent flow)</title><path d="M330.9 880.0 L475.0 600.0 L619.1 320.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_05"><title>Flow_05 (Time-Dependent flow)</title><path d="M292.7 880.0 Q243.8 481.0 550.0 314.4"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(332.6 539.1) rotate(-65.5) scale(1.6)"/></g>
 <g class="d-link" data-name="Flow_06"><title>Flow_06 (Time-Dependent flow)</title><path d="M650.0 320.0 L650.0 345.0 L650.0 370.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Flow_07"><title>Flow_07 (Time-Dependent flow)</title><path d="M650.0 490.0 L650.0 515.0 L650.0 540.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Flow_08"><title>Flow_08 (Time-Dependent flow)</title><path d="M650.0 660.0 L650.0 685.0 L650.0 710.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Flow_09"><title>Flow_09 (Time-Dependent flow)</title><path d="M650.0 830.0 L650.0 855.0 L650.0 880.0" marker-mid="url(#arr)"/></g>
-<g class="d-link" data-name="Flow_10"><title>Flow_10 (Time-Dependent flow)</title><path d="M680.9 880.0 L825.0 600.0 L969.1 320.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_10"><title>Flow_10 (Time-Dependent flow)</title><path d="M642.7 880.0 Q593.8 481.0 900.0 314.4"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(682.6 539.1) rotate(-65.5) scale(1.6)"/></g>
 <g class="d-link" data-name="Flow_11"><title>Flow_11 (Time-Dependent flow)</title><path d="M1000.0 320.0 L1000.0 345.0 L1000.0 370.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Flow_12"><title>Flow_12 (Time-Dependent flow)</title><path d="M1000.0 490.0 L1000.0 515.0 L1000.0 540.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Flow_13"><title>Flow_13 (Time-Dependent flow)</title><path d="M1000.0 660.0 L1000.0 685.0 L1000.0 710.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Flow_14"><title>Flow_14 (Time-Dependent flow)</title><path d="M1000.0 830.0 L1000.0 855.0 L1000.0 880.0" marker-mid="url(#arr)"/></g>
-<g class="d-link" data-name="Flow_15"><title>Flow_15 (Time-Dependent flow)</title><path d="M1030.9 880.0 L1175.0 600.0 L1319.1 320.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_15"><title>Flow_15 (Time-Dependent flow)</title><path d="M992.7 880.0 Q943.8 481.0 1250.0 314.4"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1032.6 539.1) rotate(-65.5) scale(1.6)"/></g>
 <g class="d-link" data-name="Flow_16"><title>Flow_16 (Time-Dependent flow)</title><path d="M1350.0 320.0 L1350.0 345.0 L1350.0 370.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Flow_17"><title>Flow_17 (Time-Dependent flow)</title><path d="M1350.0 490.0 L1350.0 515.0 L1350.0 540.0" marker-mid="url(#arr)"/></g>
 <g class="d-link" data-name="Flow_18"><title>Flow_18 (Time-Dependent flow)</title><path d="M1350.0 660.0 L1350.0 685.0 L1350.0 710.0" marker-mid="url(#arr)"/></g>

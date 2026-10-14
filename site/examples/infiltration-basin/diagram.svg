@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="140 -60 1370 2566" class="ohq-diagram" style="max-width:685px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Runoff"><title>Runoff (Catchment_link)</title><path d="M400.0 100.0 L550.0 100.0 L700.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Overflow"><title>Overflow (wier)</title><path d="M900.0 100.0 L1075.0 100.0 L1250.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Infiltration"><title>Infiltration (surfacewater_to_soil_link)</title><path d="M800.0 200.0 L800.0 225.0 L800.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vadose_01_to_02"><title>Vadose_01_to_02 (soil_to_soil_link)</title><path d="M800.0 400.0 L800.0 425.0 L800.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vadose_02_to_03"><title>Vadose_02_to_03 (soil_to_soil_link)</title><path d="M800.0 600.0 L800.0 625.0 L800.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vadose_03_to_04"><title>Vadose_03_to_04 (soil_to_soil_link)</title><path d="M800.0 800.0 L800.0 825.0 L800.0 850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vadose_04_to_05"><title>Vadose_04_to_05 (soil_to_soil_link)</title><path d="M800.0 1000.0 L800.0 1025.0 L800.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vadose_05_to_06"><title>Vadose_05_to_06 (soil_to_soil_link)</title><path d="M800.0 1200.0 L800.0 1225.0 L800.0 1250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vadose_06_to_07"><title>Vadose_06_to_07 (soil_to_soil_link)</title><path d="M800.0 1400.0 L800.0 1425.0 L800.0 1450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vadose_07_to_08"><title>Vadose_07_to_08 (soil_to_soil_link)</title><path d="M800.0 1600.0 L800.0 1625.0 L800.0 1650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vadose_08_to_09"><title>Vadose_08_to_09 (soil_to_soil_link)</title><path d="M800.0 1800.0 L800.0 1825.0 L800.0 1850.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vadose_09_to_10"><title>Vadose_09_to_10 (soil_to_soil_link)</title><path d="M800.0 2000.0 L800.0 2025.0 L800.0 2050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Recharge"><title>Recharge (soil_to_fixedhead_link)</title><path d="M800.0 2200.0 L800.0 2225.0 L800.0 2250.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Paved_Catchment"><title>Paved_Catchment (Catchment)</title><rect x="200" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="222" y="22" width="156" height="156"/>
+<text x="300" y="240" font-size="30" text-anchor="middle">Paved_Catchment</text></g>
+<g class="d-node" data-name="Basin"><title>Basin (Pond)</title><rect x="700" y="0" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="722" y="22" width="156" height="156"/>
+<text x="800" y="240" font-size="30" text-anchor="middle">Basin</text></g>
+<g class="d-node" data-name="Downstream_Swale"><title>Downstream_Swale (fixed_head)</title><rect x="1250" y="0" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1272" y="22" width="156" height="156"/>
+<text x="1350" y="240" font-size="30" text-anchor="middle">Downstream_Swale</text></g>
+<g class="d-node" data-name="Vadose_01"><title>Vadose_01 (Soil)</title><rect x="700" y="250" width="200" height="150" rx="12"/>
+<image href="icons/Soil.png" x="742" y="266" width="117" height="117"/>
+<text x="800" y="440" font-size="30" text-anchor="middle">Vadose_01</text></g>
+<g class="d-node" data-name="Vadose_02"><title>Vadose_02 (Soil)</title><rect x="700" y="450" width="200" height="150" rx="12"/>
+<image href="icons/Soil.png" x="742" y="466" width="117" height="117"/>
+<text x="800" y="640" font-size="30" text-anchor="middle">Vadose_02</text></g>
+<g class="d-node" data-name="Vadose_03"><title>Vadose_03 (Soil)</title><rect x="700" y="650" width="200" height="150" rx="12"/>
+<image href="icons/Soil.png" x="742" y="666" width="117" height="117"/>
+<text x="800" y="840" font-size="30" text-anchor="middle">Vadose_03</text></g>
+<g class="d-node" data-name="Vadose_04"><title>Vadose_04 (Soil)</title><rect x="700" y="850" width="200" height="150" rx="12"/>
+<image href="icons/Soil.png" x="742" y="866" width="117" height="117"/>
+<text x="800" y="1040" font-size="30" text-anchor="middle">Vadose_04</text></g>
+<g class="d-node" data-name="Vadose_05"><title>Vadose_05 (Soil)</title><rect x="700" y="1050" width="200" height="150" rx="12"/>
+<image href="icons/Soil.png" x="742" y="1066" width="117" height="117"/>
+<text x="800" y="1240" font-size="30" text-anchor="middle">Vadose_05</text></g>
+<g class="d-node" data-name="Vadose_06"><title>Vadose_06 (Soil)</title><rect x="700" y="1250" width="200" height="150" rx="12"/>
+<image href="icons/Soil.png" x="742" y="1266" width="117" height="117"/>
+<text x="800" y="1440" font-size="30" text-anchor="middle">Vadose_06</text></g>
+<g class="d-node" data-name="Vadose_07"><title>Vadose_07 (Soil)</title><rect x="700" y="1450" width="200" height="150" rx="12"/>
+<image href="icons/Soil.png" x="742" y="1466" width="117" height="117"/>
+<text x="800" y="1640" font-size="30" text-anchor="middle">Vadose_07</text></g>
+<g class="d-node" data-name="Vadose_08"><title>Vadose_08 (Soil)</title><rect x="700" y="1650" width="200" height="150" rx="12"/>
+<image href="icons/Soil.png" x="742" y="1666" width="117" height="117"/>
+<text x="800" y="1840" font-size="30" text-anchor="middle">Vadose_08</text></g>
+<g class="d-node" data-name="Vadose_09"><title>Vadose_09 (Soil)</title><rect x="700" y="1850" width="200" height="150" rx="12"/>
+<image href="icons/Soil.png" x="742" y="1866" width="117" height="117"/>
+<text x="800" y="2040" font-size="30" text-anchor="middle">Vadose_09</text></g>
+<g class="d-node" data-name="Vadose_10"><title>Vadose_10 (Soil)</title><rect x="700" y="2050" width="200" height="150" rx="12"/>
+<image href="icons/Soil.png" x="742" y="2066" width="117" height="117"/>
+<text x="800" y="2240" font-size="30" text-anchor="middle">Vadose_10</text></g>
+<g class="d-node" data-name="Water_Table"><title>Water_Table (fixed_head)</title><rect x="700" y="2250" width="200" height="150" rx="12"/>
+<image href="icons/fixedhead.png" x="742" y="2266" width="117" height="117"/>
+<text x="800" y="2440" font-size="30" text-anchor="middle">Water_Table</text></g>
+</svg>

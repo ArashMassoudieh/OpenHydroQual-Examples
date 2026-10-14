@@ -83,11 +83,11 @@ S_s is an ordinary dissolved `Constituent` and passes through the clarifier with
 
 ## What to look for in the results
 
-- **Start-up.** In the first half day the mixed liquor drops from 1000 to about 870 g/m³ while the empty lower compartment of the clarifier fills with settled sludge. From then on the biomass grows, reaching 90% of its final value after about 10 days and 2200 g/m³ by day 40. The time scale is set by the sludge age.
+- **Start-up.** In the first 5 hours the mixed liquor in Aeration_4 drops from 1000 to about 820 g/m³ while the empty lower compartment of the clarifier fills with settled sludge. From then on the biomass grows, reaching 85% of its final value by day 10 and 2200 g/m³ by day 40. The time scale is set by the sludge age.
 - **Thickening.** The underflow is about 6400 g/m³, 2.9 times the mixed-liquor concentration. By mass balance on the clarifier, X_underflow ≈ (1500·X_ml − 990·X_effluent)/510.
 - **Substrate profile.** In Aeration_1 the substrate is diluted by the return flow and quickly consumed, giving 4.7 g/m³. It falls to 0.43 g/m³ in Aeration_2 and reaches the floor S_s* = 0.30 g/m³ in Aeration_3 and 4, which is also the effluent concentration. Removal of soluble substrate is 99.8%.
 - **Effluent solids.** The effluent carries 22 g/m³ of biomass COD. This is a quarter of the solids leaving the system each day, so effluent quality also affects the sludge age.
-- **Process control.** Increasing the waste flow lowers the sludge age and the mixed-liquor concentration; decreasing it does the opposite. The effluent substrate hardly changes, because it is pinned at S_s* as long as the sludge age is well above its washout value (about 1/(Y·μ_max − b) = 0.43 day).
+- **Process control.** Increasing the waste flow lowers the sludge age and the mixed-liquor concentration; decreasing it does the opposite. The effluent substrate hardly changes, because it is pinned at S_s* as long as the sludge age is well above its washout value (roughly 1/(Y·μ_max − b), about half a day).
 
 ## Assumptions and limitations
 

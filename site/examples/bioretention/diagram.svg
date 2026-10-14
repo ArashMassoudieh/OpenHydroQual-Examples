@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="140 -60 1370 2166" class="ohq-diagram" style="max-width:685px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Runoff"><title>Runoff (Catchment_link)</title><path d="M400.0 100.0 L550.0 100.0 L700.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Overflow"><title>Overflow (wier)</title><path d="M900.0 200.0 L1075.0 375.0 L1250.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Infiltration"><title>Infiltration (surfacewater_to_soil_link)</title><path d="M800.0 200.0 L800.0 250.0 L800.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Media_1_to_2"><title>Media_1_to_2 (soil_to_soil_link)</title><path d="M800.0 500.0 L800.0 525.0 L800.0 550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Media_2_to_3"><title>Media_2_to_3 (soil_to_soil_link)</title><path d="M800.0 750.0 L800.0 775.0 L800.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Media_to_Gravel"><title>Media_to_Gravel (soil_to_aggregate_link)</title><path d="M800.0 1000.0 L800.0 1025.0 L800.0 1050.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Underdrain"><title>Underdrain (Sewer_pipe)</title><path d="M900.0 1059.1 L1075.0 900.0 L1250.0 740.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Exfiltration"><title>Exfiltration (aggregate_to_soil_link)</title><path d="M800.0 1250.0 L800.0 1275.0 L800.0 1300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Native_1_to_2"><title>Native_1_to_2 (soil_to_soil_link)</title><path d="M800.0 1500.0 L800.0 1525.0 L800.0 1550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Recharge"><title>Recharge (soil_to_fixedhead_link)</title><path d="M800.0 1750.0 L800.0 1775.0 L800.0 1800.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Parking_Area"><title>Parking_Area (Catchment)</title><rect x="200" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="222" y="22" width="156" height="156"/>
+<text x="300" y="240" font-size="30" text-anchor="middle">Parking_Area</text></g>
+<g class="d-node" data-name="Ponding_Zone"><title>Ponding_Zone (Pond)</title><rect x="700" y="0" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="722" y="22" width="156" height="156"/>
+<text x="800" y="240" font-size="30" text-anchor="middle">Ponding_Zone</text></g>
+<g class="d-node" data-name="Media_1"><title>Media_1 (Soil)</title><rect x="700" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="722" y="322" width="156" height="156"/>
+<text x="800" y="540" font-size="30" text-anchor="middle">Media_1</text></g>
+<g class="d-node" data-name="Media_2"><title>Media_2 (Soil)</title><rect x="700" y="550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="722" y="572" width="156" height="156"/>
+<text x="800" y="790" font-size="30" text-anchor="middle">Media_2</text></g>
+<g class="d-node" data-name="Media_3"><title>Media_3 (Soil)</title><rect x="700" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="722" y="822" width="156" height="156"/>
+<text x="800" y="1040" font-size="30" text-anchor="middle">Media_3</text></g>
+<g class="d-node" data-name="Gravel_Storage"><title>Gravel_Storage (Aggregate_storage_layer)</title><rect x="700" y="1050" width="200" height="200" rx="16"/>
+<image href="icons/aggregates.png" x="722" y="1072" width="156" height="156"/>
+<text x="800" y="1290" font-size="30" text-anchor="middle">Gravel_Storage</text></g>
+<g class="d-node" data-name="Native_Soil_1"><title>Native_Soil_1 (Soil)</title><rect x="700" y="1300" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="722" y="1322" width="156" height="156"/>
+<text x="800" y="1540" font-size="30" text-anchor="middle">Native_Soil_1</text></g>
+<g class="d-node" data-name="Native_Soil_2"><title>Native_Soil_2 (Soil)</title><rect x="700" y="1550" width="200" height="200" rx="16"/>
+<image href="icons/Soil.png" x="722" y="1572" width="156" height="156"/>
+<text x="800" y="1790" font-size="30" text-anchor="middle">Native_Soil_2</text></g>
+<g class="d-node" data-name="Water_Table"><title>Water_Table (fixed_head)</title><rect x="700" y="1800" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="722" y="1822" width="156" height="156"/>
+<text x="800" y="2040" font-size="30" text-anchor="middle">Water_Table</text></g>
+<g class="d-node" data-name="Storm_Sewer"><title>Storm_Sewer (fixed_head)</title><rect x="1250" y="550" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1272" y="572" width="156" height="156"/>
+<text x="1350" y="790" font-size="30" text-anchor="middle">Storm_Sewer</text></g>
+</svg>

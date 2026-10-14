@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Physics-Informed Data-Driven Hydrology · OpenHydroQual Examples</title>
+<meta name="description" content="A rainfall-to-streamflow model for a 1 km² catchment built from generic storage units connected by links that move water down the difference of a latent &quot;potential&quot;. Driven by one year of measured daily rainfall (BWI airport, 2010). The structure conserves mass exactly; the shapes and parameters are meant to be learned from data.">
+<meta name="keywords" content="data driven, machine learning, physics informed, physics guided, hybrid model, grey box, latent variable, potential, power law, nonlinear reservoir, storage unit, conceptual model, rainfall runoff, streamflow, baseflow, quickflow, network model, mass conservation, calibration, parameter estimation">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#3a6fb0">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Watershed Hydrology</div>
+<h1>Physics-Informed Data-Driven Hydrology</h1>
+<p class="lede">A rainfall-to-streamflow model for a 1 km² catchment built from generic storage units connected by links that move water down the difference of a latent &quot;potential&quot;. Driven by one year of measured daily rainfall (BWI airport, 2010). The structure conserves mass exactly; the shapes and parameters are meant to be learned from data.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class='f'></b><span>Advanced</span></span><a class='plug' href='../../?plugin=physicsbaseddatadrivenhydrology'>physicsbaseddatadrivenhydrology</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/data-driven-hydrology.zip" download>Download model (.zip)</a>
+    <div class="muted">8 KB · 2 files · open <code>storage_unit_model.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>Data-driven streamflow models (neural networks and other regressions) can fit hydrographs well but are free to create or destroy water. Conceptual models conserve water but fix the shape of every storage–discharge relation in advance. The <code>physicsbaseddatadrivenhydrology</code> plugin sits between the two. It provides generic storage units, each with a <strong>latent variable</strong> (a generalized potential computed from its storage), and one kind of link that moves water from higher to lower potential. Any network of these units conserves mass exactly, and the shapes of the potentials and the link conductances are parameters to be learned from rainfall and streamflow records. This is the sense in which the approach is "physics-informed": mass balance and down-gradient flow are imposed, and the rest is fitted.</p>
+<p>This example builds the smallest useful network for a 1 km² catchment: a fast store and a slow store that both drain to an outlet. It is driven by one year of measured daily rainfall (2010, Baltimore/Washington International Airport, Maryland). Its parameters were set by hand to give a plausible humid-region hydrograph. There is no observed streamflow in this example, so the model is not trained; it shows what the building blocks compute and how the network behaves, as a starting point for calibration.</p>
+<h2>How it works</h2>
+<p><strong>Links.</strong> Every link computes</p>
+<p>Q = T · (φ_from − φ_to)</p>
+<p>where T is the link's <code>Mean_Transmissivity</code> and φ the latent variables of the two ends. Flow is positive from <code>from</code> to <code>to</code> and reverses when the potential difference does. Here φ is dimensionless and T has units of m³/day per unit potential. (The plugin labels T as m²/day, which matches only if φ is a length such as a head.)</p>
+<p><strong>Fast store (<code>Storage Unit</code>).</strong> With storage S, capacity C and fill ratio r = S/C, its latent variable is</p>
+<p>φ = s · r/(1 − r) − 0.0001/r</p>
+<p>with scale factor s = 1. The first term rises without bound as the store approaches its capacity, so outflow grows as fast as needed and the store never overfills: a smooth form of saturation-excess behavior. The second term goes to −∞ as the store empties, so links reverse and refill it before it can go dry. Rainfall enters directly:</p>
+<p>dS/dt = c_P · P(t) − Σ Q_out</p>
+<p>where P is the rainfall rate in <code>rainfall.csv</code> (m/day) and c_P the <code>Precipitation_coefficient</code>. Here c_P = 400,000 m²: 40% of the 1 km² catchment. The plugin has no evapotranspiration, so c_P acts both as the unit conversion from depth to volume and as an effective-rainfall factor that absorbs all losses (mainly evapotranspiration). In a calibration it would be one of the fitted parameters.</p>
+<p><strong>Slow store (<code>Storage Unit (Power-law)</code>).</strong> Its latent variable is</p>
+<p>φ = a · S^b</p>
+<p>with a = 2×10⁻¹¹ and b = 2. Draining to an outlet at φ = 0 through a link of transmissivity T, it is a nonlinear reservoir Q = T·a·S^b. With b = 2 the recession is fast at high storage and slows as the store empties. At the initial 50,000 m³, baseflow is 500 m³/day and the local recession rate dQ/dS is 0.02 1/day (a 50-day time scale). With b = 1 it would be a linear reservoir.</p>
+<p><strong>Outlet (<code>Fixed Latent Variable Unit</code>).</strong> Its latent variable is fixed (0 here) and it accepts any amount of water, like a fixed-head boundary.</p>
+<p><strong>Network.</strong> Rainfall → <code>Soil_store</code> → (<code>Direct_runoff</code>) → <code>Stream</code>, and <code>Soil_store</code> → (<code>Percolation</code>) → <code>Groundwater_store</code> → (<code>Baseflow</code>) → <code>Stream</code>. Because percolation is driven by φ_soil − φ_gw, it reverses whenever the fast store is drier, in potential terms, than the slow store: a simple representation of capillary rise or exchange in both directions.</p>
+<p><strong>Time stepping.</strong> The rainfall is an ordinary time series, not a precipitation source, so the setting <code>timestep_clamp_series = All time series</code> is used to make the solver stop at every change in rainfall. With the default (precipitation sources only) the solver can step across the start or end of a rain day and the rain actually applied differs from the record by about 1.5%.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Two time scales.</strong> Direct runoff rises within hours of rain and falls back within a few days. Baseflow changes over weeks. Between storms, flow is 400 to 1500 m³/day; on 30 September (118 mm of rain) it peaks at 18,800 m³/day.</li>
+<li><strong>Saturation behavior.</strong> The fast store reaches 85% of capacity in the September storm. Because its potential grows as r/(1 − r), its outflows (direct runoff and percolation) jump by an order of magnitude when it is nearly full, and stay small otherwise.</li>
+<li><strong>Reversal.</strong> For 13% of the year the fast store's potential is below the slow store's, and percolation runs upward (1,600 m³ in total, compared with 179,000 m³ downward).</li>
+<li><strong>Seasonality from storage.</strong> Monthly baseflow is lowest in May and June (11 mm) and highest in October (25 mm) after the September storms refill the slow store.</li>
+<li><strong>Water balance.</strong> Effective rainfall is 345,200 m³ (40% of 863 mm over 1 km²). Streamflow is 358,200 m³ (174,000 m³ direct runoff, 184,000 m³ baseflow); the stores lost 13,000 m³ over the year. The residual is about 30 m³ (0.01%).</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The model is not calibrated. The parameters (capacity, scale factor, power-law coefficient and exponent, three transmissivities, precipitation coefficient and initial storages) are illustrative. In practice they are estimated from a rainfall–streamflow record with the calibration tools (see the Calibration and Uncertainty track).</li>
+<li>There is no evapotranspiration. All losses are folded into a constant precipitation coefficient, so the model cannot represent seasonal changes in the runoff ratio caused by evaporation.</li>
+<li>The latent variables are abstract potentials, not measurable heads. Only their differences matter, and only together with the transmissivities.</li>
+<li>The plugin's unit labels are not consistent with this usage: transmissivity is labeled m²/day, and the power-law store's storage is labeled in m while it is used here as a volume in m³. The numbers in this model are consistent among themselves (m³ and m³/day throughout).</li>
+<li>Daily rainfall is applied uniformly through each day, so sub-daily peaks are smoothed.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 770 766" class="ohq-diagram" style="max-width:385px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Direct_runoff"><title>Direct_runoff (storage_unit_link)</title><path d="M200.0 144.4 L325.0 200.0 L450.0 255.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Percolation"><title>Percolation (storage_unit_link)</title><path d="M100.0 200.0 L100.0 300.0 L100.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Baseflow"><title>Baseflow (storage_unit_link)</title><path d="M200.0 455.6 L325.0 400.0 L450.0 344.4" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Soil_store"><title>Soil_store (Storage Unit)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/StorageUnit.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="222" font-size="17" text-anchor="middle">Soil_store</text></g>
+<g class="d-node" data-name="Groundwater_store"><title>Groundwater_store (Storage Unit (Power-law))</title><rect x="0" y="400" width="200" height="200" rx="16"/>
+<image href="icons/StorageUnitPowerLaw.png" x="22" y="422" width="156" height="156"/>
+<text x="100" y="622" font-size="17" text-anchor="middle">Groundwater_store</text></g>
+<g class="d-node" data-name="Stream"><title>Stream (Fixed Latent Variable Unit)</title><rect x="450" y="200" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="472" y="222" width="156" height="156"/>
+<text x="550" y="422" font-size="17" text-anchor="middle">Stream</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>3</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Soil-store'><summary><span class='cname'>Soil_store</span><span class='ctype'>Storage Unit · physicsbaseddatadrivenhydrology</span><span class='crole'><p>Fast store (<code>Storage Unit</code>) with a capacity of 30,000 m³ (30 mm over 1 km²), starting 30% full. Receives the effective rainfall. Its latent variable rises steeply as it fills, so it sheds water quickly in wet periods.</p></span></summary><div class='cbody'><p class=type-help><b>Storage Unit:</b> Storage Unit</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Capacity</td><td class='v'>30000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Initial storage ratio</td><td class='v'>0.3</td><td></td><td></td></tr><tr><td>Precipitation</td><td class='v'>rainfall.csv</td><td></td><td></td></tr><tr><td>Precipitation coefficient</td><td class='v'>400000</td><td></td><td></td></tr><tr><td>Scale factor</td><td class='v'>1</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Groundwater-store'><summary><span class='cname'>Groundwater_store</span><span class='ctype'>Storage Unit (Power-law) · physicsbaseddatadrivenhydrology</span><span class='crole'><p>Slow store (<code>Storage Unit (Power-law)</code>) starting at 50,000 m³. Its latent variable is 2×10⁻¹¹·S², a quadratic function of storage, so it drains as a nonlinear reservoir.</p></span></summary><div class='cbody'><p class=type-help><b>Storage Unit (Power-law):</b> Storage Unit</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>50000</td><td>m</td><td></td></tr><tr><td>Coefficient</td><td class='v'>2e-11</td><td></td><td></td></tr><tr><td>Exponent</td><td class='v'>2</td><td></td><td></td></tr><tr><td>Precipitation coefficient</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Stream'><summary><span class='cname'>Stream</span><span class='ctype'>Fixed Latent Variable Unit · physicsbaseddatadrivenhydrology</span><span class='crole'><p>Outlet (<code>Fixed Latent Variable Unit</code>) with its latent variable fixed at 0. Its storage starts at zero and accumulates all streamflow.</p></span></summary><div class='cbody'><p class=type-help><b>Fixed Latent Variable Unit:</b> Fixed Latent Variable Unit</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Latent variable</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>3</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Direct-runoff'><summary><span class='cname'>Direct_runoff</span><span class='ctype'>storage_unit_link · physicsbaseddatadrivenhydrology</span><span class='crole'><p>Link from the fast store to the stream, transmissivity 3000. Carries the quick response to rain.</p></span></summary><div class='cbody'><p class=type-help><b>storage_unit_link:</b> Storage Unit Link</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Mean Transmissivity</td><td class='v'>3000</td><td>m<sup>2</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Percolation'><summary><span class='cname'>Percolation</span><span class='ctype'>storage_unit_link · physicsbaseddatadrivenhydrology</span><span class='crole'><p>Link from the fast store to the slow store, transmissivity 4500. Normally downward; it reverses when the slow store has the higher latent variable.</p></span></summary><div class='cbody'><p class=type-help><b>storage_unit_link:</b> Storage Unit Link</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Mean Transmissivity</td><td class='v'>4500</td><td>m<sup>2</sup>/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Baseflow'><summary><span class='cname'>Baseflow</span><span class='ctype'>storage_unit_link · physicsbaseddatadrivenhydrology</span><span class='crole'><p>Link from the slow store to the stream, transmissivity 10,000. Carries the slow, sustained flow.</p></span></summary><div class='cbody'><p class=type-help><b>storage_unit_link:</b> Storage Unit Link</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Mean Transmissivity</td><td class='v'>10000</td><td>m<sup>2</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>rainfall.csv</code></td><td><p>Daily rainfall (m/day) versus time (days from 1 January 2010) for 2010, aggregated from NOAA hourly precipitation at Baltimore/Washington International Airport (BWI), Maryland (US public domain). Each day is written as a step (two points, at the start and just before the end of the day). Two columns, no header. Total 863 mm.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>365</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Rainfall' loading='lazy'><figcaption><b>Rainfall</b> The measured forcing. The largest day (118 mm) is 30 September, near day 272.</figcaption></figure><figure><img src='plot_2.png' alt='Streamflow and its two paths' loading='lazy'><figcaption><b>Streamflow and its two paths</b> Direct runoff makes the storm peaks; baseflow is a smooth, delayed signal. Over the year each carries about half of the water.</figcaption></figure><figure><img src='plot_3.png' alt='Latent variables' loading='lazy'><figcaption><b>Latent variables</b> The water moves down these potentials. The fast store&#x27;s potential spikes in storms; when it drops below the slow store&#x27;s potential, percolation reverses.</figcaption></figure><figure><img src='plot_4.png' alt='Store contents' loading='lazy'><figcaption><b>Store contents</b> The fast store fills and empties within days; the slow store integrates the whole season.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/data-driven-hydrology">View source on GitHub</a>.</div></footer>
+</body></html>

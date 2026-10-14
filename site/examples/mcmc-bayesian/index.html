@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bayesian Calibration with MCMC · OpenHydroQual Examples</title>
+<meta name="description" content="A first-order degradation test in a batch microcosm, calibrated with Markov chain Monte Carlo. The run returns posterior distributions of the rate constant, the initial concentration and the error standard deviation, and a prediction band that widens beyond the last measurement.">
+<meta name="keywords" content="mcmc, bayesian, markov chain monte carlo, metropolis, metropolis hastings, adaptive mcmc, posterior, prior, credible interval, prediction interval, uncertainty, realizations, likelihood, first order decay, biodegradation, half life, microcosm, OHQ-MCMC">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#b8417e">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Calibration &amp; Uncertainty</div>
+<h1>Bayesian Calibration with MCMC</h1>
+<p class="lede">A first-order degradation test in a batch microcosm, calibrated with Markov chain Monte Carlo. The run returns posterior distributions of the rate constant, the initial concentration and the error standard deviation, and a prediction band that widens beyond the last measurement.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class='f'></b><span>Advanced</span></span><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/mcmc-bayesian.zip" download>Download model (.zip)</a>
+    <div class="muted">385 KB · 2 files · open <code>batch_decay_mcmc.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A microcosm test measures how fast a contaminant degrades: a sample of water or slurry is sealed in a vessel and its concentration is measured over a few days. The result usually feeds a prediction, for example the time for a plume to fall below a cleanup level. A single best-fit rate constant hides how uncertain that prediction is. Bayesian calibration with <strong>Markov chain Monte Carlo (MCMC)</strong> gives the full joint distribution of the parameters given the data, and from it a range of predictions.</p>
+<p>The model is deliberately simple: one closed reactor, one constituent, first-order decay. The "observed" data were made from the exact solution at known values (C₀ = 10 g/m³, k = 0.35 1/day) with 10% multiplicative noise, so the posterior can be checked against the truth. Twelve samples over six days is a typical laboratory record, and the question is what it says about the concentration after 15 days.</p>
+<h2>How it works</h2>
+<h3>The model</h3>
+<p>The microcosm is a Reactor block of fixed volume V = 0.2 m³ with no flow. The reaction <code>Biodegradation</code> has rate k·C and stoichiometric coefficient −1, so</p>
+<p>d(V·C)/dt = −V·k·C,  C(0) = C₀</p>
+<p>whose solution is C(t) = C₀·exp(−k·t). Three model quantities are calibrated through <strong>Parameter</strong> objects bound with <code>setasparameter</code>: <code>p_k</code> drives the <code>base_value</code> of the reaction parameter <code>k</code>, <code>p_C0</code> drives the initial <code>Contaminant:concentration</code> of the block, and <code>p_sigma</code> drives the observation's <code>error_standard_deviation</code>.</p>
+<p>The solver step is held at 0.01 day (<code>max_timestep_increase_factor = 1</code>). With the default growth factor of 50 the step reaches 0.5 day, and the computed curve then differs from the exact solution by up to about 10% (at t = 1 day), which is larger than the measurement noise and would bias the estimates.</p>
+<h3>Likelihood and priors</h3>
+<p>The observation uses <code>error_structure = log-normal</code>, so residuals are taken between log concentrations. With n = 12 points:</p>
+<p>−ln L = n·[ MSE/(2σ²) + ln σ ],  MSE = (1/n) Σ (ln oᵢ − ln mᵢ)²</p>
+<p>This is the same likelihood that the genetic algorithm and Levenberg-Marquardt use. Because σ is a parameter here, its estimate is part of the posterior, and so is its uncertainty.</p>
+<p>Each Parameter's <code>low</code> and <code>high</code> define its prior. For <code>normal</code> the prior is a normal distribution with mean (low + high)/2 and standard deviation (high − low)/4; for <code>log-normal</code> it is log-normal with geometric mean √(low·high) and log standard deviation ln(high/low)/4. In both cases <code>low</code> and <code>high</code> are the 2.5% and 97.5% points of the prior, not hard bounds. (The <code>uniform</code> prior, also available, is bounded.) The priors here are wide: for k they span three orders of magnitude.</p>
+<h3>The sampler</h3>
+<p>OpenHydroQual runs several Metropolis-Hastings chains in parallel. Each step, every chain proposes a new parameter set from its current one, runs the model and accepts the proposal with probability min(1, p_new/p_old), where</p>
+<p>ln p = Σ ln prior(θᵢ) − (−ln L) + Σ_{log-normal i} ln θᵢ</p>
+<p>The last term is the Hastings correction for proposals made in log space, which is how parameters with a <code>log-normal</code> prior are perturbed. A rejected proposal repeats the current state. Two proposal types are used in one run:</p>
+<ul>
+<li><strong>Diagonal (start of the run).</strong> Each parameter is perturbed independently, by a normal step in log space for log-normal priors or in linear space otherwise. The step is <code>initual_purturbation_factor</code> (0.05) times the prior's range, and every 50 rounds it is divided by <code>purturbation_change_scale</code> (0.75) if the acceptance rate exceeded <code>acceptance_rate</code> (0.25) and multiplied by it otherwise.</li>
+<li><strong>Covariance-adapted.</strong> Once <code>covariance_min_samples</code> (500) samples beyond the burn-in exist, the proposal becomes a correlated step drawn from the empirical covariance of the samples so far (in log space for log-normal parameters), scaled by 2.38/√d for d = 3 parameters. It is refreshed every <code>covariance_update_interval</code> (800) samples. This lets the chains move along the ridge where k and C₀ trade off.</li>
+</ul>
+<p>The chains start from the Parameter <code>value</code> fields: the first chain exactly there, the others scattered around it (<code>initial_purturbation = Yes</code>). Sample counts are totals over all chains: <code>number_of_samples = 4800</code> with 8 chains is 600 steps per chain, and <code>number_of_burnout_samples = 1600</code> discards the first 200 steps of each chain.</p>
+<p>After sampling, <code>number_of_post_estimate_realizations = 200</code> parameter sets are drawn at random from the post-burn-in samples and the model is run for each. The 2.5%, 50% and 97.5% points of these runs at each time form the prediction band. The realizations are model curves only; they show the effect of parameter uncertainty, not the scatter of a future measurement.</p>
+<h3>Running</h3>
+<p>In the interface, press <strong>MCMC parameter estimation</strong>. Headless:</p>
+<pre><code>OHQ-MCMC batch_decay_mcmc.ohq results/
+</code></pre>
+<p>The run writes <code>mcmc.txt</code> (every recorded sample: index, parameters, log posterior), <code>posterior_percentiles.txt</code>, <code>Posterior_distributions.txt</code> (histogram densities), <code>Realizations_Concentration.txt</code> (one column per realization), <code>Predicted_95p_BracketConcentration.txt</code> (mean, 2.5%, 50% and 97.5% at each time), and a forward run at the posterior medians. The run below took 4.3 minutes on two threads. The settings in the file are kept small so that the example runs quickly. For a production run, increase <code>number_of_samples</code> to at least 5000 per chain (40 000 for 8 chains), keep the burn-in at 20 to 30%, use 500 or more realizations, and confirm that independent chains agree (for example with the Gelman-Rubin R̂ below 1.05).</p>
+<h2>What to look for in the results</h2>
+<p><img alt="Trace of the eight chains for each parameter. The shaded part is discarded as burn-in; the dashed line is the true value." src="results/traces.png" /></p>
+<ul>
+<li><strong>Burn-in.</strong> The chains start at k ≈ 1 1/day and C₀ ≈ 6 g/m³, far from the data. Within about 50 steps k settles near 0.36; C₀ and σ take longer because the diagonal proposal moves them in small, often rejected steps. After step 263 the covariance-adapted proposal takes over and the chains mix visibly faster. The Gelman-Rubin R̂ of the post-burn-in samples is 1.01 for k and C₀ and 1.04 for σ, adequate for a demonstration but a sign that a longer run is needed for reported numbers.</li>
+</ul>
+<p><img alt="Posterior histograms (bars), prior densities (dotted), the Levenberg-Marquardt Gaussian approximation (orange) and the true values (dashed)." src="results/posteriors.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th style="text-align: right;">Truth</th>
+<th style="text-align: right;">Posterior median</th>
+<th>95% credible interval</th>
+<th>LM estimate (95% interval)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>k (1/day)</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.366</td>
+<td>0.333 to 0.388</td>
+<td>0.364 (0.343 to 0.386)</td>
+</tr>
+<tr>
+<td>C₀ (g/m³)</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">10.62</td>
+<td>9.50 to 11.68</td>
+<td>10.62 (9.80 to 11.45)</td>
+</tr>
+<tr>
+<td>σ (log units)</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.077</td>
+<td>0.053 to 0.129</td>
+<td>0.064 (profiled)</td>
+</tr>
+</tbody>
+</table>
+<p>The credible intervals are computed from the 2816 post-burn-in samples in <code>mcmc.txt</code>. The LM column is a separate run of <code>OHQ-LM</code> on the same file.</p>
+<ul>
+<li><strong>The data dominate the priors.</strong> The posteriors are narrow compared with the priors, which are nearly flat over the plotted range. All three intervals contain the true values.</li>
+<li><strong>MCMC and LM agree on k and C₀.</strong> For this nearly linear problem (log C is linear in ln C₀ and k) the posterior is close to the Gaussian that LM derives from its Jacobian. The MCMC intervals are somewhat wider because they also account for the uncertainty in σ, which LM fixes at its best value.</li>
+<li><strong>σ is skewed.</strong> With 12 points, the error standard deviation is poorly determined and its posterior has a long upper tail. Its median (0.077) lies above the maximum-likelihood value (0.064), which is biased low for small samples.</li>
+<li><strong>k and C₀ are correlated</strong> (correlation 0.87 in the samples). A higher starting concentration can be offset by faster decay. Reporting the two marginal intervals separately understates how well their combination, the concentration within the measured period, is known.</li>
+</ul>
+<p><img alt="Posterior median and 95% band from 200 realizations, with the observations and the true curve. Log scale." src="results/prediction_band.png" /></p>
+<ul>
+<li><strong>The band widens outside the data.</strong> At day 3 the 95% band spans a factor of 1.09 (3.39 to 3.71 g/m³). At day 15, nine days after the last sample, it spans a factor of 2.0 (0.035 to 0.070 g/m³), because the uncertainty in k is multiplied by t in the exponent. The true value at day 15 (0.052 g/m³) lies inside it.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The model is exact first-order decay in a closed, well-mixed vessel. Real microcosms can show lag phases, substrate limitation or sorption, which this model cannot represent; with real data the posterior describes the parameters of this model, not of the real system.</li>
+<li>The noise is independent and log-normal with a constant σ, and that is the error model assumed in the likelihood. Serially correlated errors from dense sensor records need the AR1 error model (see that example).</li>
+<li>The sampler adapts its step size throughout the run, including after burn-in. Strictly, an adaptive sampler only converges to the posterior when the adaptation dies out; with long runs the effect is small, but it is another reason to use long runs for reported results.</li>
+<li>The prediction band contains parameter uncertainty only. A band for a future measurement would also include the observation noise σ, which here is about ±15% (two standard deviations in log units).</li>
+<li>In this run <code>mcmc.txt</code> holds 4408 of the 4800 samples, because the file is written in blocks of 50 rounds and the last partial block was not written. <code>posterior_percentiles.txt</code> is computed from the samples held in memory and agrees with the table above to within sampling noise.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="340 240 320 366" class="ohq-diagram" style="max-width:160px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-node" data-name="Microcosm"><title>Microcosm (Reactor)</title><rect x="400" y="300" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="422" y="322" width="156" height="156"/>
+<text x="500" y="518" font-size="14" text-anchor="middle">Microcosm</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>1</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Microcosm'><summary><span class='cname'>Microcosm</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A closed, well-mixed 0.2 m³ vessel (no inflow or outflow) in which the contaminant degrades. Its initial contaminant concentration is a calibrated parameter (p_C0).</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Contaminant: Concentration</td><td class='v'>6</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Initial Storage</td><td class='v'>0.2</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>1</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-Contaminant'><summary><span class='cname'>Contaminant</span><span class='ctype'>Constituent</span><span class='crole'><p>A dissolved organic contaminant, for example a fuel hydrocarbon in a biodegradation microcosm.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/s</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>1</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-k'><summary><span class='cname'>k</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>First-order degradation rate constant (1/day). Its value is set by the calibrated parameter p_k.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reactions <small>1</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-Biodegradation'><summary><span class='cname'>Biodegradation</span><span class='ctype'>Reaction</span><span class='crole'><p>First-order loss of the contaminant, rate k·C.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k*Contaminant)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Contaminant</td><td class='v'>-1</td></tr></tbody></table></div></div></details>
+</div>
+<h3>Model parameters <small>3</small></h3><p class='kind-blurb'>Quantities flagged for estimation, with their search ranges or priors.</p><div class='comp-list'>
+<details class='comp' id='c-p-k'><summary><span class='cname'>p_k</span><span class='ctype'>Parameter</span><span class='crole'><p>Rate constant. Log-normal prior with 95% of its mass between 0.01 and 10 1/day. Chains start near 1 1/day; the value used to make the data was 0.35 1/day.</p></span></summary><div class='cbody'><p class=type-help><b>Parameter:</b> Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Lower Limit</td><td class='v'>0.01</td><td></td><td></td></tr><tr><td>Upper Limit</td><td class='v'>10</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Prior distribution</td><td class='v'>log-normal</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-p-C0'><summary><span class='cname'>p_C0</span><span class='ctype'>Parameter</span><span class='crole'><p>Initial concentration (g/m³). Normal prior with 95% of its mass between 2 and 20 g/m³. Chains start near 6 g/m³; truth 10 g/m³.</p></span></summary><div class='cbody'><p class=type-help><b>Parameter:</b> Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Lower Limit</td><td class='v'>2</td><td></td><td></td></tr><tr><td>Upper Limit</td><td class='v'>20</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>6</td><td></td><td></td></tr><tr><td>Prior distribution</td><td class='v'>normal</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-p-sigma'><summary><span class='cname'>p_sigma</span><span class='ctype'>Parameter</span><span class='crole'><p>Standard deviation of the log residuals (about a relative error). Log-normal prior with 95% of its mass between 0.01 and 1. Start 0.3; truth 0.1.</p></span></summary><div class='cbody'><p class=type-help><b>Parameter:</b> Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Lower Limit</td><td class='v'>0.01</td><td></td><td></td></tr><tr><td>Upper Limit</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.3</td><td></td><td></td></tr><tr><td>Prior distribution</td><td class='v'>log-normal</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Observations <small>1</small></h3><p class='kind-blurb'>Model outputs that are recorded and, when data are supplied, compared with measurements.</p><div class='comp-list'>
+<details class='comp' id='c-Concentration'><summary><span class='cname'>Concentration</span><span class='ctype'>Observation</span><span class='crole'><p>Observation of the contaminant concentration (g/m³) compared with observed_concentration.csv under a log-normal error model. Its error standard deviation is the calibrated parameter p_sigma.</p></span></summary><div class='cbody'><p class=type-help><b>Observation:</b> Observation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>Contaminant:concentration</td><td></td><td>Expression evaluated on the chosen object at each output time step. Typically a single state variable (e.g. &#x27;Storage&#x27;) or a derived quantity (e.g. &#x27;Storage/Area&#x27;). The result becomes the modeled value compared against observed data.</td></tr><tr><td>Error probability distribution</td><td class='v'>log-normal</td><td></td><td>Distribution assumed for the residual between modeled and observed values. &#x27;normal&#x27; compares values directly; &#x27;log-normal&#x27; compares the logs (suitable for strictly positive quantities spanning multiple orders of magnitude, e.g. concentrations or flows).</td></tr><tr><td>Error standard deviation</td><td class='v'>0.3</td><td></td><td>Standard deviation of the residual under the chosen error structure. For &#x27;normal&#x27; errors, units match the observed quantity; for &#x27;log-normal&#x27; errors, this is the standard deviation of log-residuals. May be set per-observation or pushed in at runtime from a Truth Twin metadata sidecar.</td></tr><tr><td>Comparison Method</td><td class='v'>Least Squared</td><td></td><td>How modeled and observed series are compared. &#x27;Least Squared&#x27; uses standard sum of squared residuals (negative log-likelihood for normal/log-normal errors). &#x27;Similarity&#x27; compares autocorrelation structure and value distribution (Kolmogorov-Smirnov), useful when point-by-point matching is not meaningful. &#x27;Weighted Least Squared&#x27; applies a temporal kernel that downweights older observations, suited for streaming data assimilation where recent measurements should dominate. &#x27;EMC&#x27; compares event mean concentrations: for each event window in the EMC events file the modeled expression is weighted by the EMC weighting expression (e.g. flow) and averaged over the event, then compared with the observed value time-stamped within that window.</td></tr><tr><td>Observed data time series</td><td class='v'>observed_concentration.csv</td><td></td><td>Measured time series to compare the modeled output against. Used by all comparison methods. May be loaded from a file or pushed in at runtime by an external assimilation driver.</td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>observed_concentration.csv</code></td><td><p>Synthetic measured concentration (g/m³) versus time (days): 12 samples every 0.5 days from day 0.5 to day 6, made from C = 10·exp(−0.35 t) with 10% multiplicative log-normal noise (random seed 20261013). Two columns, no header.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>15</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>100</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>1e-06</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Concentration at the chains&#x27; starting point' loading='lazy'><figcaption><b>Concentration at the chains&#x27; starting point</b> The downloaded model runs at the parameters&#x27; starting values, which are deliberately poor. The chains start here; the posterior and the prediction band are shown in the text.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/mcmc-bayesian">View source on GitHub</a>.</div></footer>
+</body></html>

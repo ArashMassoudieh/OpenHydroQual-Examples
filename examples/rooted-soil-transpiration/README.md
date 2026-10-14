@@ -25,11 +25,11 @@ components:
   Percolation_lower: Flow between the middle and lower layers. Positive downward.
   Deep_drainage: Exchange between the bottom layer and the water table. Positive downward (drainage); negative means the water table is supplying the profile by capillary rise.
 inputs:
-  rainfall_2010.txt: "Measured rainfall for 2010 in the precipitation format: interval start (day), interval end (day), depth (m) in the interval. Times are spreadsheet serial dates (40179 = 1 January 2010)."
-  solar_radiation_2010.csv: Measured incoming shortwave radiation (W/m²) versus time (serial date), half-hourly through 2010.
-  temperature_2010.csv: Measured air temperature (°C) versus time (serial date), half-hourly. Mean 26.1 °C over the simulated window.
-  humidity_2010.csv: Measured relative humidity as a fraction (0 to 1) versus time (serial date), half-hourly.
-  wind_speed_2010.csv: Measured wind speed versus time (serial date), half-hourly. The units are not recorded with the data; the model multiplies by 0.28, which converts km/h to m/s.
+  rainfall_2010.txt: "Measured rainfall for 2010 in the precipitation format: interval start (day), interval end (day), depth (m) in the interval. Times are spreadsheet serial dates (40179 = 1 January 2010). NOAA observations from Baltimore/Washington International Airport (BWI), Maryland, USA (public domain)."
+  solar_radiation_2010.csv: Measured incoming shortwave radiation (W/m²) versus time (serial date), half-hourly through 2010. NOAA observations from Baltimore/Washington International Airport (BWI), Maryland, USA (public domain).
+  temperature_2010.csv: Measured air temperature (°C) versus time (serial date), half-hourly. Mean 26.1 °C over the simulated window. NOAA observations from Baltimore/Washington International Airport (BWI), Maryland, USA (public domain).
+  humidity_2010.csv: Measured relative humidity as a fraction (0 to 1) versus time (serial date), half-hourly. NOAA observations from Baltimore/Washington International Airport (BWI), Maryland, USA (public domain).
+  wind_speed_2010.csv: Measured wind speed versus time (serial date), half-hourly. The units are not recorded with the data; the model multiplies by 0.28, which converts km/h to m/s. NOAA observations from Baltimore/Washington International Airport (BWI), Maryland, USA (public domain).
   rooted_soil_profile_synthetic.ohq: The same field and soil profile with ET0 read from a time series (`Transpiration_Time_Series (Soil)` sources) and synthetic rain, run for 120 days from day 36526.
   et0_synthetic.csv: Synthetic daily reference evapotranspiration (m/day) versus time (day) for the synthetic variant, 2.5 to 6.0 mm/day, 567 mm in total.
   rainfall_synthetic.txt: Synthetic hourly rainfall for the synthetic variant, in the precipitation format, 174 mm in seven events.
@@ -60,7 +60,7 @@ plots:
 
 ## What this model represents
 
-A field crop takes its water from the soil through roots that are not spread evenly with depth: most of the root mass is near the surface, and less is deeper down. When the topsoil dries, the plant can only keep transpiring if the deeper layers still hold water. This model represents a one-hectare field with a 1.5 m soil profile in three layers, a crop whose roots are divided 50%, 30% and 20% among them, and a water table below the profile. It is driven by four months of measured weather (1 June to 29 September 2010): rainfall, solar radiation, air temperature, relative humidity and wind speed.
+A field crop takes its water from the soil through roots that are not spread evenly with depth: most of the root mass is near the surface, and less is deeper down. When the topsoil dries, the plant can only keep transpiring if the deeper layers still hold water. This model represents a one-hectare field with a 1.5 m soil profile in three layers, a crop whose roots are divided 50%, 30% and 20% among them, and a water table below the profile. It is driven by four months of measured weather at Baltimore/Washington International Airport, Maryland (1 June to 29 September 2010): rainfall, solar radiation, air temperature, relative humidity and wind speed.
 
 This is the simpler of the two plant water uptake formulations in OpenHydroQual (Model 1 in the technical guide linked above): a transpiration source attached to each soil layer. It is a good choice when the root distribution is known and fixed. For roots that grow, and for uptake that shifts towards wetter layers, see the *Crop Growing Season* example.
 
@@ -111,6 +111,6 @@ with γ = 66.8 Pa/K, z₂ = 2 m, z₀ = 0.0003 m, the radiation scale factor s_R
 - **Fixed roots, no compensation.** Root fractions are typed in and do not change. A dry layer's share of the demand is lost, so actual transpiration can fall well below potential even when deeper layers are wet. The full FAO-56 stress function, with its depletion fraction p, cannot be expressed in a source (it is equivalent to p = 0 here).
 - **The Penman ET₀ needs checking against site data.** The radiation term uses incoming shortwave radiation scaled by 0.5, not net radiation. In addition, the slope Δ is written in the plugin as 4098·e_s/(237.3 + T); the standard FAO-56 expression divides by (237.3 + T)². With the plugin form Δ is far larger than γ, so the aerodynamic weight γ/(Δ + γ) is about 0.001 to 0.003 and ET₀ is in practice the scaled radiation term alone. Humidity and wind therefore have almost no influence in this model.
 - The wind speed units are not recorded with the data. The scale factor 0.28 assumes km/h.
-- The weather is from a single 2010 record in the OpenHydroQual climate data collection. The station location is not documented.
+- The weather is a single 2010 NOAA record from Baltimore/Washington International Airport (BWI), Maryland, used here as a representative humid-temperate summer.
 - The 1 m between the base of the profile and the water table is not represented as soil. The link to the water table spans only half the bottom layer, which tends to overstate capillary rise.
 - The soil is homogeneous, and the three layers have different thicknesses (0.3, 0.4 and 0.8 m). Because the soil plugin refers each layer's head to its top, the gravity component of the gradient between layers of unequal thickness is less than one (0.86 between the upper and middle layers, 0.67 between the middle and lower layers). Equal layer thicknesses avoid this.

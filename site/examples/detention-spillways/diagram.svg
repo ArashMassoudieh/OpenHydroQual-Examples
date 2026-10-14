@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="140 240 920 366" class="ohq-diagram" style="max-width:460px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Low_Flow_Orifice"><title>Low_Flow_Orifice (orifice)</title><path d="M400.0 400.0 L600.0 400.0 L800.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Riser"><title>Riser (Riser_Spillway)</title><path d="M400.0 418.0 L600.0 418.0 L800.0 418.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Emergency_Spillway"><title>Emergency_Spillway (Emergency_Spillway)</title><path d="M400.0 364.0 L600.0 364.0 L800.0 364.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Detention_Pond"><title>Detention_Pond (Pond)</title><rect x="200" y="300" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="222" y="322" width="156" height="156"/>
+<text x="300" y="518" font-size="14" text-anchor="middle">Detention_Pond</text></g>
+<g class="d-node" data-name="Downstream_Channel"><title>Downstream_Channel (fixed_head)</title><rect x="800" y="300" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="822" y="322" width="156" height="156"/>
+<text x="900" y="518" font-size="14" text-anchor="middle">Downstream_Channel</text></g>
+</svg>

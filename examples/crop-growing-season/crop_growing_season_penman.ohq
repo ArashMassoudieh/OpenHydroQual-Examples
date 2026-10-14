@@ -1,0 +1,27 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = unsaturated_soil.json
+addtemplate; filename = plants.json
+create source;type=Precipitation,name=Rain_2010,timeseries=rainfall_2010.txt
+create block;type=Catchment,ManningCoeff=0.15,Precipitation=Rain_2010,_height=200,_width=200,area=10000[m~^2],depth=0[m],elevation=10[m],name=Corn_field,x=0,y=0
+create block;type=Soil,K_sat_original=0.8[m/day],_height=200,_width=200,alpha=1.5[1/m],area=10000[m~^2],bottom_elevation=9.8[m],depth=0.2[m],n=1.4,name=Topsoil,specific_storage=0.01[1/m],theta=0.32,theta_res=0.06,theta_sat=0.42,x=0,y=250
+create block;type=Soil,K_sat_original=0.8[m/day],_height=200,_width=200,alpha=1.5[1/m],area=10000[m~^2],bottom_elevation=9.5[m],depth=0.3[m],n=1.4,name=Subsoil_upper,specific_storage=0.01[1/m],theta=0.32,theta_res=0.06,theta_sat=0.42,x=0,y=500
+create block;type=Soil,K_sat_original=0.8[m/day],_height=200,_width=200,alpha=1.5[1/m],area=10000[m~^2],bottom_elevation=9[m],depth=0.5[m],n=1.4,name=Subsoil_lower,specific_storage=0.01[1/m],theta=0.32,theta_res=0.06,theta_sat=0.42,x=0,y=750
+create block;type=Soil,K_sat_original=0.8[m/day],_height=200,_width=200,alpha=1.5[1/m],area=10000[m~^2],bottom_elevation=8.5[m],depth=0.5[m],n=1.4,name=Deep_subsoil,specific_storage=0.01[1/m],theta=0.32,theta_res=0.06,theta_sat=0.42,x=0,y=1000
+create block;type=fixed_head,Storage=100000[m~^3],_height=200,_width=200,head=7[m],name=Water_table,x=0,y=1250
+create block;type=Crop_Penman,K_plant=0.01[day],Kcb=1.15,LAI_constant=0,LAI_timeseries=lai_corn.csv,R_h=humidity_2010.csv,Temperature=temperature_2010.csv,_height=200,_width=200,area=10000[m~^2],compensation=1,gamma=66.8,h_anoxic=-0.1[m],h_optimal_dry=-5[m],h_optimal_wet=-0.25[m],h_wilting=-160[m],k_extinction=0.6,name=Corn,root_depth_constant=0.2[m],root_depth_timeseries=root_depth_corn.csv,root_lambda=2,solar_radiation=solar_radiation_2010.csv,solar_scale_fact=0.5,surface_elevation=10[m],wind_scale_fact=0.28,wind_speed=wind_speed_2010.csv,x=550,y=500,z0=0.0003[m],z2=2[m]
+create link;from=Corn_field,to=Topsoil,type=surfacewater_to_soil_link,name=Infiltration
+create link;from=Topsoil,to=Subsoil_upper,type=soil_to_soil_link,name=Percolation_1
+create link;from=Subsoil_upper,to=Subsoil_lower,type=soil_to_soil_link,name=Percolation_2
+create link;from=Subsoil_lower,to=Deep_subsoil,type=soil_to_soil_link,name=Percolation_3
+create link;from=Deep_subsoil,to=Water_table,type=soil_to_fixedhead_link,name=Drainage
+create link;from=Topsoil,to=Corn,type=Root_uptake_link,name=Uptake_topsoil
+create link;from=Subsoil_upper,to=Corn,type=Root_uptake_link,name=Uptake_subsoil_upper
+create link;from=Subsoil_lower,to=Corn,type=Root_uptake_link,name=Uptake_subsoil_lower
+create link;from=Deep_subsoil,to=Corn,type=Root_uptake_link,name=Uptake_deep_subsoil
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=40269
+setvalue; object=system, quantity=simulation_end_time, value=40452
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-08
+setvalue; object=system, quantity=nr_tolerance, value=1e-06
+setvalue; object=system, quantity=write_interval, value=50

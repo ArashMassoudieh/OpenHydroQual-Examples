@@ -48,6 +48,26 @@ def _clip(cx, cy, w, h, tx, ty):
     return cx + dx * s, cy + dy * s
 
 
+def _inside(px, py, box, m=6):
+    x, y, w, h = box
+    return x - m <= px <= x + w + m and y - m <= py <= y + h + m
+
+
+def _blocked(x1, y1, x2, y2, boxes):
+    return any(_inside(x1 + (x2 - x1) * t / 40, y1 + (y2 - y1) * t / 40, b)
+               for b in boxes for t in range(1, 40))
+
+
+def _blocked_curve(x1, y1, cx, cy, x2, y2, boxes):
+    for i in range(1, 40):
+        t = i / 40
+        px = (1 - t) ** 2 * x1 + 2 * (1 - t) * t * cx + t * t * x2
+        py = (1 - t) ** 2 * y1 + 2 * (1 - t) * t * cy + t * t * y2
+        if any(_inside(px, py, b) for b in boxes):
+            return True
+    return False
+
+
 def render(model, plugins, resources, icon_dir, icon_href="icons/"):
     """Return (svg_text, n_drawn). Icons are written to icon_dir."""
     nodes = {}
@@ -73,11 +93,8 @@ def render(model, plugins, resources, icon_dir, icon_href="icons/"):
     minx, maxx, miny, maxy = min(xs) - pad, max(xs) + pad, min(ys) - pad, max(ys) + pad
     W, H = maxx - minx, maxy - miny
     font = max(14, min(W, H) / 45, W / 70)
-
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{minx:.0f} {miny:.0f} {W:.0f} {H:.0f}" '
-             f'class="ohq-diagram" style="max-width:{W * 0.5:.0f}px" role="img" aria-label="Model diagram">',
-             '<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" '
-             'orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>']
+    parts = []
+    ext = []  # extra points (curved links) that the view box must include
 
     drawn_pairs = {}
     for o in model.of_kind("link"):
@@ -96,8 +113,29 @@ def render(model, plugins, resources, icon_dir, icon_href="icons/"):
         ox, oy = nx / nl * off, ny / nl * off
         x1, y1 = _clip(acx, acy, aw, ah, bcx, bcy)
         x2, y2 = _clip(bcx, bcy, bw, bh, acx, acy)
-        mx, my = (x1 + x2) / 2 + ox, (y1 + y2) / 2 + oy
         title = html.escape(f'{o["name"]} ({o["type"]})')
+        others = [bx_ for n_, (_, bx_) in nodes.items() if n_ not in (a[0]["name"], b[0]["name"])]
+        if _blocked(x1, y1, x2, y2, others):
+            # route around blocks in the way: quadratic curve bowed to the side with fewer obstacles
+            L = math.hypot(x2 - x1, y2 - y1) or 1
+            ux, uy = -(y2 - y1) / L, (x2 - x1) / L
+            if uy < 0 or (uy == 0 and ux < 0):
+                ux, uy = -ux, -uy  # prefer bowing downward / rightward
+            bow = max(260, 0.3 * L) + 40 * k
+            for sign in (1, -1):
+                cx, cy = (x1 + x2) / 2 + sign * ux * bow, (y1 + y2) / 2 + sign * uy * bow
+                if not _blocked_curve(x1, y1, cx, cy, x2, y2, others):
+                    break
+            sx, sy = _clip(acx, acy, aw, ah, cx, cy)
+            ex, ey = _clip(bcx, bcy, bw, bh, cx, cy)
+            mx, my = 0.25 * sx + 0.5 * cx + 0.25 * ex, 0.25 * sy + 0.5 * cy + 0.25 * ey
+            ang = math.degrees(math.atan2(ey - sy, ex - sx))
+            ext.append((mx, my))
+            parts.append(f'<g class="d-link" data-name="{html.escape(o["name"])}"><title>{title}</title>'
+                         f'<path d="M{sx:.1f} {sy:.1f} Q{cx:.1f} {cy:.1f} {ex:.1f} {ey:.1f}"/>'
+                         f'<path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate({mx:.1f} {my:.1f}) rotate({ang:.1f}) scale(1.6)"/></g>')
+            continue
+        mx, my = (x1 + x2) / 2 + ox, (y1 + y2) / 2 + oy
         parts.append(f'<g class="d-link" data-name="{html.escape(o["name"])}"><title>{title}</title>'
                      f'<path d="M{x1+ox:.1f} {y1+oy:.1f} L{mx:.1f} {my:.1f} L{x2+ox:.1f} {y2+oy:.1f}" '
                      f'marker-mid="url(#arr)"/></g>')
@@ -114,8 +152,17 @@ def render(model, plugins, resources, icon_dir, icon_href="icons/"):
                          f'width="{s:.0f}" height="{s:.0f}"/>')
         parts.append(f'<text x="{x + w / 2:.0f}" y="{y + h + font * 1.3:.0f}" font-size="{font:.0f}" '
                      f'text-anchor="middle">{html.escape(name)}</text></g>')
-    parts.append("</svg>")
-    return "\n".join(parts), len(nodes)
+    if ext:
+        minx = min([minx] + [p[0] - pad for p in ext])
+        maxx = max([maxx] + [p[0] + pad for p in ext])
+        miny = min([miny] + [p[1] - pad for p in ext])
+        maxy = max([maxy] + [p[1] + pad for p in ext])
+        W, H = maxx - minx, maxy - miny
+    head = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{minx:.0f} {miny:.0f} {W:.0f} {H:.0f}" '
+            f'class="ohq-diagram" style="max-width:{W * 0.5:.0f}px" role="img" aria-label="Model diagram">',
+            '<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" '
+            'orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>']
+    return "\n".join(head + parts + ["</svg>"]), len(nodes)
 
 
 def thumbnail(svg, icon_dir):

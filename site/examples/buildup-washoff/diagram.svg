@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="140 240 720 366" class="ohq-diagram" style="max-width:360px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Runoff"><title>Runoff (Catchment_link)</title><path d="M400.0 400.0 L500.0 400.0 L600.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Parking_Lot"><title>Parking_Lot (Catchment)</title><rect x="200" y="300" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="222" y="322" width="156" height="156"/>
+<text x="300" y="518" font-size="14" text-anchor="middle">Parking_Lot</text></g>
+<g class="d-node" data-name="Collection_Tank"><title>Collection_Tank (Catch basin)</title><rect x="600" y="300" width="200" height="200" rx="16"/>
+<image href="icons/Catch_basin.png" x="622" y="322" width="156" height="156"/>
+<text x="700" y="518" font-size="14" text-anchor="middle">Collection_Tank</text></g>
+</svg>

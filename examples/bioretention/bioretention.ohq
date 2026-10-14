@@ -3,7 +3,7 @@ addtemplate; filename = Pond_Plugin.json
 addtemplate; filename = unsaturated_soil.json
 addtemplate; filename = Sewer_system.json
 addtemplate; filename = soil_evapotranspiration_models.json
-create source;type=Precipitation,name=Rain,timeseries=rainfall.csv
+create source;type=Precipitation,name=Rain,timeseries=rainfall.txt
 create source;type=Evapotranspiration_Penman (Soil),name=Penman_ET,Temperature=air_temperature.csv,R_h=relative_humidity.csv,solar_radiation=solar_radiation.csv,wind_speed=wind_speed.csv,solar_scale_fact=0.5,wind_scale_fact=1,z2=10[m],z0=0.0003[m],gamma=66.8
 create block;type=Catchment,name=Parking_Area,area=2000[m~^2],Width=40[m],Slope=0.02,ManningCoeff=0.015,Runoff_coeff=1,depression_storage=0[m],depth=0[m],elevation=0.5[m],loss_coefficient=0[1/day],inflow=,Precipitation=Rain,Evapotranspiration=,_width=200,_height=200,x=200,y=0
 create block;type=Pond,name=Ponding_Zone,Storage=0[m~^3],alpha=100,alpha_multiplier=1,beta=1,bottom_elevation=0[m],inflow=,Precipitation=Rain,Evapotranspiration=,_width=200,_height=200,x=700,y=0

@@ -628,15 +628,16 @@
     "antecedent dry period",
     "kinematic wave",
     "swmm"
-   ]
+   ],
+   "thumb": "examples/buildup-washoff/thumb.svg"
   },
   {
    "id": "bioretention",
    "title": "Bioretention Cell",
    "track": "storm",
    "level": 2,
-   "status": "planned",
-   "summary": "Ponding zone, engineered soil, gravel storage and underdrain, driven by rainfall and Penman evapotranspiration.",
+   "status": "ready",
+   "summary": "A 100 m\u00b2 bioretention cell treats runoff from a 2,000 m\u00b2 parking area through a summer of hourly rainfall. Water ponds, infiltrates through 0.6 m of engineered media into a gravel layer, and leaves by the underdrain, by exfiltration to the native soil, by evapotranspiration or by overflow.",
    "plugins": [
     "Pond_Plugin",
     "unsaturated_soil",
@@ -644,24 +645,42 @@
     "soil_evapotranspiration_models"
    ],
    "features": [
-    "Unsaturated flow",
+    "Ponding zone",
+    "Variably saturated media",
+    "Gravel storage with internal water storage",
     "Underdrain",
-    "Overflow"
+    "Overflow weir",
+    "Penman evapotranspiration",
+    "Water budget"
    ],
    "keywords": [
     "bioretention",
     "rain garden",
+    "biofilter",
     "lid",
     "low impact development",
     "gsi",
-    "green infrastructure",
+    "green stormwater infrastructure",
     "bmp",
     "scm",
+    "stormwater control measure",
     "underdrain",
+    "internal water storage",
+    "iws",
+    "exfiltration",
     "infiltration",
     "ponding",
-    "engineered media"
-   ]
+    "overflow",
+    "engineered media",
+    "van genuchten",
+    "richards",
+    "unsaturated flow",
+    "evapotranspiration",
+    "penman",
+    "water budget",
+    "volume reduction"
+   ],
+   "thumb": "examples/bioretention/thumb.svg"
   },
   {
    "id": "detention-spillways",
@@ -705,37 +724,51 @@
     "unit hydrograph",
     "scs",
     "dam"
-   ]
+   ],
+   "thumb": "examples/detention-spillways/thumb.svg"
   },
   {
    "id": "infiltration-basin",
    "title": "Infiltration Basin",
    "track": "storm",
    "level": 2,
-   "status": "planned",
-   "summary": "A basin collects runoff and infiltrates it through the unsaturated zone below.",
+   "status": "ready",
+   "summary": "A 400 m\u00b2 infiltration basin receives runoff from 1 ha of pavement and returns it to the aquifer through a 3 m unsaturated zone. Ten soil layers show wetting fronts moving down after each storm, and the largest storm fills the basin to overflow and saturates the whole profile.",
    "plugins": [
     "Pond_Plugin",
-    "unsaturated_soil",
-    "Sewer_system"
+    "unsaturated_soil"
    ],
    "features": [
-    "Pond-to-soil exfiltration",
-    "Vadose zone"
+    "Pond-to-soil infiltration",
+    "Vadose zone profile",
+    "Wetting fronts",
+    "Groundwater recharge",
+    "Overflow",
+    "Drawdown time"
    ],
    "keywords": [
     "infiltration basin",
+    "recharge basin",
     "recharge",
+    "groundwater recharge",
     "exfiltration",
+    "infiltration",
     "lid",
     "gsi",
     "bmp",
     "scm",
-    "vadose",
+    "stormwater control measure",
+    "vadose zone",
+    "unsaturated zone",
+    "wetting front",
+    "richards equation",
+    "van genuchten",
     "drawdown",
     "managed aquifer recharge",
-    "mar"
-   ]
+    "mar",
+    "overflow"
+   ],
+   "thumb": "examples/infiltration-basin/thumb.svg"
   },
   {
    "id": "sewershed-drywells",
@@ -1122,26 +1155,41 @@
    "title": "Physics-Informed Data-Driven Hydrology",
    "track": "hydro",
    "level": 3,
-   "status": "planned",
-   "summary": "Conceptual storage units with power-law and latent-variable behavior, trained against observed streamflow.",
+   "status": "ready",
+   "summary": "A rainfall-to-streamflow model for a 1 km\u00b2 catchment built from generic storage units connected by links that move water down the difference of a latent \"potential\". Driven by one year of measured daily rainfall (BWI airport, 2010). The structure conserves mass exactly; the shapes and parameters are meant to be learned from data.",
    "plugins": [
     "physicsbaseddatadrivenhydrology"
    ],
    "features": [
     "Storage units",
-    "Latent variables",
-    "Calibration"
+    "Latent-variable links",
+    "Power-law storage",
+    "Mass-conserving model structure",
+    "Calibration-ready parameters"
    ],
    "keywords": [
     "data driven",
     "machine learning",
     "physics informed",
+    "physics guided",
     "hybrid model",
+    "grey box",
     "latent variable",
+    "potential",
     "power law",
+    "nonlinear reservoir",
     "storage unit",
-    "conceptual model"
-   ]
+    "conceptual model",
+    "rainfall runoff",
+    "streamflow",
+    "baseflow",
+    "quickflow",
+    "network model",
+    "mass conservation",
+    "calibration",
+    "parameter estimation"
+   ],
+   "thumb": "examples/data-driven-hydrology/thumb.svg"
   },
   {
    "id": "soil-infiltration-1d",
@@ -1251,31 +1299,45 @@
    "title": "Crop Growing Season",
    "track": "soil",
    "level": 2,
-   "status": "planned",
-   "summary": "Corn through a growing season, with leaf area index and rooting depth that change over time.",
+   "status": "ready",
+   "summary": "A corn crop through one growing season on a four-layer soil profile, driven by measured weather. Leaf area and rooting depth grow over the season, each layer's share of root uptake is derived from an exponential root profile, and wet layers make up for dry ones.",
    "plugins": [
     "plants",
     "unsaturated_soil"
    ],
    "features": [
+    "Crop block",
     "Dynamic LAI",
-    "Dynamic root depth",
-    "Weather forcing"
+    "Growing roots",
+    "Feddes stress",
+    "Root water compensation"
    ],
    "keywords": [
     "crop",
     "corn",
     "maize",
     "agriculture",
-    "irrigation",
+    "growing season",
+    "crop calendar",
     "lai",
     "leaf area index",
+    "canopy cover",
+    "beer's law",
     "root depth",
-    "growing season",
+    "root distribution",
+    "root water uptake",
+    "feddes",
+    "water stress",
+    "compensation",
+    "transpiration",
+    "penman",
     "et0",
-    "crop coefficient"
+    "basal crop coefficient",
+    "capillary rise",
+    "irrigation"
    ],
-   "doc": "plant_water_uptake.pdf"
+   "doc": "plant_water_uptake.pdf",
+   "thumb": "examples/crop-growing-season/thumb.svg"
   },
   {
    "id": "rooted-soil-transpiration",
@@ -1652,28 +1714,39 @@
    "title": "Bayesian Calibration with MCMC",
    "track": "calib",
    "level": 3,
-   "status": "planned",
-   "summary": "Sample posterior parameter distributions with Markov chain Monte Carlo and plot prediction bands.",
+   "status": "ready",
+   "summary": "A first-order degradation test in a batch microcosm, calibrated with Markov chain Monte Carlo. The run returns posterior distributions of the rate constant, the initial concentration and the error standard deviation, and a prediction band that widens beyond the last measurement.",
    "plugins": [
     "mass_transfer"
    ],
    "features": [
     "MCMC",
     "Posterior distributions",
-    "Prediction intervals"
+    "Prediction bands",
+    "Priors",
+    "Error model"
    ],
    "keywords": [
     "mcmc",
     "bayesian",
     "markov chain monte carlo",
-    "posterior",
-    "uncertainty",
-    "prediction interval",
-    "credible interval",
-    "likelihood",
     "metropolis",
-    "realizations"
-   ]
+    "metropolis hastings",
+    "adaptive mcmc",
+    "posterior",
+    "prior",
+    "credible interval",
+    "prediction interval",
+    "uncertainty",
+    "realizations",
+    "likelihood",
+    "first order decay",
+    "biodegradation",
+    "half life",
+    "microcosm",
+    "OHQ-MCMC"
+   ],
+   "thumb": "examples/mcmc-bayesian/thumb.svg"
   },
   {
    "id": "console-python",

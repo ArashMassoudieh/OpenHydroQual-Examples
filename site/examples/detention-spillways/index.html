@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detention Pond with Riser and Emergency Spillway · OpenHydroQual Examples</title>
+<meta name="description" content="A dry detention pond with a low-flow orifice, a drop-inlet riser and an emergency spillway routes two synthetic storm hydrographs. The small storm is handled by the orifice and the riser weir; the large one drives the riser into pipe control and spills over the emergency spillway.">
+<meta name="keywords" content="detention, dry pond, detention basin, stormwater pond, riser, drop inlet, principal spillway, spillway, emergency spillway, auxiliary spillway, broad-crested weir, orifice, outlet structure, stage-storage, stage-discharge, peak flow, attenuation, flood routing, level pool routing, design storm, unit hydrograph, scs, dam">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#5b9a2c">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Stormwater &amp; Green Infrastructure</div>
+<h1>Detention Pond with Riser and Emergency Spillway</h1>
+<p class="lede">A dry detention pond with a low-flow orifice, a drop-inlet riser and an emergency spillway routes two synthetic storm hydrographs. The small storm is handled by the orifice and the riser weir; the large one drives the riser into pipe control and spills over the emergency spillway.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=dam_spillways'>dam_spillways</a><a class='plug' href='../../?plugin=Pond_Plugin'>Pond_Plugin</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/detention-spillways.zip" download>Download model (.zip)</a>
+    <div class="muted">9 KB · 2 files · open <code>detention_pond.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A dry detention pond reduces the peak flow from a developed catchment by storing runoff temporarily and releasing it through an outlet structure. A typical structure, modelled here, has three outlets:</p>
+<ul>
+<li>a <strong>low-flow orifice</strong> at the floor, which releases small flows and empties the pond after each storm,</li>
+<li>a <strong>riser</strong> (drop inlet), a vertical pipe whose rim acts as a weir and which discharges through a conduit under the embankment (the principal spillway),</li>
+<li>an <strong>emergency spillway</strong>, a wide overflow section in the embankment that protects the dam when a flood exceeds what the riser can pass.</li>
+</ul>
+<p>The pond routes two synthetic storms, a moderate one and a large one, so that every outlet and both riser control regimes (weir and pipe) come into play. This is the classic "level-pool routing" problem of pond design, solved here as a continuous simulation.</p>
+<h2>How it works</h2>
+<p><strong>Storage.</strong> The pond is a <code>Pond</code> block. Its volume S (m³) changes with the inflow and the three outflows:</p>
+<p>dS/dt = Q_in(t) − Q_orifice − Q_riser − Q_emergency</p>
+<p>The stage-storage relation is a power law, S = α·d^β, with α = 1600 and β = 2. OpenHydroQual computes the depth as d = [S²/(α·(S + 0.1))]^(1/β), which equals (S/α)^(1/β) except within a fraction of a cubic metre of empty. The water level is H = 100.0 m + d, and the surface area α·β·d^(β−1) = 3,200·d m² grows linearly with depth, as in a basin with sloping sides.</p>
+<p><strong>Low-flow orifice</strong> (<code>orifice</code> link from <code>Pond_Plugin</code>):</p>
+<p>Q_orifice = 86400 · C · A_o · [19.6 · (H − H_down)]₊^0.5  (m³/day)</p>
+<p>with C = 0.6 (the <code>head_loss_coefficient</code> property acts as a discharge coefficient), A_o = 0.0491 m² and H_down the head of <code>Downstream_Channel</code>. The downstream head is set to the orifice centre (100.125 m), so the driving head is measured to the orifice centroid, as for an orifice discharging freely.</p>
+<p><strong>Riser</strong> (<code>Riser_Spillway</code> link from <code>dam_spillways</code>):</p>
+<p>Q_riser = min( 86400 · C_w · L · (H − z_c)₊^1.5 ,  86400 · (π/4) · D² · [2g · (H − z_out)₊ / (1 + K)]^0.5 )</p>
+<p>The first term is the weir capacity of the riser rim (C_w = 1.84 m^0.5/s, crest perimeter L = 3 m, crest z_c = 101.5 m). The second is the capacity of the conduit flowing full under the head between the pond level and the conduit outlet (D = 0.6 m, z_out = 99.5 m, total loss coefficient K = 1.5). At low heads over the crest the weir controls. The two capacities are equal at H = 101.87 m (1.87 m depth); above that level the conduit controls and the riser flow grows only with the square root of the head. The outlet discharges freely, so the downstream level does not affect it.</p>
+<p><strong>Emergency spillway</strong> (<code>Emergency_Spillway</code> link):</p>
+<p>Q_emergency = a · (H − z_e)₊^1.5</p>
+<p>with crest z_e = 102.2 m and a = 1,468,800 m^1.5/day, which is 86400 × 1.7 m^0.5/s × 10 m: a broad-crested weir 10 m wide.</p>
+<p>All three links flow only from the pond to the channel; none of them can reverse.</p>
+<p><strong>Inflow.</strong> <code>inflow.csv</code> holds two hydrographs with the shape of the SCS dimensionless unit hydrograph (gamma form):</p>
+<p>q(t) = q_p · [(t′/t_p) · e^(1 − t′/t_p)]^3.7</p>
+<p>where t′ is the time since the start of the event and t_p = 45 min. The events start at 6 h (q_p = 2.0 m³/s) and 36 h (q_p = 5.0 m³/s).</p>
+<p><strong>Time stepping.</strong> The inflow changes from zero to its peak in under an hour. With the default setting, only precipitation series limit the time step, and the solver can step across a short hydrograph peak. The model therefore sets <code>timestep_clamp_series</code> to "All time series" and limits the step to 5 times the initial step (0.005 day, about 7 minutes).</p>
+<h2>What to look for in the results</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Storm 1</th>
+<th>Storm 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inflow peak</td>
+<td>2.0 m³/s at 6.7 h</td>
+<td>5.0 m³/s at 36.7 h</td>
+</tr>
+<tr>
+<td>Total outflow peak</td>
+<td>0.81 m³/s at 7.4 h</td>
+<td>3.08 m³/s at 37.2 h</td>
+</tr>
+<tr>
+<td>Peak reduction</td>
+<td>59%</td>
+<td>38%</td>
+</tr>
+<tr>
+<td>Maximum depth</td>
+<td>1.74 m</td>
+<td>2.40 m</td>
+</tr>
+<tr>
+<td>Maximum storage</td>
+<td>4,840 m³</td>
+<td>9,230 m³</td>
+</tr>
+<tr>
+<td>Riser control at peak</td>
+<td>weir (0.64 m³/s)</td>
+<td>conduit (1.35 m³/s)</td>
+</tr>
+<tr>
+<td>Emergency spillway peak</td>
+<td>none</td>
+<td>1.54 m³/s</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Peak attenuation and lag.</strong> The outflow peaks about 30 to 40 minutes after the inflow, exactly when the pond level peaks. At that moment inflow and outflow are equal, which is the defining property of level-pool routing.</li>
+<li><strong>Outlet staging.</strong> Below 1.5 m depth only the orifice releases water, at up to about 0.15 m³/s. The riser starts when the level passes 101.5 m, and the emergency spillway only when it passes 102.2 m.</li>
+<li><strong>Riser in pipe control.</strong> In storm 2 the riser flow levels off at 1.35 m³/s while the pond keeps rising. Once the conduit controls, the extra head over the crest buys little extra capacity, which is why an emergency spillway is needed.</li>
+<li><strong>Emergency spillway.</strong> It flows for about 56 minutes (36.9 to 37.8 h) and passes 2,860 m³, 16% of the storm 2 volume.</li>
+<li><strong>Drawdown.</strong> After each storm the orifice empties the pond to its centre level in about 12 to 13 hours. The pond is effectively empty when storm 2 arrives, so the two events do not interact.</li>
+<li><strong>Volume balance.</strong> Of the 25,190 m³ of inflow, the orifice releases 10,690 m³, the riser 11,560 m³ and the emergency spillway 2,860 m³. The 25 m³ below the orifice centre remains in the pond at the end.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>Level-pool (storage) routing: the pond surface is assumed flat, with no travel time across it.</li>
+<li>The stage-storage relation is a single power law. A real pond would use a surveyed stage-storage table, and the β exponent can be fitted to one.</li>
+<li>The rating equations use constant coefficients. Riser crest submergence, orifice control at the riser inlet, vortices and partly full conduit flow are not represented.</li>
+<li>The orifice equation has no invert. Using the orifice centre as the downstream head reproduces free discharge, but it leaves 25 m³ below that level that never drains, and it would not be correct if the channel level rose above the orifice.</li>
+<li>The emergency spillway discharges freely: tailwater, erosion of the spillway and overtopping of the embankment are not modelled.</li>
+<li>There is no rainfall on the pond surface, evaporation or infiltration through the pond floor.</li>
+<li>The inflow hydrographs are synthetic. In a design study they would come from a rainfall-runoff model of the catchment for the design storms required by the local standard.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="140 240 920 366" class="ohq-diagram" style="max-width:460px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Low_Flow_Orifice"><title>Low_Flow_Orifice (orifice)</title><path d="M400.0 400.0 L600.0 400.0 L800.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Riser"><title>Riser (Riser_Spillway)</title><path d="M400.0 418.0 L600.0 418.0 L800.0 418.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Emergency_Spillway"><title>Emergency_Spillway (Emergency_Spillway)</title><path d="M400.0 364.0 L600.0 364.0 L800.0 364.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Detention_Pond"><title>Detention_Pond (Pond)</title><rect x="200" y="300" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="222" y="322" width="156" height="156"/>
+<text x="300" y="518" font-size="14" text-anchor="middle">Detention_Pond</text></g>
+<g class="d-node" data-name="Downstream_Channel"><title>Downstream_Channel (fixed_head)</title><rect x="800" y="300" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="822" y="322" width="156" height="156"/>
+<text x="900" y="518" font-size="14" text-anchor="middle">Downstream_Channel</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>2</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Detention-Pond'><summary><span class='cname'>Detention_Pond</span><span class='ctype'>Pond · Pond_Plugin</span><span class='crole'><p>A dry pond with its floor at 100.0 m. Storage follows S = 1600·d² (d = water depth, m), so the water surface area is 3,200·d m²: 3,200 m² at 1 m depth and 7,680 m² at 2.4 m. Empty at the start. Receives the inflow hydrograph from <code>inflow.csv</code>.</p></span></summary><div class='cbody'><p class=type-help><b>Pond:</b> Stormwater pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the pond at the beginning of the simulation.</td></tr><tr><td>The coefficient (α) in the rating curve S = α d^β</td><td class='v'>1600</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Alpha multiplier - This number is multiplied by alpha parameter (for calibration of multiple ponds)</td><td class='v'>1</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>The exponent (β) in the rating curve S = α d^β</td><td class='v'>2</td><td></td><td>The exponent (β) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Bottom elevation of pond</td><td class='v'>100</td><td>m</td><td></td></tr><tr><td>Inflow rate time series</td><td class='v'>inflow.csv</td><td>m^3/day</td><td>The time series containing the inflow rate into the pond</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Downstream-Channel'><summary><span class='cname'>Downstream_Channel</span><span class='ctype'>fixed_head</span><span class='crole'><p>Receiving channel, a fixed-head boundary at 100.125 m (the centre of the low-flow orifice). Its storage only accumulates the outflow volume.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>100.125</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>area</td><td class='v'>1</td><td>m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>3</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Low-Flow-Orifice'><summary><span class='cname'>Low_Flow_Orifice</span><span class='ctype'>orifice · Pond_Plugin</span><span class='crole'><p>A 0.25 m diameter orifice (0.0491 m²) at the pond floor with discharge coefficient 0.6. It releases water at any depth above its centre and drains the pond between storms.</p></span></summary><div class='cbody'><p class=type-help><b>orifice:</b> Orifice</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>orifice_area</td><td class='v'>0.0491</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Head-loss coefficient</td><td class='v'>0.6</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Riser'><summary><span class='cname'>Riser</span><span class='ctype'>Riser_Spillway · dam_spillways</span><span class='crole'><p>Drop-inlet principal spillway: a riser with a 3 m crest perimeter at 101.5 m (1.5 m above the floor), discharging through a 0.6 m conduit whose outlet is at 99.5 m (total loss coefficient 1.5). Flow is the smaller of the riser weir capacity and the conduit capacity.</p></span></summary><div class='cbody'><p class=type-help><b>Riser_Spillway:</b> Principal spillway of an ungated drop-inlet structure (e.g. NRCS/SCS flood-control dams): water spills over the riser crest (weir flow, Q = weir_coefficient*riser_crest_length*H^1.5 with H = head.s - crest_elevation) and leaves through a conduit under pressure (Q = conduit_area*sqrt(2g*(head.s - outlet_elevation)/(1 + loss_coefficient))). The discharge is the smaller of the two controls. Flow is from the source (pond/reservoir) only; tailwater is ignored (outlet_elevation is the conduit outlet crown or tailwater level). rating_multiplier scales the whole rating for calibration.</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Riser crest elevation</td><td class='v'>101.5</td><td>m</td><td></td></tr><tr><td>Riser crest (weir) length</td><td class='v'>3</td><td>m</td><td></td></tr><tr><td>Riser weir coefficient (SI, m^0.5/s)</td><td class='v'>1.84</td><td></td><td></td></tr><tr><td>Conduit diameter</td><td class='v'>0.6</td><td>m</td><td></td></tr><tr><td>Conduit outlet (crown or tailwater) elevation</td><td class='v'>99.5</td><td>m</td><td></td></tr><tr><td>Total conduit loss coefficient (entrance + friction + bends)</td><td class='v'>1.5</td><td></td><td></td></tr><tr><td>Rating multiplier (calibration)</td><td class='v'>1</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Emergency-Spillway'><summary><span class='cname'>Emergency_Spillway</span><span class='ctype'>Emergency_Spillway · dam_spillways</span><span class='crole'><p>A 10 m wide broad-crested auxiliary spillway with its crest at 102.2 m (2.2 m above the floor), weir coefficient 1.7 m^0.5/s. It operates only in floods that the riser cannot pass.</p></span></summary><div class='cbody'><p class=type-help><b>Emergency_Spillway:</b> Emergency spillway of a dam: flow = alpha*(head.s - crest_elevation)^beta from the reservoir (source) only; for a broad-crested weir use beta = 1.5 and alpha = 86400*C*L (m3/day) with C ~ 1.7 m^0.5/s and L the crest length. Identical formulation to the &#x27;wier&#x27; link; a separate type for the dam diagram icon.</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Crest Elevation</td><td class='v'>102.2</td><td>m</td><td>Crest Elevation</td></tr><tr><td>Coefficient alpha in Q=alpha*(h-z_0)^beta</td><td class='v'>1468800</td><td></td><td>Coefficient alpha in Q=alpha*(h-z_0)^beta</td></tr><tr><td>Exponent beta in Q=alpha*(h-z_0)^beta</td><td class='v'>1.5</td><td></td><td>Exponent beta in Q=alpha*(h-z_0)^beta</td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>inflow.csv</code></td><td><p>Synthetic inflow hydrograph: time (day), inflow (m³/day), at 5-minute spacing. Two SCS-type (gamma-shaped) hydrographs with a 45-minute time to peak: a 2.0 m³/s peak starting at 6 h (7,200 m³) and a 5.0 m³/s peak starting at 36 h (18,000 m³).</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>3</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>1</td></tr></tbody></table></section>
+
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/detention-spillways">View source on GitHub</a>.</div></footer>
+</body></html>

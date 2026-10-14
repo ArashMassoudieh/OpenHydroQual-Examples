@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 770 766" class="ohq-diagram" style="max-width:385px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Direct_runoff"><title>Direct_runoff (storage_unit_link)</title><path d="M200.0 144.4 L325.0 200.0 L450.0 255.6" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Percolation"><title>Percolation (storage_unit_link)</title><path d="M100.0 200.0 L100.0 300.0 L100.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Baseflow"><title>Baseflow (storage_unit_link)</title><path d="M200.0 455.6 L325.0 400.0 L450.0 344.4" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Soil_store"><title>Soil_store (Storage Unit)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/StorageUnit.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="222" font-size="17" text-anchor="middle">Soil_store</text></g>
+<g class="d-node" data-name="Groundwater_store"><title>Groundwater_store (Storage Unit (Power-law))</title><rect x="0" y="400" width="200" height="200" rx="16"/>
+<image href="icons/StorageUnitPowerLaw.png" x="22" y="422" width="156" height="156"/>
+<text x="100" y="622" font-size="17" text-anchor="middle">Groundwater_store</text></g>
+<g class="d-node" data-name="Stream"><title>Stream (Fixed Latent Variable Unit)</title><rect x="450" y="200" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="472" y="222" width="156" height="156"/>
+<text x="550" y="422" font-size="17" text-anchor="middle">Stream</text></g>
+</svg>

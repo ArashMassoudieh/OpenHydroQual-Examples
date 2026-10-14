@@ -1,0 +1,15 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = physicsbaseddatadrivenhydrology.json
+create block;type=Storage Unit,name=Soil_store,Capacity=30000[m~^3],Initial_Storage_coeff=0.3,Precipitation=rainfall.csv,Precipitation_coefficient=400000,Scale_factor=1,_width=200,_height=200,x=0,y=0
+create block;type=Storage Unit (Power-law),name=Groundwater_store,Storage=50000,H_S_Coefficient=2e-11,Exponent=2,Precipitation_coefficient=0,_width=200,_height=200,x=0,y=400
+create block;type=Fixed Latent Variable Unit,name=Stream,Latent_variable=0,Storage=0,_width=200,_height=200,x=450,y=200
+create link;type=storage_unit_link,name=Direct_runoff,from=Soil_store,to=Stream,Mean_Transmissivity=3000
+create link;type=storage_unit_link,name=Percolation,from=Soil_store,to=Groundwater_store,Mean_Transmissivity=4500
+create link;type=storage_unit_link,name=Baseflow,from=Groundwater_store,to=Stream,Mean_Transmissivity=10000
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=365
+setvalue; object=system, quantity=initial_time_step, value=0.01
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=write_interval, value=10
+setvalue; object=system, quantity=timestep_clamp_series, value=All time series
