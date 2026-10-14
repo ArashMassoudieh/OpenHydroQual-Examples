@@ -104,7 +104,7 @@ OpenHydroQual-Console column.ohq -r /path/to/OpenHydroQual/resources -q -o outpu
 | `-q`, `--quiet` | No per-step progress output. |
 | `--skip-verify` | Skip the check of every property against the limits declared in the templates (not recommended). |
 
-The console reads the script, stops with exit code 4 if any line failed (a missing input file, an unknown type or property) or if a property violates its declared limits, solves, and writes the results. If the model defines calibration parameters, their `value` fields are applied before the run. Observations with observed data are scored and their fit (MSE, R², NSE, −ln L) is printed. Exit codes: 0 success, 2 usage error, 3 model file not found, 4 model errors, 5 solve failed. A script should always check the exit code.
+The console reads the script, stops with exit code 4 if any line failed (a missing input file, an unknown type or property) or if a property violates its declared limits, solves, and writes the results. If the model defines calibration parameters, their `value` fields are applied before the run. Observations with observed data are scored and their fit (MSE, R², NSE, −ln L) is printed. Messages logged while the model is solving are printed as warnings; the run continues and still exits 0. Exit codes: 0 success, 2 usage error, 3 model file not found, 4 model errors, 5 solve failed. A script should always check the exit code.
 
 The results file has one pair of columns per output, `t, Cell_10_Cu_aq:concentration, t, Cell_10_Cu_s:concentration, ...`: a block or link property is named `<object>_<property>`, a constituent property `<object>_<constituent>:<property>`. All series are resampled to a common time grid.
 
