@@ -426,6 +426,57 @@
    "thumb": "examples/sedimentation-basin/thumb.svg"
   },
   {
+   "id": "shallow-lake-eutrophication",
+   "title": "Shallow Lake Eutrophication",
+   "track": "wq",
+   "level": 2,
+   "status": "ready",
+   "summary": "A 50 ha, 2.5 m deep, well-mixed lake over a phosphorus-rich sediment, simulated through 2010 with Baltimore weather. Phytoplankton, phosphorus, an explicit nitrogen cycle and dissolved oxygen respond to light, temperature, tributary storms and redox-controlled phosphorus release from the sediment. A second model halves the tributary phosphorus load.",
+   "plugins": [
+    "Pond_Plugin",
+    "groundwater",
+    "mass_transfer"
+   ],
+   "features": [
+    "Phytoplankton growth",
+    "Light and nutrient limitation",
+    "Nitrogen cycle",
+    "Sediment phosphorus release",
+    "Load-reduction scenario"
+   ],
+   "keywords": [
+    "eutrophication",
+    "algal bloom",
+    "phytoplankton",
+    "chlorophyll-a",
+    "phosphorus",
+    "phosphate",
+    "nitrogen",
+    "ammonia",
+    "nitrate",
+    "nutrient limitation",
+    "light limitation",
+    "self-shading",
+    "monod",
+    "internal loading",
+    "sediment phosphorus release",
+    "iron-bound phosphorus",
+    "sediment oxygen demand",
+    "denitrification",
+    "nitrification",
+    "ammonification",
+    "dissolved oxygen",
+    "supersaturation",
+    "diel cycle",
+    "reaeration",
+    "shallow lake",
+    "polymictic",
+    "load reduction",
+    "tmdl"
+   ],
+   "thumb": "examples/shallow-lake-eutrophication/thumb.svg"
+  },
+  {
    "id": "column-breakthrough",
    "title": "Soil Column Breakthrough",
    "track": "wq",
@@ -553,6 +604,58 @@
     "decay"
    ],
    "thumb": "examples/asm-clarifier/thumb.svg"
+  },
+  {
+   "id": "stratified-lake-eutrophication",
+   "title": "Stratified Lake Eutrophication",
+   "track": "wq",
+   "level": 3,
+   "status": "ready",
+   "summary": "The shallow-lake eutrophication model rebuilt as a 12 m deep lake with an epilimnion and a hypolimnion. Summer stratification cuts the bottom water off from the atmosphere, the hypolimnion turns anoxic, the sediment releases phosphate that accumulates below the thermocline, and fall turnover mixes it into the surface layer. A second model halves the tributary phosphorus load.",
+   "plugins": [
+    "Pond_Plugin",
+    "groundwater",
+    "mass_transfer"
+   ],
+   "features": [
+    "Two-layer lake",
+    "Seasonal stratification and turnover",
+    "Hypolimnetic anoxia",
+    "Internal phosphorus loading",
+    "Load-reduction scenario"
+   ],
+   "keywords": [
+    "eutrophication",
+    "stratification",
+    "thermocline",
+    "epilimnion",
+    "hypolimnion",
+    "turnover",
+    "fall overturn",
+    "dimictic",
+    "monomictic",
+    "hypoxia",
+    "anoxia",
+    "hypolimnetic oxygen depletion",
+    "internal loading",
+    "sediment phosphorus release",
+    "iron-bound phosphorus",
+    "algal bloom",
+    "phytoplankton",
+    "chlorophyll-a",
+    "phosphorus",
+    "nitrogen",
+    "ammonia",
+    "nitrate",
+    "denitrification",
+    "nutrient limitation",
+    "light limitation",
+    "vertical mixing",
+    "eddy diffusivity",
+    "reservoir",
+    "load reduction"
+   ],
+   "thumb": "examples/stratified-lake-eutrophication/thumb.svg"
   },
   {
    "id": "wet-pond-nutrients",

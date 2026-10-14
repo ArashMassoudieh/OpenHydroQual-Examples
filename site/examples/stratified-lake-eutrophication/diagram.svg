@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="340 40 770 1066" class="ohq-diagram" style="max-width:385px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Outlet_weir"><title>Outlet_weir (wier)</title><path d="M600.0 200.0 L725.0 200.0 L850.0 200.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Exchange_down"><title>Exchange_down (Time-Dependent flow)</title><path d="M500.0 300.0 L500.0 375.0 L500.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Exchange_up"><title>Exchange_up (Time-Dependent flow)</title><path d="M518.0 450.0 L518.0 375.0 L518.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Sediment_interface"><title>Sediment_interface (Time-Dependent flow)</title><path d="M500.0 650.0 L500.0 725.0 L500.0 800.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Epilimnion"><title>Epilimnion (Pond)</title><rect x="400" y="100" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="422" y="122" width="156" height="156"/>
+<text x="500" y="322" font-size="17" text-anchor="middle">Epilimnion</text></g>
+<g class="d-node" data-name="Hypolimnion"><title>Hypolimnion (Pond)</title><rect x="400" y="450" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="422" y="472" width="156" height="156"/>
+<text x="500" y="672" font-size="17" text-anchor="middle">Hypolimnion</text></g>
+<g class="d-node" data-name="Sediment"><title>Sediment (Groundwater cell)</title><rect x="400" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="422" y="822" width="156" height="156"/>
+<text x="500" y="1022" font-size="17" text-anchor="middle">Sediment</text></g>
+<g class="d-node" data-name="Outlet"><title>Outlet (fixed_head)</title><rect x="850" y="100" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="872" y="122" width="156" height="156"/>
+<text x="950" y="322" font-size="17" text-anchor="middle">Outlet</text></g>
+</svg>

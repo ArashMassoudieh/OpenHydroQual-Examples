@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shallow Lake Eutrophication · OpenHydroQual Examples</title>
+<meta name="description" content="A 50 ha, 2.5 m deep, well-mixed lake over a phosphorus-rich sediment, simulated through 2010 with Baltimore weather. Phytoplankton, phosphorus, an explicit nitrogen cycle and dissolved oxygen respond to light, temperature, tributary storms and redox-controlled phosphorus release from the sediment. A second model halves the tributary phosphorus load.">
+<meta name="keywords" content="eutrophication, algal bloom, phytoplankton, chlorophyll-a, phosphorus, phosphate, nitrogen, ammonia, nitrate, nutrient limitation, light limitation, self-shading, monod, internal loading, sediment phosphorus release, iron-bound phosphorus, sediment oxygen demand, denitrification, nitrification, ammonification, dissolved oxygen, supersaturation, diel cycle, reaeration, shallow lake, polymictic, load reduction, tmdl">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#1f9e89">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Reactions &amp; Water Quality</div>
+<h1>Shallow Lake Eutrophication</h1>
+<p class="lede">A 50 ha, 2.5 m deep, well-mixed lake over a phosphorus-rich sediment, simulated through 2010 with Baltimore weather. Phytoplankton, phosphorus, an explicit nitrogen cycle and dissolved oxygen respond to light, temperature, tributary storms and redox-controlled phosphorus release from the sediment. A second model halves the tributary phosphorus load.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=Pond_Plugin'>Pond_Plugin</a><a class='plug' href='../../?plugin=groundwater'>groundwater</a><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/shallow-lake-eutrophication.zip" download>Download model (.zip)</a>
+    <div class="muted">282 KB · 18 files · open <code>shallow_lake.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>Eutrophication is the over-enrichment of a lake with nutrients, mostly phosphorus and nitrogen, and the chain of consequences that follows: dense algal blooms, turbid water, large swings in dissolved oxygen and, in time, a sediment so loaded with phosphorus that it keeps feeding the algae after the external load is cut. Shallow lakes are especially prone to it. Wind keeps them mixed (polymictic), so the nutrients released from the bed reach the sunlit water at once.</p>
+<p>This model is a 50 ha lake with a mean depth of 2.5 m over a phosphorus-rich sediment, run for the calendar year 2010 with hourly light, wind and air temperature from Baltimore/Washington International Airport (BWI). A synthetic tributary brings water and nutrients with storm pulses timed to the 2010 rainfall. The lake has a single phytoplankton group, the phosphorus cycle (phosphate, organic P and iron-bound P), an explicit nitrogen cycle (organic N, ammonia, nitrate and denitrification losses), detrital carbon, dissolved oxygen and the oxygen demand of reduced species. The sediment layer settles, decomposes and stores organic matter, and releases phosphate when it turns anoxic. A second model file, <code>shallow_lake_p_load_50pct.ohq</code>, halves the tributary phosphorus load so that the effect of a watershed load reduction can be compared with the base run.</p>
+<p>The model is a teaching and screening tool. Its parameters are typical literature values and it has not been calibrated to any lake.</p>
+<h2>How it works</h2>
+<p><strong>Blocks and links.</strong> The <code>Lake</code> is a <code>Pond</code> block with S = α·d^β, β = 1 and α = 500 000 m², so its surface area is a constant 50 ha and its depth is d = S/α (about 2.53 m). The tributary enters through the Pond <code>inflow</code> series; each constituent enters at the concentration in its <code>time_variable_inflow_concentration</code> file, so the load is C_in(t)·Q_in(t). Water leaves over the <code>Outlet_weir</code>, Q = 2 940 000·max(h − 2.5, 0)^1.5 m³/day, which holds the level within 0.14 m of the crest. Under the lake, the <code>Sediment</code> block is a <code>Groundwater cell</code> 0.1 m thick with a porosity of 0.9, holding 45 000 m³ of pore water. It has no water flow. All its concentrations are per m³ of pore water: 1 g/m³ in the sediment is 0.09 g per m² of lake bottom.</p>
+<p><strong>Transport between water and sediment.</strong> On the <code>Sediment_interface</code> link, a constituent moves by</p>
+<p>J = Q·C_upstream + ((D·A + α_L·Q)/L + v_ex·A)·(C_Lake − C_Sediment)  (dissolved constituents)
+  J = Q·C_upstream + v_s·A·C_Lake  (Particle constituents, settling from the higher block into the lower one)</p>
+<p>with Q = 0 (no flow), A = 500 000 m² and D = α_L = 0. The exchange velocities are v_ex = 0.2 m/day for O2 and 0.02 m/day for PO4, NH3, NOx and ODU; the larger value for oxygen stands for the thin oxic surface layer, where most of the oxygen is consumed within millimetres of the interface. The settling velocities v_s are 0.05 m/day for algae, 0.25 m/day for POC, ON and OP and 0.3 m/day for PIP. Particles only settle down; resuspension is not represented, so these are net settling velocities. On the weir, all constituents leave with the water at the lake concentration.</p>
+<p><strong>Reactions.</strong> Thirteen reactions apply in every block (OpenHydroQual multiplies each rate, in g/m³/day, by the block volume and the stoichiometric coefficients). T is the block's <code>T_water</code>, I₀ its <code>PAR</code> and H its <code>depth</code>; θ^(T−20) corrects each rate for temperature.</p>
+<table>
+<thead>
+<tr>
+<th>Reaction</th>
+<th>Rate (g/m³/day)</th>
+<th>Algae</th>
+<th>POC</th>
+<th>ON</th>
+<th>OP</th>
+<th>PIP</th>
+<th>PO4</th>
+<th>NH3</th>
+<th>NOx</th>
+<th>O2</th>
+<th>N2, ODU</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Growth_on_NH3</td>
+<td>G·p_NH3</td>
+<td>+1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>−a_PC</td>
+<td>−a_NC</td>
+<td></td>
+<td>+r_OC</td>
+<td></td>
+</tr>
+<tr>
+<td>Growth_on_NOx</td>
+<td>G·(1 − p_NH3)</td>
+<td>+1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>−a_PC</td>
+<td></td>
+<td>−a_NC</td>
+<td>+r_OC + r_ON·a_NC</td>
+<td></td>
+</tr>
+<tr>
+<td>Algal_respiration</td>
+<td>k_resp·θ_a^(T−20)·Algae·O2/(K_O + O2)</td>
+<td>−1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>+a_PC</td>
+<td>+a_NC</td>
+<td></td>
+<td>−r_OC</td>
+<td></td>
+</tr>
+<tr>
+<td>Algal_mortality</td>
+<td>k_mort·θ_a^(T−20)·Algae</td>
+<td>−1</td>
+<td>+1</td>
+<td>+a_NC</td>
+<td>+a_PC</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>POC_aerobic_oxidation</td>
+<td>k_C·θ_m^(T−20)·POC·O2/(K_O + O2)</td>
+<td></td>
+<td>−1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>−r_OC</td>
+<td></td>
+</tr>
+<tr>
+<td>Denitrification</td>
+<td>k_C·θ_m^(T−20)·POC·K_O/(K_O + O2)·NOx/(K_NOx + NOx)</td>
+<td></td>
+<td>−1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>−a_dn</td>
+<td></td>
+<td>N2 +a_dn</td>
+</tr>
+<tr>
+<td>POC_anaerobic_oxidation</td>
+<td>f_an·k_C·θ_m^(T−20)·POC·K_O/(K_O + O2)·K_NOx/(K_NOx + NOx)</td>
+<td></td>
+<td>−1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>ODU +r_OC</td>
+</tr>
+<tr>
+<td>ODU_oxidation</td>
+<td>k_odu·θ_m^(T−20)·ODU·O2/(K_O + O2)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>−1</td>
+<td>ODU −1</td>
+</tr>
+<tr>
+<td>Ammonification</td>
+<td>k_ON·θ_m^(T−20)·ON</td>
+<td></td>
+<td></td>
+<td>−1</td>
+<td></td>
+<td></td>
+<td></td>
+<td>+1</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OP_mineralization</td>
+<td>k_OP·θ_m^(T−20)·OP</td>
+<td></td>
+<td></td>
+<td></td>
+<td>−1</td>
+<td></td>
+<td>+1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Nitrification</td>
+<td>k_nit·θ_n^(T−20)·NH3·O2/(K_O_nit + O2)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>−1</td>
+<td>+1</td>
+<td>−r_ON</td>
+<td></td>
+</tr>
+<tr>
+<td>P_sorption</td>
+<td>k_sorb·Fe_ox·PO4·O2/(K_Fe + O2)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>+1</td>
+<td>−1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>P_release</td>
+<td>k_rel·θ_m^(T−20)·PIP·K_Fe/(K_Fe + O2)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>−1</td>
+<td>+1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Algal growth.</strong> The gross growth rate is</p>
+<p>G = μ_max·θ_g^(T−20)·f_L·f_N·f_P·Algae</p>
+<p>with multiplicative Monod nutrient limitation on total inorganic nitrogen and on phosphate,</p>
+<p>f_N = (NH3 + NOx)/(K_N + NH3 + NOx),  f_P = PO4/(K_P + PO4)</p>
+<p>and a light limitation that is the Monod light response averaged over the depth of the block, with Beer-Lambert attenuation:</p>
+<p>f_L = ln((K_I + I₀)/(K_I + I₀·e^(−k_e·H)))/(k_e·H),  k_e = k_bg + k_chl·chl_C·Algae</p>
+<p>The extinction coefficient includes self-shading: at 80 µg/L of chlorophyll-a, k_e = 2.1 per m and 0.5% of the surface light reaches the bottom. Because I₀ is hourly, growth stops at night and peaks at midday. The ammonium preference factor of Thomann and Mueller splits the nitrogen uptake between NH3 and NOx:</p>
+<p>p_NH3 = NH3·NOx/((K_NH + NH3)(K_NH + NOx)) + NH3·K_NH/((NH3 + NOx)(K_NH + NOx))</p>
+<p>It is 1 when only ammonia is present and 0 when only nitrate is. Algae have fixed Redfield stoichiometry (a_NC = 0.176 g N/g C, a_PC = 0.0244 g P/g C), and growth on nitrate releases more oxygen (3.47 g O₂/g C) than growth on ammonia (2.67), because the nitrate is reduced inside the cell.</p>
+<p><strong>Organic matter, nitrogen and phosphorus cycles.</strong> Dead algae become detritus with separate carbon (POC), nitrogen (ON) and phosphorus (OP) pools, which settle together. The tributary brings its own POC, ON and OP. Organic N is ammonified to NH3 and organic P mineralized to PO4 by first-order kinetics, independent of oxygen. Detrital carbon is oxidized by three pathways in sequence: with oxygen (consuming 2.67 g O₂/g C), with nitrate when oxygen is scarce (denitrification, removing 0.933 g N/g C as N2) and, when both are scarce, by other electron acceptors at 30% of the aerobic rate. The reduced products of this last pathway are carried as oxygen demand units (ODU, 2.67 g O₂-eq per g C, after Di Toro 2001); they diffuse out of the sediment like other solutes and are reoxidized by oxygen wherever it is available, so the oxygen demand of carbon mineralized anaerobically is not lost. Ammonia is nitrified to nitrate when oxygen is present (4.57 g O₂/g N). The same reactions run in the sediment, where the settled detritus is concentrated: the oxygen they consume there, supplied across the interface, is the sediment oxygen demand, and the nitrate the sediment removes (by direct uptake from the water and by coupled nitrification and denitrification) is the main nitrogen sink.</p>
+<p><strong>Redox-controlled phosphorus release.</strong> The sediment holds phosphate bound to iron(III) oxides (PIP). While the pore water has oxygen, phosphate is sorbed to the oxides at a rate proportional to the iron content (<code>Fe_ox</code>, 5000 g Fe/m³, which exists only in the sediment). When the pore water loses its oxygen, the iron is reduced and the bound phosphate dissolves at a rate k_rel·θ_m^(T−20)·PIP·K_Fe/(K_Fe + O2). Pore-water phosphate then diffuses into the lake. This is the classic Mortimer mechanism of internal loading: release is fast when the sediment is warm and anoxic and slow when it is cold and oxic. In the water column, where Fe_ox is zero, PIP from the tributary can also dissolve if the water turns anoxic, but no phosphate is sorbed.</p>
+<p><strong>Reaeration.</strong> The <code>Reaeration</code> source (Banks-Herrera) adds oxygen to the lake at</p>
+<p>F = A·K_L·1.024^(T−20)·(DO_sat − O2),  K_L = 0.728·U^0.5 − 0.317·U + 0.0372·U²  (m/day)
+  DO_sat = 14.652 − 0.41022·T + 0.007991·T² − 0.000077774·T³</p>
+<p>with A = 500 000 m² (the pond area), U the hourly wind speed at 10 m (BWI, converted from mph) and T the water temperature. Over the open-water season U averages 3.9 m/s and K_L averages 0.86 m/day (0.71 m/day over the whole year including ice, 0.73 m/day in July), within the 0.5 to 3 m/day usual for lakes; at 10 m/s K_L is 2.9 m/day. For the 2.53 m deep lake this is a volumetric rate K_L/H of about 0.3 per day. When the lake is supersaturated the flux is negative and oxygen escapes to the air.</p>
+<p><strong>Forcing.</strong> Air temperature, shortwave radiation and wind speed are the hourly NOAA Local Climatological Data for BWI in 2010, rebased to day 0 = 1 January 2010 00:00 (Excel serial date 40179). The first air-temperature record reads 22 °C between readings of 2.2 °C and was corrected to 2.2 °C; 16 records flagged as suspect ("s") were dropped. Water temperature is an exponential moving average of the hourly air temperature with a 5-day time constant (dT_w/dt = (T_air − T_w)/5 days), floored at 1 °C. The lake is taken as ice-covered whenever the water temperature is below 1.5 °C (52 days: 1 to 17 January, 31 January to 20 February and 14 to 29 December, during the cold, snowy winter of 2010). Under ice the PAR is reduced to 10% and the wind to zero, which turns off reaeration. PAR is 0.45 times the shortwave radiation. The inflow and its concentrations are synthetic (see Input files).</p>
+<p><strong>Parameter values.</strong> Not calibrated. Values are typical of the ranges in Chapra (1997), Bowie et al. (1985) and the WASP and CE-QUAL-W2 manuals.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Unit</th>
+<th>Typical range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>μ_max, θ_g</td>
+<td>2.5, 1.066</td>
+<td>1/day, -</td>
+<td>1 to 3; 1.02 to 1.07</td>
+</tr>
+<tr>
+<td>K_I</td>
+<td>30</td>
+<td>W/m² PAR</td>
+<td>10 to 60</td>
+</tr>
+<tr>
+<td>K_N, K_P, K_NH</td>
+<td>0.03, 0.005, 0.025</td>
+<td>g/m³</td>
+<td>0.01 to 0.1; 0.001 to 0.02; 0.01 to 0.05</td>
+</tr>
+<tr>
+<td>k_bg, k_chl</td>
+<td>0.8, 0.016</td>
+<td>1/m, m²/mg chl</td>
+<td>0.2 to 2; 0.01 to 0.02</td>
+</tr>
+<tr>
+<td>chl_C</td>
+<td>25</td>
+<td>mg chl/g C</td>
+<td>10 to 50 (C:chl 20 to 100)</td>
+</tr>
+<tr>
+<td>a_NC, a_PC</td>
+<td>0.176, 0.0244</td>
+<td>g/g C</td>
+<td>Redfield</td>
+</tr>
+<tr>
+<td>k_resp, k_mort, θ_a</td>
+<td>0.15, 0.12, 1.08</td>
+<td>1/day, 1/day, -</td>
+<td>0.05 to 0.2; 0.02 to 0.2; 1.04 to 1.08</td>
+</tr>
+<tr>
+<td>k_C, k_ON, k_OP, θ_m</td>
+<td>0.1, 0.05, 0.07, 1.08</td>
+<td>1/day, -</td>
+<td>0.01 to 0.2; 1.02 to 1.10</td>
+</tr>
+<tr>
+<td>k_odu</td>
+<td>1.0</td>
+<td>1/day</td>
+<td>0.1 to 10 (sulfide and Fe²⁺ oxidation)</td>
+</tr>
+<tr>
+<td>K_O, K_NOx, f_an</td>
+<td>0.5, 0.1, 0.3</td>
+<td>g/m³, g N/m³, -</td>
+<td>0.1 to 1; 0.05 to 0.5</td>
+</tr>
+<tr>
+<td>k_nit, θ_n, K_O_nit</td>
+<td>0.1, 1.08, 1.0</td>
+<td>1/day, -, g/m³</td>
+<td>0.05 to 0.5; 1.05 to 1.08; 0.5 to 2</td>
+</tr>
+<tr>
+<td>k_sorb·Fe_ox, K_Fe, k_rel</td>
+<td>0.5, 1.0, 0.012</td>
+<td>1/day, g/m³, 1/day</td>
+<td>model-specific</td>
+</tr>
+<tr>
+<td>v_s algae, detritus, PIP</td>
+<td>0.05, 0.25, 0.3</td>
+<td>m/day</td>
+<td>0.05 to 0.5; 0.1 to 1; 0.1 to 1 (net of resuspension)</td>
+</tr>
+<tr>
+<td>v_ex O2, solutes</td>
+<td>0.2, 0.02</td>
+<td>m/day</td>
+<td>model-specific</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Simulation settings.</strong> The run covers day 0 to 365 with an initial step of 0.01 day and <code>max_timestep_increase_factor</code> = 4, so the step never exceeds 0.04 day (about one hour); this keeps the fast, nonlinear kinetics and the diurnal light cycle accurate. A run takes about 1 to 2 minutes.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Seasonal succession.</strong> Under ice (January and February) light is too low for growth and chlorophyll-a falls below 3 µg/L. After ice-out a spring bloom reaches about 47 µg/L in mid-March, limited by phosphorus: phosphate is drawn down from 0.06 to 0.003 g P/m³, where f_P = 0.4. In July and August chlorophyll-a is 50 to 65 µg/L, and it peaks at 79 µg/L on 6 October. The May to September mean is 40 µg/L, which places the lake in the eutrophic to hypereutrophic range.</li>
+<li><strong>From phosphorus to nitrogen limitation.</strong> Nitrate is 1.5 g N/m³ in spring. By mid-August it has been exhausted (below 0.01 g N/m³) by algal uptake and denitrification, while sediment phosphate release lifts PO4 to 0.15 g P/m³. The algae are then nitrogen limited, the classic late-summer shift in eutrophic lakes in which nitrogen-fixing cyanobacteria (not represented here) gain an advantage. Total N falls from 2.0 g N/m³ in April and May to 0.78 g N/m³ in August.</li>
+<li><strong>The October rise in chlorophyll-a.</strong> The 118 mm storm of 30 September and its recession bring about 540 kg of nitrate and ammonia in five days into a lake that is nitrogen limited but holds 0.14 g P/m³ of phosphate. Lake NOx rises from 0.005 to 0.14 g N/m³ in two days, and the algae, no longer nitrogen limited, grow from a daily mean of 48 to 74 µg/L over the next six days (net 0.07 per day, with gross growth of about 0.5 per day in daylight). The storm water, free of algae, replaces about a quarter of the lake volume in three days, so dilution and washout do act, but growth outpaces them once the nitrogen arrives. The rise looks sudden only on the scale of a year.</li>
+<li><strong>Diel oxygen cycle.</strong> In July the pre-dawn minimum (7.4 to 8.2 g/m³) is on average equal to saturation (7.4 to 8.0 g/m³) and falls below it on 11 of 31 nights; the afternoon maximum is about 115% of saturation. In August the minimum is below saturation on 25 of 31 nights (by 0.37 g/m³ on average) and in September on every night (by 0.65 g/m³). The lowest summer DO is 7.0 g/m³ before dawn on 4 September. The wind-mixed shallow lake never becomes hypoxic.</li>
+<li><strong>Oxygen budget.</strong> Over the year the water column produces 152 t more oxygen by photosynthesis than it consumes by respiration, decomposition, nitrification and ODU oxidation, the sediment takes up 166 t, and the lake gains a net 10.5 t from the atmosphere: the lake as a whole is slightly net heterotrophic, fed by the organic carbon of the tributary and the sediment.</li>
+<li><strong>Winter oxygen depletion.</strong> Under ice there is no reaeration and little photosynthesis, so sediment and water respiration pull DO from 12 to 6.3 g/m³ in January, 7.8 g/m³ in February and 9.6 g/m³ in December, while saturation is 14 g/m³.</li>
+<li><strong>Internal phosphorus loading.</strong> Sediment pore-water oxygen falls below 1.5 g/m³ from 10 August to 27 September, and the phosphate release rises to 20 to 31 mg P/m²/day, against 1 to 5 mg P/m²/day in winter. Over the year the sediment releases 1370 kg of P (2.7 g P/m²), 1.5 times the tributary load of 898 kg. Because the sediment is oxic for most of the year, it also traps phosphate as iron-bound P, which grows from 40 to 52 g P/m³ of pore water over the year.</li>
+<li><strong>Sediment oxygen demand.</strong> The sediment takes up 0.45 to 0.9 g O₂/m²/day in winter and 1.3 to 1.4 g O₂/m²/day in August and September, 166 t over the year.</li>
+<li><strong>Phosphorus budget.</strong> Inflow 898 kg; outflow 461 kg; net retention 437 kg (49%), stored as iron-bound P in the sediment. Inflow minus outflow equals the change in storage to better than 0.01 kg.</li>
+<li><strong>Nitrogen budget.</strong> Inflow 11 830 kg; outflow 6 870 kg (58%); denitrification 4 950 kg (42%: 3 690 kg in the sediment and 1 260 kg in the water); the N stored in the lake and the sediment is unchanged to within 5 kg. The budget closes to 0.02 kg.</li>
+<li><strong>Halving the phosphorus load.</strong> With the tributary P load cut from 898 to 449 kg, the mean total phosphorus of the lake falls by 46% (0.098 to 0.053 g P/m³), chlorophyll-a falls by 30% in May to September (40 to 28 µg/L) and the October peak by half (79 to 42 µg/L), because the lake no longer holds enough phosphate to use the storm nitrate. Sediment release falls from 1370 to 860 kg, so internal loading still delivers twice the external load. The sediment buffers the response; a full recovery takes years, as its phosphorus pool is depleted.</li>
+</ul>
+<p><img alt="Base run versus the 50% phosphorus-load scenario: chlorophyll-a, total phosphorus and daily minimum DO" src="results/p_load_comparison.png" /></p>
+<p>The comparison figure was made with <code>results/compare_scenarios.py</code> from the output files of the two models. The forcing files and both model files were generated by <code>results/prep.py</code> (from the BWI records) and <code>results/gen.py</code>; the model files are plain text and can also be edited directly.</p>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The lake is a single well-mixed box. Temperature stratification on calm days, spatial patchiness, and the littoral zone with macrophytes are not represented. The Stratified Lake Eutrophication example adds two layers.</li>
+<li>Water temperature is derived from air temperature by a smoothing filter, not from a heat budget. Ice cover is inferred from the 1 °C floor of that filter and its effect is reduced to a fixed light transmission and zero wind.</li>
+<li>One phytoplankton group with fixed stoichiometry and fixed chlorophyll to carbon ratio. Nitrogen fixation, cyanobacterial buoyancy, zooplankton grazing dynamics (lumped into mortality), silica limitation and luxury phosphorus uptake are not modeled.</li>
+<li>Settling is net settling; wind-driven resuspension of sediment, important in shallow lakes, is not represented.</li>
+<li>The sediment is one 0.1 m layer with a single oxygen concentration. The redox switch of iron-bound phosphorus is driven by the mean pore-water oxygen, which stands in for the thin oxic surface layer of real sediments. The fixed iron pool is not consumed, sulfide does not bind iron, and there is no burial of phosphorus below 0.1 m.</li>
+<li>Reduced species are lumped into one ODU pool that is reoxidized at a single rate; methane escaping as bubbles, iron sulfide burial and the different kinetics of Fe²⁺, Mn²⁺ and H₂S are not represented.</li>
+<li>The Monod inhibition terms let a small fraction of denitrification proceed in oxic water (about 6% of the aerobic rate at 8 g/m³ of O2), which stands for denitrification in anoxic microsites of settling particles.</li>
+<li>The tributary flow and concentrations are synthetic; storm timing follows the 2010 BWI rainfall, but magnitudes are not those of a real stream. Precipitation on and evaporation from the lake surface are not included.</li>
+<li>Parameters are literature values and have not been calibrated. The initial sediment phosphorus (3.6 g P/m² of iron-bound P) sets the strength of the internal loading and is the most influential uncertain input.</li>
+<li>The constituents also enter the Outlet boundary and the reactions run there, but nothing in the Outlet affects the lake.</li>
+</ul>
+<p><strong>Data credit.</strong> Air temperature, solar radiation, wind speed and rainfall: NOAA National Centers for Environmental Information (formerly NCDC), Local Climatological Data, Baltimore/Washington International Airport, Maryland, 2010. US public domain.</p></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="340 140 770 766" class="ohq-diagram" style="max-width:385px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Outlet_weir"><title>Outlet_weir (wier)</title><path d="M600.0 300.0 L725.0 300.0 L850.0 300.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Sediment_interface"><title>Sediment_interface (Time-Dependent flow)</title><path d="M500.0 400.0 L500.0 500.0 L500.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Lake"><title>Lake (Pond)</title><rect x="400" y="200" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="422" y="222" width="156" height="156"/>
+<text x="500" y="422" font-size="17" text-anchor="middle">Lake</text></g>
+<g class="d-node" data-name="Sediment"><title>Sediment (Groundwater cell)</title><rect x="400" y="600" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="422" y="622" width="156" height="156"/>
+<text x="500" y="822" font-size="17" text-anchor="middle">Sediment</text></g>
+<g class="d-node" data-name="Outlet"><title>Outlet (fixed_head)</title><rect x="850" y="200" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="872" y="222" width="156" height="156"/>
+<text x="950" y="422" font-size="17" text-anchor="middle">Outlet</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>3</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Lake'><summary><span class='cname'>Lake</span><span class='ctype'>Pond · Pond_Plugin</span><span class='crole'><p>The lake water column: a vertical-walled Pond block (S = α·d with α = 500 000 m², so the area is a constant 50 ha) holding 1.26 million m³ at a mean depth of 2.53 m. Fully mixed. It receives the tributary inflow and its eight constituent concentrations, carries the reaeration source on O2, and reads its own water temperature (water_temperature.csv) and surface light (par.csv).</p></span></summary><div class='cbody'><p class=type-help><b>Pond:</b> Stormwater pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Algae: Concentration</td><td class='v'>0.1</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>POC: Concentration</td><td class='v'>1.0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>ON: Concentration</td><td class='v'>0.3</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>OP: Concentration</td><td class='v'>0.02</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>PIP: Concentration</td><td class='v'>0.02</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>PO4: Concentration</td><td class='v'>0.03</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>NH3: Concentration</td><td class='v'>0.1</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>NOx: Concentration</td><td class='v'>1.0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>O2: Concentration</td><td class='v'>12.0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>ODU: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>N2: Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Fe_ox: Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>O2: External source</td><td class='v'>Reaeration</td><td>g/day</td><td></td></tr><tr><td>PO4: Time Variable Inflow concentration</td><td class='v'>tributary_PO4.csv</td><td>g/m^3</td><td></td></tr><tr><td>PIP: Time Variable Inflow concentration</td><td class='v'>tributary_PIP.csv</td><td>g/m^3</td><td></td></tr><tr><td>OP: Time Variable Inflow concentration</td><td class='v'>tributary_OP.csv</td><td>g/m^3</td><td></td></tr><tr><td>NH3: Time Variable Inflow concentration</td><td class='v'>tributary_NH3.csv</td><td>g/m^3</td><td></td></tr><tr><td>NOx: Time Variable Inflow concentration</td><td class='v'>tributary_NOx.csv</td><td>g/m^3</td><td></td></tr><tr><td>ON: Time Variable Inflow concentration</td><td class='v'>tributary_ON.csv</td><td>g/m^3</td><td></td></tr><tr><td>POC: Time Variable Inflow concentration</td><td class='v'>tributary_POC.csv</td><td>g/m^3</td><td></td></tr><tr><td>O2: Time Variable Inflow concentration</td><td class='v'>tributary_O2.csv</td><td>g/m^3</td><td></td></tr><tr><td>T_water: value</td><td class='v'>water_temperature.csv</td><td></td><td></td></tr><tr><td>PAR: value</td><td class='v'>par.csv</td><td></td><td></td></tr><tr><td>Initial Storage</td><td class='v'>1263000</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the pond at the beginning of the simulation.</td></tr><tr><td>The coefficient (α) in the rating curve S = α d^β</td><td class='v'>500000</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Alpha multiplier - This number is multiplied by alpha parameter (for calibration of multiple ponds)</td><td class='v'>1</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>The exponent (β) in the rating curve S = α d^β</td><td class='v'>1</td><td></td><td>The exponent (β) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Bottom elevation of pond</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Inflow rate time series</td><td class='v'>tributary_inflow.csv</td><td>m^3/day</td><td>The time series containing the inflow rate into the pond</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Sediment'><summary><span class='cname'>Sediment</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>The top 0.1 m of lake sediment under the whole lake (Groundwater cell, 500 000 m², porosity 0.9, so 45 000 m³ of pore water). It has no water flow; all concentrations are per m³ of pore water. It receives settling particles, exchanges dissolved constituents with the Lake, holds the iron-oxide sorbent and starts with 40 g P/m³ of iron-bound phosphorus (3.6 g P/m²) and 200 g C/m³ of labile organic carbon. It is dark (no_light.csv) and has the lake water temperature.</p></span></summary><div class='cbody'><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Algae: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>POC: Concentration</td><td class='v'>200</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>ON: Concentration</td><td class='v'>30</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>OP: Concentration</td><td class='v'>4</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>PIP: Concentration</td><td class='v'>40</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>PO4: Concentration</td><td class='v'>0.15</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>NH3: Concentration</td><td class='v'>2</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>NOx: Concentration</td><td class='v'>0.1</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>O2: Concentration</td><td class='v'>8</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>ODU: Concentration</td><td class='v'>5</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>N2: Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Fe_ox: Concentration per total volume</td><td class='v'>5000</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>T_water: value</td><td class='v'>water_temperature.csv</td><td></td><td></td></tr><tr><td>PAR: value</td><td class='v'>no_light.csv</td><td></td><td></td></tr><tr><td>Cell area</td><td class='v'>500000</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>-0.1</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>0.1</td><td>m</td><td></td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>0.0001</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.9</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.9</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Outlet'><summary><span class='cname'>Outlet</span><span class='ctype'>fixed_head</span><span class='crole'><p>Fixed-head boundary downstream of the outlet weir. Its head (0 m) equals the lake bottom elevation so that no particle settling acts across the weir link. Its storage and mass only accumulate what leaves the lake and are not plotted.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Head</td><td class='v'>0</td><td>m</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>2</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Outlet-weir'><summary><span class='cname'>Outlet_weir</span><span class='ctype'>wier · Pond_Plugin</span><span class='crole'><p>Outlet of the lake, Q = 2 940 000·max(h − 2.5, 0)^1.5 m³/day (h = lake water level in m), a 20 m wide broad-crested weir (1.7·b·H^1.5 m³/s) with its crest at 2.5 m. Water, dissolved constituents and suspended particles leave at the lake concentration.</p></span></summary><div class='cbody'><p class=type-help><b>wier:</b> Weir based on a power-law rating curve</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Coefficient alpha in Q=alpha*(h-z_0)^beta (SI-day units)</td><td class='v'>2940000</td><td></td><td></td></tr><tr><td>Exponent beta in Q=alpha*(h-z_0)^beta</td><td class='v'>1.5</td><td></td><td></td></tr><tr><td>Crest Elevation</td><td class='v'>2.5</td><td>m</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Sediment-interface'><summary><span class='cname'>Sediment_interface</span><span class='ctype'>Time-Dependent flow · mass_transfer</span><span class='crole'><p>Time-Dependent flow link from the Lake to the Sediment with no water flow and an interface area of 500 000 m². Particles settle across it at their settling velocity; dissolved O2 exchanges with an exchange velocity of 0.2 m/day, and PO4, NH3, NOx and ODU with 0.02 m/day. Positive mass transfer is from the lake into the sediment.</p></span></summary><div class='cbody'><p class=type-help><b>Time-Dependent flow:</b> Time-Dependent flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>O2: Interface exchange velocity</td><td class='v'>0.2</td><td>m/day</td><td>Link-specific mass-transfer velocity for exchange across an interface, e.g. hyporheic/bioturbation exchange between a channel and the bed or aggregate beneath it: exchange_velocity*area*(concentration.s-concentration.e), with area the link&#x27;s interface area. Equivalent to an effective diffusion coefficient D_eff = exchange_velocity*length. 0 (the default) leaves the link without it.</td></tr><tr><td>PO4: Interface exchange velocity</td><td class='v'>0.02</td><td>m/day</td><td>Link-specific mass-transfer velocity for exchange across an interface, e.g. hyporheic/bioturbation exchange between a channel and the bed or aggregate beneath it: exchange_velocity*area*(concentration.s-concentration.e), with area the link&#x27;s interface area. Equivalent to an effective diffusion coefficient D_eff = exchange_velocity*length. 0 (the default) leaves the link without it.</td></tr><tr><td>NH3: Interface exchange velocity</td><td class='v'>0.02</td><td>m/day</td><td>Link-specific mass-transfer velocity for exchange across an interface, e.g. hyporheic/bioturbation exchange between a channel and the bed or aggregate beneath it: exchange_velocity*area*(concentration.s-concentration.e), with area the link&#x27;s interface area. Equivalent to an effective diffusion coefficient D_eff = exchange_velocity*length. 0 (the default) leaves the link without it.</td></tr><tr><td>NOx: Interface exchange velocity</td><td class='v'>0.02</td><td>m/day</td><td>Link-specific mass-transfer velocity for exchange across an interface, e.g. hyporheic/bioturbation exchange between a channel and the bed or aggregate beneath it: exchange_velocity*area*(concentration.s-concentration.e), with area the link&#x27;s interface area. Equivalent to an effective diffusion coefficient D_eff = exchange_velocity*length. 0 (the default) leaves the link without it.</td></tr><tr><td>ODU: Interface exchange velocity</td><td class='v'>0.02</td><td>m/day</td><td>Link-specific mass-transfer velocity for exchange across an interface, e.g. hyporheic/bioturbation exchange between a channel and the bed or aggregate beneath it: exchange_velocity*area*(concentration.s-concentration.e), with area the link&#x27;s interface area. Equivalent to an effective diffusion coefficient D_eff = exchange_velocity*length. 0 (the default) leaves the link without it.</td></tr><tr><td>Cross-sectional area of the connection</td><td class='v'>500000</td><td>m<sup>2</sup></td><td>Flow area shared by the two blocks. It multiplies the molecular-diffusion term in Constituent::diffusive_masstransfer, so the default of 1e-9 m^2 suppresses diffusion entirely no matter what diffusion_coefficient is set on the constituent. Set it to the real interface area for any model where molecular diffusion matters. The tiny default is kept so existing models are unchanged.</td></tr><tr><td>Separation between the connected blocks</td><td class='v'>0.05</td><td>m</td><td>Distance between the centres of the two connected blocks. It divides the diffusive/dispersive exchange in Constituent::diffusive_masstransfer, so it must be the real separation or dispersion is scaled wrongly: a chain of 0.0254 m cells left at the default 1 m disperses 39x too weakly, and a dispersivity calibrated that way absorbs the error. The default of 1 m is kept only so existing models are unchanged -- set it for any model where dispersion or diffusion matters.</td></tr></tbody></table></div></details>
+</div>
+<h3>Sources <small>1</small></h3><p class='kind-blurb'>External inputs or sinks applied to blocks: rainfall, evaporation, loads, exchange with the atmosphere.</p><div class='comp-list'>
+<details class='comp' id='c-Reaeration'><summary><span class='cname'>Reaeration</span><span class='ctype'>reaeration_Banks_Herrera · mass_transfer</span><span class='crole'><p>Banks-Herrera wind-driven reaeration source assigned to O2 in the Lake: flux = A·(0.728·U^0.5 − 0.317·U + 0.0372·U²)·1.024^(T−20)·(DO_sat(T) − O2) g/day, with U from wind_speed.csv and T from water_temperature.csv.</p></span></summary><div class='cbody'><p class=type-help><b>reaeration_Banks_Herrera:</b> Wind-driven oxygen reaeration of still or slow water (ponds, wetlands, lakes) by the Banks and Herrera (1977) gas-transfer velocity K_L = 0.728 U_w^0.5 - 0.317 U_w + 0.0372 U_w^2 (m/day, U_w = wind speed at 10 m in m/s). Surface flux area * K_L * theta^(T-20) * (C_s - C). Attach to dissolved oxygen as an external source on any block with a water-surface &#x27;area&#x27; (channels, ponds).</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Water temperature</td><td class='v'>water_temperature.csv</td><td>degC</td><td>Optional water-temperature time series. If none is given, 20 C is used: no temperature correction is applied and the saturation concentration is the 20 C value (9.09 g/m3).</td></tr><tr><td>Temperature coefficient of reaeration</td><td class='v'>1.024</td><td></td><td>Reaeration rate correction theta^(T-20); 1.024 is the standard value (Elmore and West 1961).</td></tr><tr><td>Wind speed at 10 m</td><td class='v'>wind_speed.csv</td><td>m/s</td><td>Optional wind-speed time series at 10 m height; if none is given, 3 m/s is used.</td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>12</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-Algae'><summary><span class='cname'>Algae</span><span class='ctype'>Particle</span><span class='crole'><p>Phytoplankton biomass as carbon (g C/m³), one functional group. A Particle that settles at 0.05 m/day. Chlorophyll-a is reported as 25 mg chl-a per g C (a C:chl-a ratio of 40), so 1 g C/m³ = 25 µg chl-a/L.</p></span></summary><div class='cbody'><p class=type-help><b>Particle:</b> Solid Particle</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Settling velocity</td><td class='v'>0.05</td><td>m/day</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Turbidity Coefficient</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Turbidity Exponent</td><td class='v'>1</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-POC'><summary><span class='cname'>POC</span><span class='ctype'>Particle</span><span class='crole'><p>Detrital particulate organic carbon (g C/m³), from algal mortality and the tributary. Settles at 0.25 m/day. Oxidized aerobically, by denitrification or by anaerobic pathways.</p></span></summary><div class='cbody'><p class=type-help><b>Particle:</b> Solid Particle</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Settling velocity</td><td class='v'>0.25</td><td>m/day</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Turbidity Coefficient</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Turbidity Exponent</td><td class='v'>1</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-ON'><summary><span class='cname'>ON</span><span class='ctype'>Particle</span><span class='crole'><p>Solid Particle</p></span></summary><div class='cbody'><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Settling velocity</td><td class='v'>0.25</td><td>m/day</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Turbidity Coefficient</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Turbidity Exponent</td><td class='v'>1</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-OP'><summary><span class='cname'>OP</span><span class='ctype'>Particle</span><span class='crole'><p>Organic phosphorus (g P/m³), particulate, settling at 0.25 m/day. Produced by algal mortality (0.0244 g P per g C) and carried by the tributary; mineralized to PO4.</p></span></summary><div class='cbody'><p class=type-help><b>Particle:</b> Solid Particle</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Settling velocity</td><td class='v'>0.25</td><td>m/day</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Turbidity Coefficient</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Turbidity Exponent</td><td class='v'>1</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-PIP'><summary><span class='cname'>PIP</span><span class='ctype'>Particle</span><span class='crole'><p>Particulate inorganic phosphorus (g P/m³): phosphate bound to iron oxides. Settles at 0.3 m/day. Arrives with the tributary, forms in the sediment by sorption of PO4 and returns PO4 by reductive release when oxygen is low.</p></span></summary><div class='cbody'><p class=type-help><b>Particle:</b> Solid Particle</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Settling velocity</td><td class='v'>0.3</td><td>m/day</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Turbidity Coefficient</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Turbidity Exponent</td><td class='v'>1</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-PO4'><summary><span class='cname'>PO4</span><span class='ctype'>Constituent</span><span class='crole'><p>Dissolved inorganic (soluble reactive) phosphate (g P/m³).</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/day</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-NH3'><summary><span class='cname'>NH3</span><span class='ctype'>Constituent</span><span class='crole'><p>Ammonia plus ammonium nitrogen (g N/m³).</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/day</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-NOx'><summary><span class='cname'>NOx</span><span class='ctype'>Constituent</span><span class='crole'><p>Nitrate plus nitrite nitrogen (g N/m³).</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/day</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-O2'><summary><span class='cname'>O2</span><span class='ctype'>Constituent</span><span class='crole'><p>Dissolved oxygen (g/m³).</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/day</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-ODU'><summary><span class='cname'>ODU</span><span class='ctype'>Constituent</span><span class='crole'><p>Oxygen demand units (g O₂-equivalent/m³): the reduced products of anaerobic decomposition (Fe²⁺, Mn²⁺, H₂S, CH₄) lumped as the oxygen needed to reoxidize them. Produced by POC_anaerobic_oxidation (2.67 g O₂-eq per g C), exchanged across the sediment interface like the other solutes and oxidized by O2.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/day</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-N2'><summary><span class='cname'>N2</span><span class='ctype'>Immobile_Constituent · mass_transfer</span><span class='crole'><p>Nitrogen removed by denitrification (g N/m³), an Immobile_Constituent that only accumulates where denitrification occurs. Its mass in each block is the cumulative denitrification loss, used in the nitrogen budget.</p></span></summary><div class='cbody'><p class=type-help><b>Immobile_Constituent:</b> Immobile constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Fe-ox'><summary><span class='cname'>Fe_ox</span><span class='ctype'>Immobile_Constituent · mass_transfer</span><span class='crole'><p>Reactive iron(III) oxide in the sediment (g Fe/m³ of pore water), an Immobile_Constituent fixed at 5000 g/m³ in the Sediment and zero in the Lake. It is not consumed: it scales the phosphate sorption rate, so sorption happens only in the sediment.</p></span></summary><div class='cbody'><p class=type-help><b>Immobile_Constituent:</b> Immobile constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>33</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-mu-max'><summary><span class='cname'>mu_max</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Maximum algal growth rate at 20 °C: 2.5 per day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>2.5</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-theta-g'><summary><span class='cname'>theta_g</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Temperature coefficient of algal growth: 1.066.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.066</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-I'><summary><span class='cname'>K_I</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Half-saturation light intensity for growth: 30 W/m² of PAR.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>30</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-N'><summary><span class='cname'>K_N</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Half-saturation concentration of inorganic nitrogen (NH3 + NOx) for growth: 0.03 g N/m³.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.03</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-P'><summary><span class='cname'>K_P</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Half-saturation concentration of PO4 for growth: 0.005 g P/m³.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.005</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-NH'><summary><span class='cname'>K_NH</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Half-saturation constant of the ammonium preference factor: 0.025 g N/m³.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.025</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-bg'><summary><span class='cname'>k_bg</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Background light extinction coefficient of water and non-algal matter: 0.8 per m.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.8</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-chl'><summary><span class='cname'>k_chl</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Specific light extinction by chlorophyll-a: 0.016 m² per mg chl-a.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.016</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-chl-C'><summary><span class='cname'>chl_C</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Chlorophyll-a to carbon ratio of the algae: 25 mg chl-a per g C.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>25</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-a-NC'><summary><span class='cname'>a_NC</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Nitrogen to carbon mass ratio of algae and the organic matter they produce: 0.176 g N/g C (Redfield, 16:106 molar).</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.176</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-a-PC'><summary><span class='cname'>a_PC</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Phosphorus to carbon mass ratio: 0.0244 g P/g C (Redfield, 1:106 molar).</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.0244</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-r-OC'><summary><span class='cname'>r_OC</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Oxygen produced per g of carbon fixed, and consumed per g of carbon respired or oxidized: 2.67 g O₂/g C.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>2.67</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-r-ON'><summary><span class='cname'>r_ON</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Oxygen equivalent of nitrogen oxidation (nitrification) and of nitrate reduction during algal uptake: 4.57 g O₂/g N.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>4.57</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-a-dn'><summary><span class='cname'>a_dn</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Nitrate nitrogen reduced per g of organic carbon oxidized by denitrification: 0.933 g N/g C (5 CH₂O + 4 NO₃⁻).</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.933</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-resp'><summary><span class='cname'>k_resp</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Algal respiration rate at 20 °C: 0.15 per day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.15</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-mort'><summary><span class='cname'>k_mort</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Algal mortality rate at 20 °C (natural death and grazing, lumped): 0.12 per day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.12</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-theta-a'><summary><span class='cname'>theta_a</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Temperature coefficient of respiration and mortality: 1.08.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.08</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-C'><summary><span class='cname'>k_C</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Decomposition rate of detrital POC at 20 °C: 0.1 per day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.1</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-ON'><summary><span class='cname'>k_ON</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Ammonification rate of organic nitrogen at 20 °C: 0.05 per day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.05</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-OP'><summary><span class='cname'>k_OP</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Mineralization rate of organic phosphorus at 20 °C: 0.07 per day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.07</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-theta-m'><summary><span class='cname'>theta_m</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Temperature coefficient of decomposition, mineralization and phosphorus release: 1.08.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.08</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-O'><summary><span class='cname'>K_O</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Half-saturation O₂ concentration of aerobic oxidation, and the O₂ inhibition constant of denitrification and anaerobic oxidation: 0.5 g/m³.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.5</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-NOx'><summary><span class='cname'>K_NOx</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Half-saturation NOx concentration of denitrification: 0.1 g N/m³.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.1</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-f-an'><summary><span class='cname'>f_an</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Rate of anaerobic POC oxidation (iron, sulfate reduction, methanogenesis) relative to aerobic oxidation: 0.3.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.3</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-nit'><summary><span class='cname'>k_nit</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Nitrification rate at 20 °C: 0.1 per day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.1</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-theta-n'><summary><span class='cname'>theta_n</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Temperature coefficient of nitrification: 1.08.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.08</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-O-nit'><summary><span class='cname'>K_O_nit</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Half-saturation O₂ concentration of nitrification: 1.0 g/m³.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.0</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-sorb'><summary><span class='cname'>k_sorb</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Second-order rate constant of phosphate sorption to iron oxides: 0.0001 m³/(g Fe·day), i.e. 0.5 per day at 5000 g Fe/m³.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.0001</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-Fe'><summary><span class='cname'>K_Fe</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>O₂ concentration that controls the redox switch of iron-bound phosphorus: 1.0 g/m³.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.0</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-rel'><summary><span class='cname'>k_rel</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Reductive release rate of iron-bound phosphorus at 20 °C under anoxia: 0.012 per day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.012</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-k-odu'><summary><span class='cname'>k_odu</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Oxidation rate of reduced species (ODU) at 20 °C with ample oxygen: 1.0 per day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.0</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-T-water'><summary><span class='cname'>T_water</span><span class='ctype'>TimeDependent_ReactionParameter</span><span class='crole'><p>Water temperature (°C), a block-specific TimeDependent_ReactionParameter. Lake and Sediment both read water_temperature.csv.</p></span></summary><div class='cbody'><p class=type-help><b>TimeDependent_ReactionParameter:</b> Time Dependent Reaction Parameter</p></div></details>
+<details class='comp' id='c-PAR'><summary><span class='cname'>PAR</span><span class='ctype'>TimeDependent_ReactionParameter</span><span class='crole'><p>Photosynthetically active radiation at the top of the block (W/m²), block-specific. The Lake reads par.csv; the Sediment reads no_light.csv (zero).</p></span></summary><div class='cbody'><p class=type-help><b>TimeDependent_ReactionParameter:</b> Time Dependent Reaction Parameter</p></div></details>
+</div>
+<h3>Reactions <small>13</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-Growth-on-NH3'><summary><span class='cname'>Growth_on_NH3</span><span class='ctype'>Reaction</span><span class='crole'><p>Algal growth supported by ammonium: the fraction p_NH3 of the total growth rate. Takes up 0.176 g NH3-N and 0.0244 g PO4-P and produces 2.67 g O₂ per g C.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(mu_max*theta_g^(T_water-20)*_log((K_I+PAR)/(K_I+PAR*_exp(0-(k_bg+k_chl*chl_C*Algae)*depth)))/((k_bg+k_chl*chl_C*Algae)*depth)*(NH3+NOx)/(K_N+NH3+NOx)*PO4/(K_P+PO4)*Algae*(NH3*NOx/((K_NH+NH3)*(K_NH+NOx))+NH3*K_NH/((NH3+NOx)*(K_NH+NOx))))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Algae</td><td class='v'>1</td></tr><tr><td>PO4</td><td class='v'>(0-a_PC)</td></tr><tr><td>NH3</td><td class='v'>(0-a_NC)</td></tr><tr><td>O2</td><td class='v'>r_OC</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-Growth-on-NOx'><summary><span class='cname'>Growth_on_NOx</span><span class='ctype'>Reaction</span><span class='crole'><p>Algal growth supported by nitrate, the remaining fraction 1 − p_NH3. Takes up 0.176 g NOx-N and 0.0244 g PO4-P per g C and produces 2.67 + 4.57·0.176 = 3.47 g O₂ per g C.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(mu_max*theta_g^(T_water-20)*_log((K_I+PAR)/(K_I+PAR*_exp(0-(k_bg+k_chl*chl_C*Algae)*depth)))/((k_bg+k_chl*chl_C*Algae)*depth)*(NH3+NOx)/(K_N+NH3+NOx)*PO4/(K_P+PO4)*Algae*(1-(NH3*NOx/((K_NH+NH3)*(K_NH+NOx))+NH3*K_NH/((NH3+NOx)*(K_NH+NOx)))))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Algae</td><td class='v'>1</td></tr><tr><td>PO4</td><td class='v'>(0-a_PC)</td></tr><tr><td>NOx</td><td class='v'>(0-a_NC)</td></tr><tr><td>O2</td><td class='v'>(r_OC+r_ON*a_NC)</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-Algal-respiration'><summary><span class='cname'>Algal_respiration</span><span class='ctype'>Reaction</span><span class='crole'><p>Endogenous respiration of algal carbon, k_resp·θ_a^(T−20)·Algae·O2/(K_O + O2). Consumes 2.67 g O₂ per g C and returns the N and P content as NH3 and PO4.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_resp*theta_a^(T_water-20)*Algae*O2/(K_O+O2))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Algae</td><td class='v'>-1</td></tr><tr><td>PO4</td><td class='v'>a_PC</td></tr><tr><td>NH3</td><td class='v'>a_NC</td></tr><tr><td>O2</td><td class='v'>(0-r_OC)</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-Algal-mortality'><summary><span class='cname'>Algal_mortality</span><span class='ctype'>Reaction</span><span class='crole'><p>Death and grazing loss of algae, k_mort·θ_a^(T−20)·Algae. Moves algal C, N and P to POC, ON and OP.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_mort*theta_a^(T_water-20)*Algae)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Algae</td><td class='v'>-1</td></tr><tr><td>POC</td><td class='v'>1</td></tr><tr><td>ON</td><td class='v'>a_NC</td></tr><tr><td>OP</td><td class='v'>a_PC</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-POC-aerobic-oxidation'><summary><span class='cname'>POC_aerobic_oxidation</span><span class='ctype'>Reaction</span><span class='crole'><p>Aerobic decomposition of detrital carbon, k_C·θ_m^(T−20)·POC·O2/(K_O + O2). Consumes 2.67 g O₂ per g C. This is the oxygen demand of organic matter in the water and the sediment oxygen demand in the Sediment.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_C*theta_m^(T_water-20)*POC*O2/(K_O+O2))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>POC</td><td class='v'>-1</td></tr><tr><td>O2</td><td class='v'>(0-r_OC)</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-Denitrification'><summary><span class='cname'>Denitrification</span><span class='ctype'>Reaction</span><span class='crole'><p>Oxidation of POC with nitrate, k_C·θ_m^(T−20)·POC·K_O/(K_O + O2)·NOx/(K_NOx + NOx). Removes 0.933 g NOx-N per g C as N2. Switched off by oxygen and limited by organic carbon and nitrate.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_C*theta_m^(T_water-20)*POC*K_O/(K_O+O2)*NOx/(K_NOx+NOx))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>POC</td><td class='v'>-1</td></tr><tr><td>NOx</td><td class='v'>(0-a_dn)</td></tr><tr><td>N2</td><td class='v'>a_dn</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-POC-anaerobic-oxidation'><summary><span class='cname'>POC_anaerobic_oxidation</span><span class='ctype'>Reaction</span><span class='crole'><p>Oxidation of POC by other electron acceptors (iron, manganese and sulfate reduction, methanogenesis) when both O2 and NOx are low, f_an·k_C·θ_m^(T−20)·POC·K_O/(K_O + O2)·K_NOx/(K_NOx + NOx). Its reduced products are tracked as ODU, 2.67 g O₂-eq per g C.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(f_an*k_C*theta_m^(T_water-20)*POC*K_O/(K_O+O2)*K_NOx/(K_NOx+NOx))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>POC</td><td class='v'>-1</td></tr><tr><td>ODU</td><td class='v'>r_OC</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-ODU-oxidation'><summary><span class='cname'>ODU_oxidation</span><span class='ctype'>Reaction</span><span class='crole'><p>Reoxidation of reduced species by oxygen, k_odu·θ_m^(T−20)·ODU·O2/(K_O + O2), consuming 1 g O₂ per g ODU. With it, all carbon that is mineralized aerobically or anaerobically eventually demands oxygen, except the carbon oxidized by denitrification.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_odu*theta_m^(T_water-20)*ODU*O2/(K_O+O2))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>O2</td><td class='v'>-1</td></tr><tr><td>ODU</td><td class='v'>-1</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-Ammonification'><summary><span class='cname'>Ammonification</span><span class='ctype'>Reaction</span><span class='crole'><p>Mineralization of organic nitrogen to ammonia, k_ON·θ_m^(T−20)·ON.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_ON*theta_m^(T_water-20)*ON)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>ON</td><td class='v'>-1</td></tr><tr><td>NH3</td><td class='v'>1</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-OP-mineralization'><summary><span class='cname'>OP_mineralization</span><span class='ctype'>Reaction</span><span class='crole'><p>Mineralization of organic phosphorus to phosphate, k_OP·θ_m^(T−20)·OP.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_OP*theta_m^(T_water-20)*OP)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>OP</td><td class='v'>-1</td></tr><tr><td>PO4</td><td class='v'>1</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-Nitrification'><summary><span class='cname'>Nitrification</span><span class='ctype'>Reaction</span><span class='crole'><p>NH3 to NOx, k_nit·θ_n^(T−20)·NH3·O2/(K_O_nit + O2). Consumes 4.57 g O₂ per g N.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_nit*theta_n^(T_water-20)*NH3*O2/(K_O_nit+O2))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>NH3</td><td class='v'>-1</td></tr><tr><td>NOx</td><td class='v'>1</td></tr><tr><td>O2</td><td class='v'>(0-r_ON)</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-P-sorption'><summary><span class='cname'>P_sorption</span><span class='ctype'>Reaction</span><span class='crole'><p>Sorption of phosphate to iron oxides, k_sorb·Fe_ox·PO4·O2/(K_Fe + O2): only where Fe_ox exists (the sediment) and only while oxygen is present.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_sorb*Fe_ox*PO4*O2/(K_Fe+O2))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>PIP</td><td class='v'>1</td></tr><tr><td>PO4</td><td class='v'>-1</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-P-release'><summary><span class='cname'>P_release</span><span class='ctype'>Reaction</span><span class='crole'><p>Reductive dissolution of iron-bound phosphorus, k_rel·θ_m^(T−20)·PIP·K_Fe/(K_Fe + O2): fast when the sediment is anoxic and warm, slow when it is oxic. This is the internal phosphorus load.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_rel*theta_m^(T_water-20)*PIP*K_Fe/(K_Fe+O2))</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>PIP</td><td class='v'>-1</td></tr><tr><td>PO4</td><td class='v'>1</td></tr></tbody></table></div></div></details>
+</div>
+<h3>Observations <small>4</small></h3><p class='kind-blurb'>Model outputs that are recorded and, when data are supplied, compared with measurements.</p><div class='comp-list'>
+<details class='comp' id='c-Chl-a'><summary><span class='cname'>Chl_a</span><span class='ctype'>Observation</span><span class='crole'><p>Observation: chlorophyll-a in the lake, chl_C·Algae (µg/L).</p></span></summary><div class='cbody'><p class=type-help><b>Observation:</b> Observation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>chl_C*Algae:concentration</td><td></td><td>Expression evaluated on the chosen object at each output time step. Typically a single state variable (e.g. &#x27;Storage&#x27;) or a derived quantity (e.g. &#x27;Storage/Area&#x27;). The result becomes the modeled value compared against observed data.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Total-P'><summary><span class='cname'>Total_P</span><span class='ctype'>Observation</span><span class='crole'><p>Observation: total phosphorus in the lake, PO4 + PIP + OP + a_PC·Algae (g P/m³).</p></span></summary><div class='cbody'><p class=type-help><b>Observation:</b> Observation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>PO4:concentration+PIP:concentration+OP:concentration+a_PC*Algae:concentration</td><td></td><td>Expression evaluated on the chosen object at each output time step. Typically a single state variable (e.g. &#x27;Storage&#x27;) or a derived quantity (e.g. &#x27;Storage/Area&#x27;). The result becomes the modeled value compared against observed data.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Total-N'><summary><span class='cname'>Total_N</span><span class='ctype'>Observation</span><span class='crole'><p>Observation: total nitrogen in the lake, NH3 + NOx + ON + a_NC·Algae (g N/m³).</p></span></summary><div class='cbody'><p class=type-help><b>Observation:</b> Observation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>NH3:concentration+NOx:concentration+ON:concentration+a_NC*Algae:concentration</td><td></td><td>Expression evaluated on the chosen object at each output time step. Typically a single state variable (e.g. &#x27;Storage&#x27;) or a derived quantity (e.g. &#x27;Storage/Area&#x27;). The result becomes the modeled value compared against observed data.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-DO-saturation'><summary><span class='cname'>DO_saturation</span><span class='ctype'>Observation</span><span class='crole'><p>Observation: oxygen saturation at the lake water temperature, the same polynomial the reaeration source uses (g/m³).</p></span></summary><div class='cbody'><p class=type-help><b>Observation:</b> Observation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>14.652-0.41022*T_water:value+0.007991*T_water:value^2-0.000077774*T_water:value^3</td><td></td><td>Expression evaluated on the chosen object at each output time step. Typically a single state variable (e.g. &#x27;Storage&#x27;) or a derived quantity (e.g. &#x27;Storage/Area&#x27;). The result becomes the modeled value compared against observed data.</td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>water_temperature.csv</code></td><td><p>Daily water temperature (°C) versus time (days from 1 January 2010). Derived from the BWI 2010 hourly air temperature (see below) by an exponential moving average with a 5-day time constant, floored at 1 °C. Mean 15.4 °C, maximum 30.2 °C on 25 July.</p></td></tr><tr><td><code>wind_speed.csv</code></td><td><p>Hourly wind speed at 10 m (m/s), BWI 2010, converted from mph (×0.447). Mean 3.9 m/s, maximum 13 m/s. Set to zero under ice, which stops reaeration.</p></td></tr><tr><td><code>tributary_PO4.csv</code></td><td><p>Synthetic tributary PO4 (g P/m³), daily: 0.04 + 0.08·φ, with φ the quickflow fraction of the inflow. Flow-weighted mean 0.063.</p></td></tr><tr><td><code>tributary_PIP.csv</code></td><td><p>Synthetic tributary particulate inorganic P (g P/m³): 0.03 + 0.25·φ, flow-weighted mean 0.100. Tributary total phosphorus (PO4 + PIP + OP) ranges from 0.09 at baseflow to 0.49 g P/m³ in the largest storm, flow-weighted 0.21.</p></td></tr><tr><td><code>tributary_OP.csv</code></td><td><p>Synthetic tributary organic P (g P/m³): 0.02 + 0.08·φ, flow-weighted mean 0.043.</p></td></tr><tr><td><code>tributary_NH3.csv</code></td><td><p>Synthetic tributary ammonia (g N/m³): 0.08 + 0.20·φ, flow-weighted mean 0.14.</p></td></tr><tr><td><code>tributary_NOx.csv</code></td><td><p>Synthetic tributary nitrate (g N/m³): 2.0 − 0.6·φ (diluted in storms), flow-weighted mean 1.83. Tributary total nitrogen is 2.4 to 2.9 g N/m³, flow-weighted 2.6.</p></td></tr><tr><td><code>tributary_ON.csv</code></td><td><p>Synthetic tributary organic N (g N/m³): 0.35 + 1.0·φ, flow-weighted mean 0.63.</p></td></tr><tr><td><code>tributary_POC.csv</code></td><td><p>Synthetic tributary detrital organic carbon (g C/m³): 1.5 + 6.0·φ, flow-weighted mean 3.2.</p></td></tr><tr><td><code>tributary_O2.csv</code></td><td><p>Tributary dissolved oxygen (g/m³): 95% of saturation at the water temperature.</p></td></tr><tr><td><code>par.csv</code></td><td><p>Hourly photosynthetically active radiation at the water surface (W/m²): 0.45 × the BWI 2010 shortwave radiation, hourly means of the 30-minute record. Under ice (water at its 1 °C floor, 52 days in January, February and December) only 10% is transmitted. Mean 107 W/m² before the ice correction.</p></td></tr><tr><td><code>tributary_inflow.csv</code></td><td><p>Synthetic daily tributary inflow (m³/day), made up for this example: a seasonal baseflow of 9000·(1 + 0.45·cos(2π(t − 50)/365)) m³/day plus storm quickflow from an 8 km² catchment, generated from the BWI 2010 daily rainfall (30% of the rain above 5 mm/day, routed through a linear reservoir with a 1.5-day time constant). Mean 12 530 m³/day (residence time 100 days), maximum 189 000 m³/day after the 118 mm storm of 30 September.</p></td></tr><tr><td><code>no_light.csv</code></td><td><p>Zero PAR from day 0 to day 366, the light series of the Sediment block.</p></td></tr><tr><td><code>shallow_lake_p_load_50pct.ohq</code></td><td><p>Scenario model, identical to shallow_lake.ohq except that the Lake reads the three _50pct phosphorus files: the tributary phosphorus load is halved.</p></td></tr><tr><td><code>tributary_PO4_50pct.csv</code></td><td><p>Half of tributary_PO4.csv, read by the scenario model.</p></td></tr><tr><td><code>tributary_PIP_50pct.csv</code></td><td><p>Half of tributary_PIP.csv, read by the scenario model.</p></td></tr><tr><td><code>tributary_OP_50pct.csv</code></td><td><p>Half of tributary_OP.csv, read by the scenario model.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>365</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Phytoplankton' loading='lazy'><figcaption><b>Phytoplankton</b> Algae stay below 3 µg/L under ice, bloom to about 47 µg/L in mid-March, hold at 22 to 35 µg/L in April and May, and grow to 50 to 65 µg/L in July and August as the water warms and the sediment releases phosphorus. The rise to 79 µg/L in early October is a response to the nitrate brought by the 118 mm storm of 30 September, which lifts the summer nitrogen limitation; it takes six days (net growth about 0.07 per day), not hours.</figcaption></figure><figure><img src='plot_2.png' alt='Phosphorus' loading='lazy'><figcaption><b>Phosphorus</b> Spring growth draws phosphate down to 0.003 g P/m³ (strong P limitation). From late July, once the algae are nitrogen limited, phosphate released by the sediment accumulates, and total P rises from 0.05 to 0.26 g P/m³ by the end of September before flushing and renewed sorption bring it down.</figcaption></figure><figure><img src='plot_3.png' alt='Nitrogen' loading='lazy'><figcaption><b>Nitrogen</b> Nitrate dominates in winter and spring (1.5 g N/m³). In summer algal uptake and denitrification exhaust it (below 0.01 g N/m³ from mid-August) and the algae become nitrogen limited; ammonia stays low because it is taken up as fast as it is released.</figcaption></figure><figure><img src='plot_4.png' alt='Dissolved oxygen' loading='lazy'><figcaption><b>Dissolved oxygen</b> Under ice, with no reaeration, respiration pulls DO from 12 to between 6.3 and 9.6 g/m³ while saturation is 14 g/m³. In spring and summer photosynthesis supersaturates the lake by day and respiration pulls it below saturation on most nights from August on. The wind-mixed lake never approaches hypoxia.</figcaption></figure><figure><img src='plot_5.png' alt='Diel oxygen cycle in late August' loading='lazy'><figcaption><b>Diel oxygen cycle in late August</b> Photosynthesis raises DO to 8.2 to 8.7 g/m³ (103 to 110% of saturation) each afternoon, and algal respiration, decomposition and sediment demand pull it to 7.0 to 7.4 g/m³ before dawn, 0.5 to 0.8 g/m³ below saturation, a daily swing of 1.0 to 1.4 g/m³.</figcaption></figure><figure><img src='plot_6.png' alt='Phosphate release from the sediment' loading='lazy'><figcaption><b>Phosphate release from the sediment</b> The release is 1 to 5 mg P/m²/day in the cold, oxic months and rises to 20 to 31 mg P/m²/day from mid-August to early September, when the warm sediment is nearly anoxic. Over the year it adds 1370 kg of P to the water, 1.5 times the tributary load.</figcaption></figure><figure><img src='plot_7.png' alt='Sediment pore water' loading='lazy'><figcaption><b>Sediment pore water</b> Pore-water oxygen falls from 7 to 10 g/m³ in late winter to 0.6 to 1.5 g/m³ from mid-August to late September. As it falls, iron-bound P dissolves and pore-water phosphate rises from 0.1 to 1.7 g P/m³.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/shallow-lake-eutrophication">View source on GitHub</a>.</div></footer>
+</body></html>
