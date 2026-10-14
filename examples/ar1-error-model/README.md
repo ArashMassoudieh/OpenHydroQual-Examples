@@ -11,7 +11,7 @@ keywords: [ar1, autocorrelation, autoregressive, serial correlation, ornstein uh
 extra_files: [basin_iid.ohq]
 components:
   Basin: "A completely mixed treatment basin (CSTR) receiving 100 m³/day. Its volume V is a calibrated parameter (p_V, truth 50 m³, hydraulic residence time 0.5 day). It starts with 6 g/m³ of ammonium."
-  Receiving_Water: A large receiving storage (10⁵ m³ Reactor block) that collects the effluent. Nothing flows back.
+  Receiving_Water: "Fixed-head boundary (head 0 m) that collects the effluent. The Outlet link carries a fixed flow with purely advective mass transfer, so nothing flows back and the boundary does not affect the basin."
   Outlet: Constant effluent flow of 100 m³/day from Basin to Receiving_Water, equal to the inflow, so the basin volume stays constant.
   Ammonium: Ammonium nitrogen (g/m³ as N), entering with the inflow and removed by first-order nitrification.
   k_n: First-order nitrification rate constant (1/day). Its value is set by the calibrated parameter p_k_n.

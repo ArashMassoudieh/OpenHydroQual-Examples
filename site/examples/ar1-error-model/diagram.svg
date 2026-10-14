@@ -4,7 +4,7 @@
 <g class="d-node" data-name="Basin"><title>Basin (Reactor)</title><rect x="200" y="300" width="200" height="200" rx="16"/>
 <image href="icons/reactor.png" x="222" y="322" width="156" height="156"/>
 <text x="300" y="518" font-size="14" text-anchor="middle">Basin</text></g>
-<g class="d-node" data-name="Receiving_Water"><title>Receiving_Water (Reactor)</title><rect x="650" y="300" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="672" y="322" width="156" height="156"/>
+<g class="d-node" data-name="Receiving_Water"><title>Receiving_Water (fixed_head)</title><rect x="650" y="300" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="672" y="322" width="156" height="156"/>
 <text x="750" y="518" font-size="14" text-anchor="middle">Receiving_Water</text></g>
 </svg>

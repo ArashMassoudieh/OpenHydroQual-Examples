@@ -12,8 +12,8 @@ keywords: [calibration, levenberg marquardt, lm, gauss newton, inverse modeling,
 extra_files: [pond_at_truth.ohq, pond_calibration_4param.ohq, sorption_calibration.ohq, sorption_at_truth.ohq, sorption_obs_Cu_aq.csv, sorption_obs_Cu_s.csv, monod_calibration.ohq, monod_at_truth.ohq, monod_inflow.txt, monod_temperature.txt, monod_obs_A.csv, monod_obs_B.csv]
 components:
   Pond: "A stormwater pond whose volume and depth are related by Storage = α·depth^β (α = 4140, β = 2.2). It receives the inflow record and an inflow PCB concentration of 5 g/m³, and starts at 10 102 m³ (depth 1.50 m)."
-  Withdrawal_Sink: Receiving storage for the fixed withdrawal (a 10⁶ m³ Reactor block with no outflow). It only collects water and mass; nothing flows back.
-  Downstream: Receiving storage for the weir overflow, built the same way as Withdrawal_Sink.
+  Withdrawal_Sink: "Fixed-head boundary (head 0 m) that receives the withdrawal. The Withdrawal link carries a fixed flow, so the boundary only collects water and mass; nothing flows back."
+  Downstream: "Fixed-head boundary (head 0 m) that receives the weir overflow. The weir rating depends only on the pond's head, so the boundary does not affect the discharge."
   Withdrawal: A constant abstraction of 3000 m³/day from the pond (positive from Pond to Withdrawal_Sink).
   Weir: "Overflow weir with the power-law rating Q = α·max(h − z₀, 0)^β, β = 1.5. Its coefficient α and crest elevation z₀ are calibrated. Flow is always from Pond to Downstream."
   PCB: A dissolved contaminant entering with the inflow and lost by first-order decay in the pond.
@@ -127,7 +127,7 @@ A closed groundwater cell (1 m² × 1 m, porosity 0.4, so 0.4 m³ of water) star
 
 with n = 0.4 and ρ = 1400. Reaction rates are multiplied by the water volume (Storage) to give mass rates, while Cu_s is a `Sorbed_Constituent`, whose concentration is its mass divided by the total cell volume. At equilibrium Cu_s/Cu_aq = KD exactly, so k_f is identified by the early decay of Cu_aq and KD by the height of the final plateau, 2.3×10⁻⁷ g/m³. Both observations use a log-normal error model with σ = 0.05. The case sets `nr_tolerance = 1e-10`: Cu_aq falls through six decades, and at the default tolerance its plateau, which carries all the information about KD, is lost in solver noise.
 
-When this case is run with the console, the solver reports `property 'Cu_s:inflow_loading' does not exist in 'Batch_Cell'`. The sorbed constituent type has no inflow loading and the cell has no inflow, so the results are not affected, but the console exits with code 4.
+When this case is run with the console, the solver reports a warning that `Cu_s:inflow_loading` does not exist in `Batch_Cell`. The sorbed constituent type has no inflow loading and the cell has no inflow, so the results are not affected.
 
 ### Case 3: Monod reactor
 
@@ -192,4 +192,3 @@ All results below were produced with `OHQ-LM` (version 2.1.1, two threads) from 
 - The covariance is the Gauss-Newton approximation at the optimum. It assumes the likelihood is close to quadratic there; it is not meaningful for a parameter sitting on a bound, and it describes only the neighbourhood of the optimum found. For skewed or multi-modal posteriors use MCMC.
 - LM is local. From a poor start on a problem with several optima it will converge to the nearest one. Run the genetic algorithm first in that case: it writes its estimates back into the parameters and LM continues from there.
 - The weir is a two-parameter power law (β fixed at 1.5), and the withdrawal is a constant 3000 m³/day regardless of storage.
-- The two receiving blocks are plain Reactor blocks with a large storage. A `fixed_head` block cannot receive flow in a model with constituents in this version, because the solver evaluates each constituent's inflow loading in every block and `fixed_head` has no inflow property.

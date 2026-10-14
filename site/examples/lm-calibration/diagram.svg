@@ -5,10 +5,10 @@
 <g class="d-node" data-name="Pond"><title>Pond (Pond)</title><rect x="300" y="300" width="200" height="200" rx="16"/>
 <image href="icons/stormwaterpond.png" x="322" y="322" width="156" height="156"/>
 <text x="400" y="521" font-size="16" text-anchor="middle">Pond</text></g>
-<g class="d-node" data-name="Withdrawal_Sink"><title>Withdrawal_Sink (Reactor)</title><rect x="700" y="550" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="722" y="572" width="156" height="156"/>
+<g class="d-node" data-name="Withdrawal_Sink"><title>Withdrawal_Sink (fixed_head)</title><rect x="700" y="550" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="722" y="572" width="156" height="156"/>
 <text x="800" y="771" font-size="16" text-anchor="middle">Withdrawal_Sink</text></g>
-<g class="d-node" data-name="Downstream"><title>Downstream (Reactor)</title><rect x="700" y="50" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="722" y="72" width="156" height="156"/>
+<g class="d-node" data-name="Downstream"><title>Downstream (fixed_head)</title><rect x="700" y="50" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="722" y="72" width="156" height="156"/>
 <text x="800" y="271" font-size="16" text-anchor="middle">Downstream</text></g>
 </svg>

@@ -12,7 +12,7 @@ extra_files: [sweep.py]
 components:
   Cell_01: "First of ten Groundwater cells, each 0.1 m thick with 1 m² cross-section and porosity 0.4 (0.04 m³ of pore water). It receives the inflow of 0.2 m³/day and the copper inflow concentration from inflow_concentration.txt."
   Groundwater cell: "The ten cells Cell_01 to Cell_10 that make up the 1 m soil column, numbered from the inlet. Each holds dissolved (Cu_aq) and sorbed (Cu_s) copper."
-  Effluent_Collector: A 1000 m³ Reactor block that receives the column effluent.
+  Effluent_Collector: "Fixed-head boundary (head 0 m) that receives the column effluent. Mass leaves the column only by advection through the Outlet link, so the boundary does not feed back on the column."
   Fixed flow: "The links Flow_01_02 to Flow_09_10 and Outlet, each carrying 0.2 m³/day downward through the column (positive from the upstream to the downstream cell)."
   Cu_aq: Dissolved copper (g/m³), carried by the flow.
   Cu_s: Sorbed copper (mg/kg of soil), an Immobile_Constituent that stays in its cell.

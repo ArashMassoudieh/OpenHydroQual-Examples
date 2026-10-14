@@ -10,7 +10,7 @@ keywords: [genetic algorithm, ga, evolutionary algorithm, global optimization, i
 components:
   Cell_01: "First of ten Groundwater cells, each 0.1 m thick with 1 m² cross-section and porosity 0.4 (0.04 m³ of pore water). It receives the column inflow of 0.2 m³/day and the copper inflow concentration from inflow_concentration.txt."
   Groundwater cell: "The ten cells Cell_01 to Cell_10 that make up the 1 m column, numbered from the inlet. Each holds dissolved copper (Cu_aq) and sorbed copper (Cu_s)."
-  Effluent_Collector: A 1000 m³ Reactor block that receives the column effluent. It plays no part in the calibration.
+  Effluent_Collector: "Fixed-head boundary (head 0 m) that receives the column effluent. The Outlet link carries a fixed flow and purely advective mass transfer, so the boundary has no influence on the column; it plays no part in the calibration."
   Fixed flow: "The links Flow_01_02 to Flow_09_10 and Outlet, each carrying 0.2 m³/day downward through the column (positive from the upstream to the downstream cell). Dissolved copper moves with the water; sorbed copper does not."
   Cu_aq: Dissolved copper (g/m³ of pore water). Carried by the flow and exchanged with the sorbed phase.
   Cu_s: "Sorbed copper, an Immobile_Constituent expressed as mass sorbed per mass of soil (mg/kg) through the stoichiometric factor porosity/rho_b. It does not move between cells."

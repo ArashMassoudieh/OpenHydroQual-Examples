@@ -40,7 +40,7 @@
 <g class="d-node" data-name="Cell_10"><title>Cell_10 (Groundwater cell)</title><rect x="200" y="2440" width="200" height="200" rx="16"/>
 <image href="icons/Groundwater.png" x="222" y="2462" width="156" height="156"/>
 <text x="300" y="2661" font-size="16" text-anchor="middle">Cell_10</text></g>
-<g class="d-node" data-name="Effluent_Collector"><title>Effluent_Collector (Reactor)</title><rect x="600" y="2440" width="200" height="200" rx="16"/>
-<image href="icons/reactor.png" x="622" y="2462" width="156" height="156"/>
+<g class="d-node" data-name="Effluent_Collector"><title>Effluent_Collector (fixed_head)</title><rect x="600" y="2440" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="622" y="2462" width="156" height="156"/>
 <text x="700" y="2661" font-size="16" text-anchor="middle">Effluent_Collector</text></g>
 </svg>
