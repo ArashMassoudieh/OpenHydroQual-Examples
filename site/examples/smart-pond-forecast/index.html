@@ -80,7 +80,7 @@
 </table>
 <p>with S_min = 0, S_max = 0.005 m/day, Q_min = 0, Q_max = 200 m³/day and flow coefficient c = 1. At full opening the valve can empty a full pond in 1.5 days. The conditions are strict inequalities, so a value of F exactly equal to S_min or S_max matches no branch and gives zero release. With Q_min = 0 this has no effect here; with a nonzero Q_min and S_min = 0 the valve would close completely whenever no rain at all is forecast.</p>
 <p>The release does not depend on the water level: the device behaves like a pump or a flow-regulating valve. When the pond runs dry, the solver limits the outflow of the empty pond so its storage cannot become negative, and the reported valve flow drops to whatever is flowing in.</p>
-<p><strong>Time step.</strong> <code>max_timestep_increase_factor = 1</code> keeps every step at 0.01 day (14.4 minutes). With larger steps the pond and catchment water balances in this model failed to close by up to 3 %, so the step is held fixed; the run then takes about 10 seconds.</p>
+<p><strong>Time step.</strong> <code>max_timestep_increase_factor = 1</code> keeps every step at the initial 0.01 day (14.4 minutes), so the hourly rainfall, the sheet-flow runoff and the valve response are all resolved. The run takes about 10 seconds.</p>
 <h2>What to look for in the results</h2>
 <ul>
 <li><strong>Pre-release before each storm.</strong> F rises one to three days before each storm. The smart pond is drawn down, and by the start of every large storm in the record it is empty. During the 30 mm storm of day 39 (10 July) the smart pond fills only to 1.31 m and does not spill, while the passive pond, already full, spills its entire inflow.</li>

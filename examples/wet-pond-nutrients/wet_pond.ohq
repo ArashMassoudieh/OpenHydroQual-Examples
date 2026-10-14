@@ -70,6 +70,9 @@ create link;from=Atmosphere,to=Pond_6,type=Time-Dependent flow,O2:exchange_veloc
 setvalue; object=system, quantity=alloutputfile, value=output.txt
 setvalue; object=system, quantity=simulation_start_time, value=0
 setvalue; object=system, quantity=simulation_end_time, value=100
-setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=initial_time_step, value=0.02
+setvalue; object=system, quantity=max_timestep_increase_factor, value=2.5
+setvalue; object=system, quantity=timestep_clamp_series, value=All time series
+setvalue; object=system, quantity=make_timeseries_uniform, value=No
 setvalue; object=system, quantity=minimum_timestep, value=1e-06
 setvalue; object=system, quantity=write_interval, value=10

@@ -88,7 +88,7 @@ def main():
     ap.add_argument("--object", default="K_D", help="object whose property is varied")
     ap.add_argument("--quantity", default="base_value", help="property that is varied")
     ap.add_argument("--values", nargs="+", type=float, default=[0.5, 1, 2, 4])
-    ap.add_argument("--series", default="Cell_20_Cu_aq:concentration", help="output column to plot")
+    ap.add_argument("--series", default="Cell_10_Cu_aq:concentration", help="output column to plot")
     ap.add_argument("--console", default=os.environ.get("OHQ_CONSOLE", "OpenHydroQual-Console"))
     ap.add_argument("--resources", default=os.environ.get("OHQ_RESOURCES", ""))
     ap.add_argument("--workdir", default=os.path.join(HERE, "runs"))

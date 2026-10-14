@@ -559,8 +559,8 @@
    "title": "Wet Pond Nutrient Cycling",
    "track": "wq",
    "level": 3,
-   "status": "planned",
-   "summary": "A six-cell stormwater wet pond over an organic bed sediment, driven by measured storm inflows and loads and by weather. Penman evaporation, surface reaeration, organic matter decomposition, nitrification and sediment denitrification move carbon, oxygen and nitrogen between the water, the bed, the outlet and the groundwater.",
+   "status": "ready",
+   "summary": "A six-cell stormwater wet pond over an organic bed sediment, driven by 100 days of storm inflows, pollutant loads and weather. Penman evaporation, surface reaeration, organic matter decomposition, nitrification and sediment denitrification move carbon, oxygen and nitrogen between the water, the bed, the outlet and the groundwater.",
    "plugins": [
     "Pond_Plugin",
     "groundwater",
@@ -598,7 +598,8 @@
     "seepage",
     "stormwater",
     "bmp"
-   ]
+   ],
+   "thumb": "examples/wet-pond-nutrients/thumb.svg"
   },
   {
    "id": "buildup-washoff",
@@ -783,36 +784,54 @@
   },
   {
    "id": "sewershed-drywells",
-   "title": "Sewershed with Drywells",
+   "title": "Sewershed with Infiltration Pond and Drywell",
    "track": "storm",
    "level": 3,
-   "status": "planned",
-   "summary": "A full urban sewershed with catchments, a sewer network, drywells injecting into a deep soil profile, and pollutant build-up.",
+   "status": "ready",
+   "summary": "An 11.3 ha Los Angeles sewershed drains through two storm-sewer lines into an infiltration pond with a 42 m drywell. A 133-cell radial grid follows the injected water through 70 m of layered vadose zone, and a build-up and wash-off pollutant tracks the first flush.",
    "plugins": [
     "Sewer_system",
     "Well",
     "unsaturated_soil",
-    "buildup_washoff",
     "Pond_Plugin",
-    "evapotranspiration_models"
+    "buildup_washoff",
+    "soil_evapotranspiration_models"
    ],
    "features": [
-    "Large network",
-    "Drywells",
-    "Vadose transport"
+    "Large model (163 blocks",
+    "302 links)",
+    "Drywell injection",
+    "Radial vadose-zone grid",
+    "Build-up and wash-off",
+    "Observed weather forcing"
    ],
    "keywords": [
     "drywell",
     "dry well",
+    "class v injection well",
+    "infiltration basin",
+    "infiltration pond",
     "sewershed",
     "storm sewer",
-    "injection well",
+    "pipe network",
+    "managed aquifer recharge",
+    "stormwater capture",
     "groundwater recharge",
-    "vadose",
-    "large model",
+    "vadose zone",
+    "unsaturated flow",
+    "van genuchten",
+    "radial grid",
+    "axisymmetric",
+    "build-up",
+    "wash-off",
+    "first flush",
+    "pollutant transport",
+    "penman",
+    "los angeles",
     "case study",
-    "urban"
-   ]
+    "large model"
+   ],
+   "thumb": "examples/sewershed-drywells/thumb.svg"
   },
   {
    "id": "smart-pond-forecast",

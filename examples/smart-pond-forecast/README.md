@@ -100,7 +100,7 @@ with S_min = 0, S_max = 0.005 m/day, Q_min = 0, Q_max = 200 m³/day and flow coe
 
 The release does not depend on the water level: the device behaves like a pump or a flow-regulating valve. When the pond runs dry, the solver limits the outflow of the empty pond so its storage cannot become negative, and the reported valve flow drops to whatever is flowing in.
 
-**Time step.** `max_timestep_increase_factor = 1` keeps every step at 0.01 day (14.4 minutes). With larger steps the pond and catchment water balances in this model failed to close by up to 3 %, so the step is held fixed; the run then takes about 10 seconds.
+**Time step.** `max_timestep_increase_factor = 1` keeps every step at the initial 0.01 day (14.4 minutes), so the hourly rainfall, the sheet-flow runoff and the valve response are all resolved. The run takes about 10 seconds.
 
 ## What to look for in the results
 

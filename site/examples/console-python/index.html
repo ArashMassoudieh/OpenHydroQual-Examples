@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Running Models from the Console &amp; Python · OpenHydroQual Examples</title>
+<meta name="description" content="An .ohq model file is a script: one command per line that loads templates, creates objects and sets values. This example documents those commands and drives the console solver from a short Python script that runs a soil column over a range of distribution coefficients and plots the breakthrough curves.">
+<meta name="keywords" content="python, script, scripting, ohq file format, command line, console, OpenHydroQual-Console, batch, automation, parameter sweep, sensitivity, scenario, headless, subprocess, setvalue, create block, linux, pybind11, python bindings">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#56606e">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Automation &amp; Scripting</div>
+<h1>Running Models from the Console &amp; Python</h1>
+<p class="lede">An .ohq model file is a script: one command per line that loads templates, creates objects and sets values. This example documents those commands and drives the console solver from a short Python script that runs a soil column over a range of distribution coefficients and plots the breakthrough curves.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=groundwater'>groundwater</a><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/console-python.zip" download>Download model (.zip)</a>
+    <div class="muted">90 KB · 4 files · open <code>column.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>Every OpenHydroQual model is saved as a plain-text <code>.ohq</code> file, and that file is a <strong>script</strong>: each line is a command that the program executes in order to build the model. The same file can be opened in the graphical interface or run without it by the console solver <code>OpenHydroQual-Console</code>. Because the format is text, any language can write, edit and run models. This is how batch runs, parameter sweeps, scenario studies and post-processing are automated.</p>
+<p>The example has three parts:</p>
+<ol>
+<li><code>column.ohq</code>, a 1 m soil column through which a 25-day copper pulse passes, with kinetic sorption (the same column as the genetic algorithm example, which documents its physics in detail).</li>
+<li>A reference for the script commands, taken from the parser in the OpenHydroQual source (<code>aquifolium/src/Command.cpp</code> and <code>Script.cpp</code>).</li>
+<li><code>sweep.py</code>, a Python script that runs the column for four values of the distribution coefficient K_D and plots the effluent curves.</li>
+</ol>
+<p>The column is adapted from a script-built column model in the OpenHydroQual example collection (<code>Script.ohq</code>), rebuilt at 1 m² cross-section with ten cells.</p>
+<h2>How it works</h2>
+<h3>The script language</h3>
+<p>A command line has the form</p>
+<pre><code>keyword [argument]; property=value, property=value, ...
+</code></pre>
+<p>The text before the first <code>;</code> is the keyword and, for <code>create</code> and <code>write</code>, one argument. Everything after it is a list of <code>property=value</code> pairs separated by commas. The parser splits on <code>;</code>, <code>,</code> and <code>=</code> without regard to brackets, so a value cannot contain any of those three characters. Write keywords in lower case. Lines are executed in order, so an object must be created before a later line refers to it.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Required properties</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>loadtemplate; filename=main_components.json</code></td>
+<td>filename</td>
+<td>Clears the model and loads the main template (the definitions of every object type and property). A bare file name is looked up in the resources folder.</td>
+</tr>
+<tr>
+<td><code>addtemplate; filename=&lt;plugin&gt;.json</code></td>
+<td>filename</td>
+<td>Adds a plugin's object types, for example <code>groundwater.json</code> or <code>mass_transfer.json</code>.</td>
+</tr>
+<tr>
+<td><code>create block; type=..., name=..., ...</code></td>
+<td>name, type</td>
+<td>Creates a block and sets the listed properties.</td>
+</tr>
+<tr>
+<td><code>create link; type=..., name=..., from=..., to=..., ...</code></td>
+<td>name, type, from, to</td>
+<td>Creates a link from one block to another. If the name is taken, the link is renamed.</td>
+</tr>
+<tr>
+<td><code>create source; type=..., name=...</code></td>
+<td>name, type</td>
+<td>Creates a source (rainfall, evaporation, loads), which blocks then refer to by name.</td>
+</tr>
+<tr>
+<td><code>create constituent; type=..., name=...</code></td>
+<td>name</td>
+<td>Creates a constituent; it becomes a property set (<code>Cu_aq:concentration</code>, ...) on every block and link.</td>
+</tr>
+<tr>
+<td><code>create reaction_parameter; type=..., name=...</code></td>
+<td>name</td>
+<td>Creates a named coefficient for rate expressions.</td>
+</tr>
+<tr>
+<td><code>create reaction; type=Reaction, name=..., rate_expression=..., &lt;constituent&gt;:stoichiometric_constant=...</code></td>
+<td>name</td>
+<td>Creates a reaction.</td>
+</tr>
+<tr>
+<td><code>create composite; type=..., name=...</code></td>
+<td>name, type</td>
+<td>Creates a composite block (a pre-assembled group).</td>
+</tr>
+<tr>
+<td><code>create observation; type=Observation, name=..., object=..., expression=...</code></td>
+<td>name, object, expression</td>
+<td>Records an expression evaluated on a block or link, and compares it with <code>observed_data</code> if given.</td>
+</tr>
+<tr>
+<td><code>create parameter; type=Parameter, name=..., low=..., high=..., value=...</code></td>
+<td>name, low, high</td>
+<td>Creates a calibration parameter.</td>
+</tr>
+<tr>
+<td><code>create objectivefunction; name=..., object=..., expression=...</code></td>
+<td>name, object, expression</td>
+<td>Creates an objective function for optimization.</td>
+</tr>
+<tr>
+<td><code>setasparameter; object=..., quantity=..., parametername=...</code></td>
+<td>all three</td>
+<td>Binds a model property to a calibration parameter.</td>
+</tr>
+<tr>
+<td><code>setvalue; object=..., quantity=..., value=...</code></td>
+<td>all three</td>
+<td>Sets one property. <code>object=system</code> addresses the settings (simulation times, solver, GA, MCMC); <code>object=LM</code> the Levenberg-Marquardt settings; any other name is looked up among blocks, links, sources, constituents, reaction parameters, reactions, observations, parameters and objective functions.</td>
+</tr>
+<tr>
+<td><code>echo; object=...[, quantity=...]</code></td>
+<td>object</td>
+<td>Prints the object, or one of its properties, to the console.</td>
+</tr>
+<tr>
+<td><code>write outputs; filename=...</code> / <code>write errors; filename=...</code></td>
+<td>filename</td>
+<td>Writes the current results or the error list.</td>
+</tr>
+<tr>
+<td><code>solve</code>, <code>optimize</code></td>
+<td></td>
+<td>Run the model or the genetic algorithm at that point in the script.</td>
+</tr>
+</tbody>
+</table>
+<p>Every <code>type</code> must be defined in a loaded template, otherwise the line fails with "Type ... does not exist". Values may carry a unit in brackets, as the interface writes them (<code>Storage=10[m~^3]</code>); in the files tested for these examples the number was used as written, without unit conversion, so give numbers in the model's base units (m, m³, days, g/m³). The models on this site use only <code>loadtemplate</code>, <code>addtemplate</code>, <code>create</code>, <code>setvalue</code> and <code>setasparameter</code>. <code>solve</code> and <code>optimize</code> are not needed in a file meant for the console, which builds the model and then solves it once by itself.</p>
+<p><code>column.ohq</code> contains, in this order: the two template lines, the two constituents, four reaction parameters, two reactions, eleven blocks, ten links and the settings. Its system settings include <code>max_timestep_increase_factor = 1</code>, which holds the step at 0.05 day. With the default the step grows to 2.5 days, and the implicit time stepping then smooths the effluent curve: late in the tail the computed concentration is up to 15% higher.</p>
+<h3>The console solver</h3>
+<pre><code>OpenHydroQual-Console column.ohq -r /path/to/OpenHydroQual/resources -q -o output.txt
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-r</code>, <code>--resources &lt;dir&gt;</code></td>
+<td>Folder with the template files. Default: <code>$OHQ_RESOURCES</code>, then a path relative to the executable.</td>
+</tr>
+<tr>
+<td><code>-o</code>, <code>--outputfile &lt;name&gt;</code></td>
+<td>Name of the results file, overriding the model's <code>alloutputfile</code>.</td>
+</tr>
+<tr>
+<td><code>-w</code>, <code>--workdir &lt;dir&gt;</code></td>
+<td>Folder against which relative input file names are resolved and outputs are written. Default: the folder of the <code>.ohq</code> file.</td>
+</tr>
+<tr>
+<td><code>-q</code>, <code>--quiet</code></td>
+<td>No per-step progress output.</td>
+</tr>
+<tr>
+<td><code>--skip-verify</code></td>
+<td>Skip the check of every property against the limits declared in the templates (not recommended).</td>
+</tr>
+</tbody>
+</table>
+<p>The console reads the script, stops with exit code 4 if any line failed (a missing input file, an unknown type or property) or if a property violates its declared limits, solves, and writes the results. If the model defines calibration parameters, their <code>value</code> fields are applied before the run. Observations with observed data are scored and their fit (MSE, R², NSE, −ln L) is printed. Exit codes: 0 success, 2 usage error, 3 model file not found, 4 model errors, 5 solve failed. A script should always check the exit code.</p>
+<p>The results file has one pair of columns per output, <code>t, Cell_10_Cu_aq:concentration, t, Cell_10_Cu_s:concentration, ...</code>: a block or link property is named <code>&lt;object&gt;_&lt;property&gt;</code>, a constituent property <code>&lt;object&gt;_&lt;constituent&gt;:&lt;property&gt;</code>. All series are resampled to a common time grid.</p>
+<h3>The Python script</h3>
+<p><code>sweep.py</code> uses only the standard library and matplotlib. It never edits the original files. For each value it:</p>
+<ol>
+<li>creates a folder <code>runs/K_D_&lt;value&gt;/</code> and copies <code>column.ohq</code>, <code>inflow.txt</code> and <code>inflow_concentration.txt</code> into it;</li>
+<li>appends one line to the copy, <code>setvalue; object=K_D, quantity=base_value, value=&lt;value&gt;</code>. Because commands run in order, this overrides the value set by the earlier <code>create reaction_parameter</code> line;</li>
+<li>runs <code>OpenHydroQual-Console &lt;copy&gt; -q -o output.txt</code> with <code>subprocess</code> and stops with a message if the exit code is not 0;</li>
+<li>reads <code>output.txt</code> and extracts the requested column.</li>
+</ol>
+<pre><code>python3 sweep.py --console /path/to/OpenHydroQual-Console --resources /path/to/OpenHydroQual/resources
+python3 sweep.py --object k_f --quantity base_value --values 0.1 1 10      # vary another property
+python3 sweep.py --series Cell_05_Cu_aq:concentration                      # plot another output
+</code></pre>
+<p>The options <code>--object</code>, <code>--quantity</code> and <code>--values</code> choose what is varied, so the same script sweeps any property of any named object: a block's <code>area</code>, a link's <code>flow</code>, a constituent's <code>dispersivity</code>. The solver's messages for each run are kept in <code>console.log</code> in its run folder. The script also writes <code>sweep_summary.csv</code> with the time at which the effluent first reaches half the inflow concentration and the peak concentration of each run.</p>
+<p>Running the solver as a separate process keeps the Python side simple and lets independent runs execute in parallel (for example with <code>concurrent.futures.ProcessPoolExecutor</code>). The OpenHydroQual source also contains Python bindings (<code>PythonBindings/</code>, built with pybind11 against the OpenHydroQual library) that create blocks and links, set values, solve and save models from within Python. They are not part of the binary distribution and must be compiled with Qt and Armadillo; this example does not use them.</p>
+<h2>What to look for in the results</h2>
+<p><img alt="Effluent copper for four values of K_D, produced by sweep.py." src="results/sweep.png" /></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">K_D (L/kg)</th>
+<th style="text-align: right;">Retardation factor R = 1 + ρ_b·K_D/n</th>
+<th style="text-align: right;">Equilibrium front arrival R × 2 days</th>
+<th style="text-align: right;">Effluent first reaches 4 g/m³</th>
+<th style="text-align: right;">Peak (g/m³)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6 days</td>
+<td style="text-align: right;">4.9 days</td>
+<td style="text-align: right;">7.98</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">10 days</td>
+<td style="text-align: right;">7.7 days</td>
+<td style="text-align: right;">7.50</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">18 days</td>
+<td style="text-align: right;">13.3 days</td>
+<td style="text-align: right;">5.93</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">34 days</td>
+<td style="text-align: right;">24.6 days</td>
+<td style="text-align: right;">4.09</td>
+</tr>
+</tbody>
+</table>
+<p>The four runs took about 15 s in total.</p>
+<ul>
+<li><strong>Retardation.</strong> The arrival time grows with K_D, because sorbed copper must be supplied before the front can advance. For instantaneous (equilibrium) sorption the centre of the front would arrive after R pore volumes, R × 2 days.</li>
+<li><strong>Kinetic sorption shortens it.</strong> With k_f = 1 1/day sorption is not instantaneous, so every run shows an early rise within the first pore volume (about 2 days), and half the inflow concentration is reached before the equilibrium arrival time. The stronger the sorption, the larger the difference: for K_D = 4 L/kg the effluent reaches 4 g/m³ ten days early, and the 25-day pulse never brings it near 8 g/m³.</li>
+<li><strong>Tails.</strong> After day 25, strongly sorbing soils release copper slowly. At day 60 the effluent is still 1.6 g/m³ for K_D = 4 L/kg but nearly zero for K_D = 0.5 L/kg. The order of the curves reverses: the soil that retained the most copper during the pulse releases the most afterwards.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The physics is that of the genetic algorithm example: steady saturated flow, linear kinetic sorption with one site type, and numerical dispersion from ten mixed cells.</li>
+<li>The sweep changes one property at a time. Appending several <code>setvalue</code> lines per run, or generating them from a table, extends it to multi-parameter designs; each run is independent.</li>
+<li><code>sweep.py</code> assumes the console writes a complete results file. A run that fails stops the sweep, with the console's messages in that run's <code>console.log</code>.</li>
+<li>The Levenberg-Marquardt documentation describes an <code>lmoptimize</code> script command. In the console build used here, a line <code>lmoptimize</code> is rejected with "Keyword 'lmoptimize' is not recognized"; use the <code>OHQ-LM</code> program for headless LM calibration.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="140 40 720 2706" class="ohq-diagram" style="max-width:360px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Flow_01_02"><title>Flow_01_02 (Fixed flow)</title><path d="M300.0 300.0 L300.0 330.0 L300.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_02_03"><title>Flow_02_03 (Fixed flow)</title><path d="M300.0 560.0 L300.0 590.0 L300.0 620.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_03_04"><title>Flow_03_04 (Fixed flow)</title><path d="M300.0 820.0 L300.0 850.0 L300.0 880.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_04_05"><title>Flow_04_05 (Fixed flow)</title><path d="M300.0 1080.0 L300.0 1110.0 L300.0 1140.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_05_06"><title>Flow_05_06 (Fixed flow)</title><path d="M300.0 1340.0 L300.0 1370.0 L300.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_06_07"><title>Flow_06_07 (Fixed flow)</title><path d="M300.0 1600.0 L300.0 1630.0 L300.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_07_08"><title>Flow_07_08 (Fixed flow)</title><path d="M300.0 1860.0 L300.0 1890.0 L300.0 1920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_08_09"><title>Flow_08_09 (Fixed flow)</title><path d="M300.0 2120.0 L300.0 2150.0 L300.0 2180.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_09_10"><title>Flow_09_10 (Fixed flow)</title><path d="M300.0 2380.0 L300.0 2410.0 L300.0 2440.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outlet"><title>Outlet (Fixed flow)</title><path d="M400.0 2540.0 L500.0 2540.0 L600.0 2540.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Cell_01"><title>Cell_01 (Groundwater cell)</title><rect x="200" y="100" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="122" width="156" height="156"/>
+<text x="300" y="321" font-size="16" text-anchor="middle">Cell_01</text></g>
+<g class="d-node" data-name="Cell_02"><title>Cell_02 (Groundwater cell)</title><rect x="200" y="360" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="382" width="156" height="156"/>
+<text x="300" y="581" font-size="16" text-anchor="middle">Cell_02</text></g>
+<g class="d-node" data-name="Cell_03"><title>Cell_03 (Groundwater cell)</title><rect x="200" y="620" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="642" width="156" height="156"/>
+<text x="300" y="841" font-size="16" text-anchor="middle">Cell_03</text></g>
+<g class="d-node" data-name="Cell_04"><title>Cell_04 (Groundwater cell)</title><rect x="200" y="880" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="902" width="156" height="156"/>
+<text x="300" y="1101" font-size="16" text-anchor="middle">Cell_04</text></g>
+<g class="d-node" data-name="Cell_05"><title>Cell_05 (Groundwater cell)</title><rect x="200" y="1140" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1162" width="156" height="156"/>
+<text x="300" y="1361" font-size="16" text-anchor="middle">Cell_05</text></g>
+<g class="d-node" data-name="Cell_06"><title>Cell_06 (Groundwater cell)</title><rect x="200" y="1400" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1422" width="156" height="156"/>
+<text x="300" y="1621" font-size="16" text-anchor="middle">Cell_06</text></g>
+<g class="d-node" data-name="Cell_07"><title>Cell_07 (Groundwater cell)</title><rect x="200" y="1660" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1682" width="156" height="156"/>
+<text x="300" y="1881" font-size="16" text-anchor="middle">Cell_07</text></g>
+<g class="d-node" data-name="Cell_08"><title>Cell_08 (Groundwater cell)</title><rect x="200" y="1920" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1942" width="156" height="156"/>
+<text x="300" y="2141" font-size="16" text-anchor="middle">Cell_08</text></g>
+<g class="d-node" data-name="Cell_09"><title>Cell_09 (Groundwater cell)</title><rect x="200" y="2180" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="2202" width="156" height="156"/>
+<text x="300" y="2401" font-size="16" text-anchor="middle">Cell_09</text></g>
+<g class="d-node" data-name="Cell_10"><title>Cell_10 (Groundwater cell)</title><rect x="200" y="2440" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="2462" width="156" height="156"/>
+<text x="300" y="2661" font-size="16" text-anchor="middle">Cell_10</text></g>
+<g class="d-node" data-name="Effluent_Collector"><title>Effluent_Collector (Reactor)</title><rect x="600" y="2440" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="622" y="2462" width="156" height="156"/>
+<text x="700" y="2661" font-size="16" text-anchor="middle">Effluent_Collector</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>11</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Cell-01'><summary><span class='cname'>Cell_01</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>First of ten Groundwater cells, each 0.1 m thick with 1 m² cross-section and porosity 0.4 (0.04 m³ of pore water). It receives the inflow of 0.2 m³/day and the copper inflow concentration from inflow_concentration.txt.</p></span></summary><div class='cbody'><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cu_aq: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cu_aq: Time Variable Inflow concentration</td><td class='v'>inflow_concentration.txt</td><td>g/m^3</td><td></td></tr><tr><td>Cu_s: Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cell area</td><td class='v'>1.0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>-0.10</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>0.1</td><td>m</td><td></td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>1</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Inflow time series</td><td class='v'>inflow.txt</td><td>m^3/day</td><td>Time series representing external water input to the groundwater cell, such as recharge from precipitation or surface water.</td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.4</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.4</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Cell-02'><summary><span class='cname'>9 × Groundwater cell</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>The ten cells Cell_01 to Cell_10 that make up the 1 m soil column, numbered from the inlet. Each holds dissolved (Cu_aq) and sorbed (Cu_s) copper.</p></span></summary><div class='cbody'><p class='members'>Cell_02, Cell_03, Cell_04, Cell_05, Cell_06, Cell_07, Cell_08, Cell_09 …</p><p class='muted'>Showing properties of <b>Cell_02</b>.</p><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cu_aq: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cu_s: Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cell area</td><td class='v'>1.0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>-0.20</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>0.1</td><td>m</td><td></td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>1</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.4</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.4</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Effluent-Collector'><summary><span class='cname'>Effluent_Collector</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A 1000 m³ Reactor block that receives the column effluent.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cu_aq: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cu_s: Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Initial Storage</td><td class='v'>1000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>-2</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>10</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Flow-01-02'><summary><span class='cname'>10 × Fixed flow</span><span class='ctype'>Fixed flow · mass_transfer</span><span class='crole'><p>The links Flow_01_02 to Flow_09_10 and Outlet, each carrying 0.2 m³/day downward through the column (positive from the upstream to the downstream cell).</p></span></summary><div class='cbody'><p class='members'>Flow_01_02, Flow_02_03, Flow_03_04, Flow_04_05, Flow_05_06, Flow_06_07, Flow_07_08, Flow_08_09 …</p><p class='muted'>Showing properties of <b>Flow_01_02</b>.</p><p class=type-help><b>Fixed flow:</b> Fixed flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Flow rate</td><td class='v'>0.2</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>2</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-Cu-aq'><summary><span class='cname'>Cu_aq</span><span class='ctype'>Constituent</span><span class='crole'><p>Dissolved copper (g/m³), carried by the flow.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/s</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Cu-s'><summary><span class='cname'>Cu_s</span><span class='ctype'>Immobile_Constituent · mass_transfer</span><span class='crole'><p>Sorbed copper (mg/kg of soil), an Immobile_Constituent that stays in its cell.</p></span></summary><div class='cbody'><p class=type-help><b>Immobile_Constituent:</b> Immobile constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>4</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-k-f'><summary><span class='cname'>k_f</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Sorption rate constant, 1 1/day.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.0</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-D'><summary><span class='cname'>K_D</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Linear distribution coefficient (L/kg), 2 in the file. This is the value the Python script varies.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>2.0</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-rho-b'><summary><span class='cname'>rho_b</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Dry bulk density, 1.6 kg/L.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.6</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-porosity'><summary><span class='cname'>porosity</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Porosity used in the stoichiometric factor, 0.4.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.4</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reactions <small>2</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-Adsorption'><summary><span class='cname'>Adsorption</span><span class='ctype'>Reaction</span><span class='crole'><p>Transfer from water to soil, rate k_f·Cu_aq, coefficients −1 for Cu_aq and +porosity/rho_b for Cu_s.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_f*Cu_aq)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Cu_aq</td><td class='v'>-1</td></tr><tr><td>Cu_s</td><td class='v'>(porosity/rho_b)</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-Desorption'><summary><span class='cname'>Desorption</span><span class='ctype'>Reaction</span><span class='crole'><p>Transfer from soil to water, rate (k_f/K_D)·Cu_s, coefficients +1 for Cu_aq and −porosity/rho_b for Cu_s.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_f/K_D*Cu_s)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Cu_aq</td><td class='v'>1</td></tr><tr><td>Cu_s</td><td class='v'>(0-porosity/rho_b)</td></tr></tbody></table></div></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>inflow_concentration.txt</code></td><td><p>Copper concentration of the inflow (g/m³) versus time (days). 8 g/m³ from day 0 to day 25, then clean water.</p></td></tr><tr><td><code>inflow.txt</code></td><td><p>Water inflow to the top of the column (m³/day) versus time (days), constant 0.2 m³/day.</p></td></tr><tr><td><code>sweep.py</code></td><td><p>Python 3 script (needs matplotlib). For each value of a chosen property it copies the model into its own folder, appends a setvalue command, runs OpenHydroQual-Console, reads the output and plots one series per run. Writes sweep.png and sweep_summary.csv.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>60</td></tr><tr><td>Initial time step</td><td class='v'>0.05</td></tr><tr><td>Write interval (steps)</td><td class='v'>100</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>1e-06</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Effluent and mid-column copper (K_D = 2 L/kg)' loading='lazy'><figcaption><b>Effluent and mid-column copper (K_D = 2 L/kg)</b> The 25-day copper pulse reaches mid-column first and leaves a long desorption tail at both depths after the inflow becomes clean.</figcaption></figure><figure><img src='plot_2.png' alt='Sorbed copper' loading='lazy'><figcaption><b>Sorbed copper</b> Near the inlet the soil approaches equilibrium with the 8 g/m³ inflow (K_D·8 = 16 mg/kg) and then releases copper; deeper cells load later and less.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/console-python">View source on GitHub</a>.</div></footer>
+</body></html>

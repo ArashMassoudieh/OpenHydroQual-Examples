@@ -44,7 +44,7 @@ The microcosm is a Reactor block of fixed volume V = 0.2 m³ with no flow. The r
 
 whose solution is C(t) = C₀·exp(−k·t). Three model quantities are calibrated through **Parameter** objects bound with `setasparameter`: `p_k` drives the `base_value` of the reaction parameter `k`, `p_C0` drives the initial `Contaminant:concentration` of the block, and `p_sigma` drives the observation's `error_standard_deviation`.
 
-The solver step is held at 0.01 day (`max_timestep_increase_factor = 1`). With the default growth factor of 50 the step reaches 0.5 day, and the computed curve then differs from the exact solution by up to about 10% (at t = 1 day), which is larger than the measurement noise and would bias the estimates.
+The solver step is held at 0.01 day (`max_timestep_increase_factor = 1`), which keeps the computed curve within 0.6% of the exact solution over the 15 days. With the default growth factor of 50 the step reaches 0.5 day, and the implicit time stepping then slows the computed decay: at day 6 the concentration is 16% above the exact value, more than the measurement noise, which would bias the estimates.
 
 ### Likelihood and priors
 
@@ -79,32 +79,32 @@ In the interface, press **MCMC parameter estimation**. Headless:
 OHQ-MCMC batch_decay_mcmc.ohq results/
 ```
 
-The run writes `mcmc.txt` (every recorded sample: index, parameters, log posterior), `posterior_percentiles.txt`, `Posterior_distributions.txt` (histogram densities), `Realizations_Concentration.txt` (one column per realization), `Predicted_95p_BracketConcentration.txt` (mean, 2.5%, 50% and 97.5% at each time), and a forward run at the posterior medians. The run below took 4.3 minutes on two threads. The settings in the file are kept small so that the example runs quickly. For a production run, increase `number_of_samples` to at least 5000 per chain (40 000 for 8 chains), keep the burn-in at 20 to 30%, use 500 or more realizations, and confirm that independent chains agree (for example with the Gelman-Rubin R̂ below 1.05).
+The run writes `mcmc.txt` (every recorded sample: index, parameters, log posterior), `posterior_percentiles.txt`, `Posterior_distributions.txt` (histogram densities), `Realizations_Concentration.txt` (one column per realization), `Predicted_95p_BracketConcentration.txt` (mean, 2.5%, 50% and 97.5% at each time), and a forward run at the posterior medians. The run below took 4.4 minutes on two threads. The settings in the file are kept small so that the example runs quickly. For a production run, increase `number_of_samples` to at least 5000 per chain (40 000 for 8 chains), keep the burn-in at 20 to 30%, use 500 or more realizations, and confirm that independent chains agree (for example with the Gelman-Rubin R̂ below 1.05).
 
 ## What to look for in the results
 
 ![Trace of the eight chains for each parameter. The shaded part is discarded as burn-in; the dashed line is the true value.](results/traces.png)
 
-- **Burn-in.** The chains start at k ≈ 1 1/day and C₀ ≈ 6 g/m³, far from the data. Within about 50 steps k settles near 0.36; C₀ and σ take longer because the diagonal proposal moves them in small, often rejected steps. After step 263 the covariance-adapted proposal takes over and the chains mix visibly faster. The Gelman-Rubin R̂ of the post-burn-in samples is 1.01 for k and C₀ and 1.04 for σ, adequate for a demonstration but a sign that a longer run is needed for reported numbers.
+- **Burn-in.** The chains start at k ≈ 1 1/day and C₀ ≈ 6 g/m³, far from the data. Within about 100 steps k settles near 0.36; C₀ and σ take longer because the diagonal proposal moves them in small, often rejected steps. After step 263 the covariance-adapted proposal takes over and the chains mix visibly faster. The Gelman-Rubin R̂ of the post-burn-in samples is 1.05 for k and C₀ and 1.09 for σ: the chains agree roughly, which is adequate for a demonstration, but a run reported in a study needs to be long enough to bring R̂ below about 1.05 for every parameter.
 
 ![Posterior histograms (bars), prior densities (dotted), the Levenberg-Marquardt Gaussian approximation (orange) and the true values (dashed).](results/posteriors.png)
 
 | Parameter | Truth | Posterior median | 95% credible interval | LM estimate (95% interval) |
 |---|---:|---:|---|---|
-| k (1/day) | 0.35 | 0.366 | 0.333 to 0.388 | 0.364 (0.343 to 0.386) |
-| C₀ (g/m³) | 10.0 | 10.62 | 9.50 to 11.68 | 10.62 (9.80 to 11.45) |
-| σ (log units) | 0.10 | 0.077 | 0.053 to 0.129 | 0.064 (profiled) |
+| k (1/day) | 0.35 | 0.363 | 0.332 to 0.399 | 0.364 (0.343 to 0.386) |
+| C₀ (g/m³) | 10.0 | 10.53 | 9.33 to 11.87 | 10.58 (9.76 to 11.40) |
+| σ (log units) | 0.10 | 0.078 | 0.050 to 0.138 | 0.064 (profiled) |
 
 The credible intervals are computed from the 2816 post-burn-in samples in `mcmc.txt`. The LM column is a separate run of `OHQ-LM` on the same file.
 
 - **The data dominate the priors.** The posteriors are narrow compared with the priors, which are nearly flat over the plotted range. All three intervals contain the true values.
 - **MCMC and LM agree on k and C₀.** For this nearly linear problem (log C is linear in ln C₀ and k) the posterior is close to the Gaussian that LM derives from its Jacobian. The MCMC intervals are somewhat wider because they also account for the uncertainty in σ, which LM fixes at its best value.
-- **σ is skewed.** With 12 points, the error standard deviation is poorly determined and its posterior has a long upper tail. Its median (0.077) lies above the maximum-likelihood value (0.064), which is biased low for small samples.
-- **k and C₀ are correlated** (correlation 0.87 in the samples). A higher starting concentration can be offset by faster decay. Reporting the two marginal intervals separately understates how well their combination, the concentration within the measured period, is known.
+- **σ is skewed.** With 12 points, the error standard deviation is poorly determined and its posterior has a long upper tail. Its median (0.078) lies above the maximum-likelihood value (0.064), which is biased low for small samples.
+- **k and C₀ are correlated** (correlation 0.88 in the samples). A higher starting concentration can be offset by faster decay. Reporting the two marginal intervals separately understates how well their combination, the concentration within the measured period, is known.
 
 ![Posterior median and 95% band from 200 realizations, with the observations and the true curve. Log scale.](results/prediction_band.png)
 
-- **The band widens outside the data.** At day 3 the 95% band spans a factor of 1.09 (3.39 to 3.71 g/m³). At day 15, nine days after the last sample, it spans a factor of 2.0 (0.035 to 0.070 g/m³), because the uncertainty in k is multiplied by t in the exponent. The true value at day 15 (0.052 g/m³) lies inside it.
+- **The band widens outside the data.** At day 3 the 95% band spans a factor of 1.12 (3.34 to 3.74 g/m³). At day 15, nine days after the last sample, it spans a factor of 2.1 (0.031 to 0.066 g/m³), because the uncertainty in k is multiplied by t in the exponent. The true value at day 15 (0.052 g/m³) lies inside it.
 
 ## Assumptions and limitations
 

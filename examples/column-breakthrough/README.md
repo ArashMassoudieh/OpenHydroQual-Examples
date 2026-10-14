@@ -77,7 +77,7 @@ so copper would need 5 pore volumes, or 20 days, to reach the outlet. With k_s =
 
 ## What to look for in the results
 
-- **Tracer.** Bromide reaches half the feed concentration at the outlet at 3.8 days, about one pore volume, and matches the analytical solution to within about 0.06 g/m³. It drops back to near zero within 6 days after the feed stops.
+- **Tracer.** Bromide reaches half the feed concentration at the outlet at 3.8 days, about one pore volume, and matches the analytical solution to within about 0.1 g/m³. It drops back to near zero within 6 days after the feed stops.
 - **Retardation.** Copper reaches half the feed concentration at 18.5 days, close to R = 5 pore volumes. Its curve is much more spread out than the bromide curve, because the same dispersion acts over a five times longer travel time and because sorption is kinetic.
 - **Nonequilibrium.** Compared with the equilibrium solution (dashed), the kinetic copper curve starts earlier (1.2 g/m³ at day 10 against 0.1 g/m³), never reaches the feed concentration (peak 7.1 g/m³ at day 34), and tails far longer (1.2 g/m³ at day 60 against 0.6 g/m³). Early breakthrough with long tailing is the classic signature of rate-limited sorption in column data.
 - **Desorption front.** After day 30 clean water strips copper from the top of the column first. The sorbed concentration at 0.25 m depth falls while the deepest cell is still near its peak (28 g/m³ at day 36). The peak value of about 32 g/m³ of pore water corresponds to q = 0.4 × 32/1600 = 0.008 g/kg (8 mg/kg), which is K_d × 8 g/m³.

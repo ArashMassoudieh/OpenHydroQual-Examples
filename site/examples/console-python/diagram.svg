@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="140 40 720 2706" class="ohq-diagram" style="max-width:360px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Flow_01_02"><title>Flow_01_02 (Fixed flow)</title><path d="M300.0 300.0 L300.0 330.0 L300.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_02_03"><title>Flow_02_03 (Fixed flow)</title><path d="M300.0 560.0 L300.0 590.0 L300.0 620.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_03_04"><title>Flow_03_04 (Fixed flow)</title><path d="M300.0 820.0 L300.0 850.0 L300.0 880.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_04_05"><title>Flow_04_05 (Fixed flow)</title><path d="M300.0 1080.0 L300.0 1110.0 L300.0 1140.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_05_06"><title>Flow_05_06 (Fixed flow)</title><path d="M300.0 1340.0 L300.0 1370.0 L300.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_06_07"><title>Flow_06_07 (Fixed flow)</title><path d="M300.0 1600.0 L300.0 1630.0 L300.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_07_08"><title>Flow_07_08 (Fixed flow)</title><path d="M300.0 1860.0 L300.0 1890.0 L300.0 1920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_08_09"><title>Flow_08_09 (Fixed flow)</title><path d="M300.0 2120.0 L300.0 2150.0 L300.0 2180.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_09_10"><title>Flow_09_10 (Fixed flow)</title><path d="M300.0 2380.0 L300.0 2410.0 L300.0 2440.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outlet"><title>Outlet (Fixed flow)</title><path d="M400.0 2540.0 L500.0 2540.0 L600.0 2540.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Cell_01"><title>Cell_01 (Groundwater cell)</title><rect x="200" y="100" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="122" width="156" height="156"/>
+<text x="300" y="321" font-size="16" text-anchor="middle">Cell_01</text></g>
+<g class="d-node" data-name="Cell_02"><title>Cell_02 (Groundwater cell)</title><rect x="200" y="360" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="382" width="156" height="156"/>
+<text x="300" y="581" font-size="16" text-anchor="middle">Cell_02</text></g>
+<g class="d-node" data-name="Cell_03"><title>Cell_03 (Groundwater cell)</title><rect x="200" y="620" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="642" width="156" height="156"/>
+<text x="300" y="841" font-size="16" text-anchor="middle">Cell_03</text></g>
+<g class="d-node" data-name="Cell_04"><title>Cell_04 (Groundwater cell)</title><rect x="200" y="880" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="902" width="156" height="156"/>
+<text x="300" y="1101" font-size="16" text-anchor="middle">Cell_04</text></g>
+<g class="d-node" data-name="Cell_05"><title>Cell_05 (Groundwater cell)</title><rect x="200" y="1140" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1162" width="156" height="156"/>
+<text x="300" y="1361" font-size="16" text-anchor="middle">Cell_05</text></g>
+<g class="d-node" data-name="Cell_06"><title>Cell_06 (Groundwater cell)</title><rect x="200" y="1400" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1422" width="156" height="156"/>
+<text x="300" y="1621" font-size="16" text-anchor="middle">Cell_06</text></g>
+<g class="d-node" data-name="Cell_07"><title>Cell_07 (Groundwater cell)</title><rect x="200" y="1660" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1682" width="156" height="156"/>
+<text x="300" y="1881" font-size="16" text-anchor="middle">Cell_07</text></g>
+<g class="d-node" data-name="Cell_08"><title>Cell_08 (Groundwater cell)</title><rect x="200" y="1920" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1942" width="156" height="156"/>
+<text x="300" y="2141" font-size="16" text-anchor="middle">Cell_08</text></g>
+<g class="d-node" data-name="Cell_09"><title>Cell_09 (Groundwater cell)</title><rect x="200" y="2180" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="2202" width="156" height="156"/>
+<text x="300" y="2401" font-size="16" text-anchor="middle">Cell_09</text></g>
+<g class="d-node" data-name="Cell_10"><title>Cell_10 (Groundwater cell)</title><rect x="200" y="2440" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="2462" width="156" height="156"/>
+<text x="300" y="2661" font-size="16" text-anchor="middle">Cell_10</text></g>
+<g class="d-node" data-name="Effluent_Collector"><title>Effluent_Collector (Reactor)</title><rect x="600" y="2440" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="622" y="2462" width="156" height="156"/>
+<text x="700" y="2661" font-size="16" text-anchor="middle">Effluent_Collector</text></g>
+</svg>

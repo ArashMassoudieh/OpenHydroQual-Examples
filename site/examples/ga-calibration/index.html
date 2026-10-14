@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Genetic Algorithm Calibration · OpenHydroQual Examples</title>
+<meta name="description" content="A copper pulse through a 1 m soil column with kinetic sorption. The genetic algorithm searches the full range of the distribution coefficient and the sorption rate constant and finds both from the effluent breakthrough curve, without a starting guess.">
+<meta name="keywords" content="genetic algorithm, ga, evolutionary algorithm, global optimization, inverse run, calibration, inverse modeling, parameter estimation, breakthrough curve, soil column, lysimeter, sorption, kinetic sorption, distribution coefficient, kd, retardation, copper, heavy metal, OHQ-GA">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#b8417e">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Calibration &amp; Uncertainty</div>
+<h1>Genetic Algorithm Calibration</h1>
+<p class="lede">A copper pulse through a 1 m soil column with kinetic sorption. The genetic algorithm searches the full range of the distribution coefficient and the sorption rate constant and finds both from the effluent breakthrough curve, without a starting guess.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=groundwater'>groundwater</a><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/ga-calibration.zip" download>Download model (.zip)</a>
+    <div class="muted">151 KB · 4 files · open <code>column_ga.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>Column and lysimeter experiments are the standard way to measure how strongly a soil retains a contaminant. A solution of known concentration is fed through a packed column, the effluent concentration is measured over time, and the shape of the breakthrough curve is interpreted with a transport model. Here a 25-day pulse of 8 g/m³ copper passes through a 1 m column of soil. Copper sorbs to the soil with finite speed (kinetic sorption), so the breakthrough curve carries two pieces of information: how strongly copper is held (the distribution coefficient K_D) and how fast it reaches equilibrium (the rate constant k_f).</p>
+<p>Both parameters are estimated with OpenHydroQual's <strong>genetic algorithm (GA)</strong>, the method behind <strong>Inverse Run</strong>. Unlike gradient methods, the GA needs no starting guess: it samples the full range of each parameter, which is useful when the plausible range spans orders of magnitude, as it does here (K_D from 0.2 to 20 L/kg, k_f from 0.02 to 20 1/day). The data are synthetic, made with the same model at K_D = 2 L/kg and k_f = 1 1/day, so the result can be checked.</p>
+<p>The model is adapted from a laboratory column study in the OpenHydroQual example collection. It was rebuilt at lysimeter scale (1 m² cross-section) with ten cells; see the limitations section for why.</p>
+<h2>How it works</h2>
+<h3>Transport</h3>
+<p>The column is a chain of ten Groundwater cells, each 0.1 m thick, connected by Fixed flow links carrying Q = 0.2 m³/day. With 0.04 m³ of pore water per cell, the pore volume is 0.4 m³ and the water residence time is 2 days (pore velocity 0.5 m/day). Each cell is fully mixed, so the column behaves as ten tanks in series; the numerical dispersion this produces is equivalent to a dispersivity of about half a cell, 0.05 m. Dissolved copper is carried by upstream advection: the mass flux in each link is Q times the concentration in the upstream cell.</p>
+<h3>Sorption</h3>
+<p>Two reactions exchange copper between the water and the soil:</p>
+<table>
+<thead>
+<tr>
+<th>Reaction</th>
+<th>Rate</th>
+<th>ν for Cu_aq</th>
+<th>ν for Cu_s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adsorption</td>
+<td>k_f·Cu_aq</td>
+<td>−1</td>
+<td>+n/ρ_b</td>
+</tr>
+<tr>
+<td>Desorption</td>
+<td>(k_f/K_D)·Cu_s</td>
+<td>+1</td>
+<td>−n/ρ_b</td>
+</tr>
+</tbody>
+</table>
+<p>with n = 0.4 and ρ_b = 1.6 kg/L. OpenHydroQual multiplies each rate by the cell's water volume, so in each cell</p>
+<p>dCu_aq/dt = (advection) − k_f·(Cu_aq − Cu_s/K_D)
+  dCu_s/dt = (n/ρ_b)·k_f·(Cu_aq − Cu_s/K_D)</p>
+<p>The factor n/ρ_b converts a change in dissolved concentration (mg/L) into a change in sorbed content per mass of soil (mg/kg), so mass is conserved. At equilibrium Cu_s = K_D·Cu_aq, and the copper front is retarded by the factor R = 1 + ρ_b·K_D/n = 1 + 4·K_D, which is 9 at the true K_D: the centre of the front needs about 18 days to cross the column. Because sorption is not instantaneous, part of the copper passes the column within the first pore volume before it can sorb, which produces the early step in the breakthrough curve. The height of that step is set mainly by k_f, the timing and length of the rise and of the elution tail mainly by K_D.</p>
+<h3>What the genetic algorithm computes</h3>
+<p>The GA minimizes the same negative log-likelihood that Levenberg-Marquardt and MCMC use. For the effluent observation, with n = 60 data points and σ = 0.2 g/m³:</p>
+<p>−ln L = n·[ MSE/(2σ²) + ln σ ],  MSE = (1/n) Σ (oᵢ − mᵢ)²</p>
+<p>One generation works as follows (from the OpenHydroQual source, <code>GA.hpp</code>):</p>
+<ol>
+<li><strong>Initial population.</strong> <code>maxpop</code> = 20 parameter sets are drawn uniformly over each parameter's range, in log10 space for parameters with a <code>log-normal</code> prior. Each parameter is binary-coded.</li>
+<li><strong>Evaluation.</strong> The model is run for every individual (in parallel, <code>numthreads</code> = 2) and −ln L is computed. A failed or timed-out run (<code>maximum_time_allowed</code> = 120 s) scores 10¹⁸.</li>
+<li><strong>Selection.</strong> Individuals are ranked by −ln L; each receives the selection weight 1/rank, and parents are drawn with probability proportional to that weight.</li>
+<li><strong>Elitism.</strong> The best individual is copied unchanged into the first two places of the next generation.</li>
+<li><strong>Crossover and mutation.</strong> Each remaining pair of parents is combined with probability <code>pcross</code> = 1 by exchanging segments of their binary strings, and each bit of the offspring is flipped with probability <code>pmute</code> = 0.02.</li>
+<li><strong>Shake.</strong> Every individual except the first has each search-space coordinate multiplied by a random factor between 1 − s and 1 + s, with s = <code>shakescale</code> = 0.05. After generation 10, s is reduced by <code>shakescalered</code> = 0.75 whenever the best value has not changed for three generations.</li>
+</ol>
+<p>After <code>ngen</code> = 12 generations the last population is evaluated once more and the best individual is written as the result. The GA reports the best parameter set and the full population history; it does not report parameter uncertainty.</p>
+<h3>Running</h3>
+<p>In the interface, press <strong>Inverse Run</strong>: the best parameters are written back into the Parameter objects when it finishes. Headless:</p>
+<pre><code>OHQ-GA column_ga.ohq ./
+</code></pre>
+<p>Relative file names are resolved against the working folder given on the command line, so run it in the folder that contains the input files. It writes <code>GA_output.txt</code> (every individual of every generation with its −ln L, rank and fit measures), <code>detail_GA.txt</code> (start and end of every model run), and the outputs of a final run at the best parameters. The settings in the file are kept small so that the example finishes in about five minutes on two threads (260 model runs of about 2 s each). For a real calibration use a population of 40 or more and 30 to 50 generations (<code>maxpop</code>, <code>ngen</code>), as many threads as physical cores, and consider generating a compiled kernel with <code>ohq_generate</code> for a 10 to 15 times faster forward model.</p>
+<h2>What to look for in the results</h2>
+<p><img alt="Left: every individual of every generation in parameter space, coloured from the first (dark) to the last (yellow) generation; the cross marks the truth. Right: best and median −ln L per generation." src="results/ga_population.png" /></p>
+<ul>
+<li><strong>From scattered to concentrated.</strong> Generation 0 covers the whole range of both parameters. By generation 5 the population has collapsed onto a band at k_f ≈ 1 1/day with K_D near 2 L/kg, and the best value has dropped from 378 to −76.</li>
+<li><strong>Convergence.</strong> The best individual does not improve after generation 6. The population median keeps fluctuating because mutation and crossover keep producing poor individuals; that is how the GA keeps exploring. In the last generation the median also reaches about −75.</li>
+<li><strong>Mutations show the coding.</strong> Points far below the band (k_f near 0.02) and at extreme K_D in late generations are mutants: one flipped high-order bit moves a parameter across a large part of its range.</li>
+</ul>
+<p><img alt="Observed effluent, the model with the values in the file, the truth and the GA result." src="results/ga_fit.png" /></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">Truth</th>
+<th style="text-align: right;">GA best (generation 6)</th>
+<th>LM started from the GA result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K_D (L/kg)</td>
+<td style="text-align: right;">2.0</td>
+<td style="text-align: right;">2.099</td>
+<td>2.096 (95%: 2.033 to 2.160)</td>
+</tr>
+<tr>
+<td>k_f (1/day)</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">0.975</td>
+<td>0.982 (95%: 0.942 to 1.024)</td>
+</tr>
+<tr>
+<td>−ln L</td>
+<td style="text-align: right;">−71.9</td>
+<td style="text-align: right;">−76.68</td>
+<td>−76.75</td>
+</tr>
+<tr>
+<td>model runs</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">260</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>The shape of the curve.</strong> The effluent jumps to about 1.5 g/m³ within the first 3 days (copper that passed before it could sorb), then rises slowly as the soil fills, and drops sharply when the pulse ends on day 25, followed by a long tail as sorbed copper is released. A model with equilibrium sorption would show none of the early step and a much shorter tail.</li>
+<li><strong>GA and LM together.</strong> A Levenberg-Marquardt run started from the GA result (<code>OHQ-LM</code> on the same file after setting the parameter values to the GA estimates) converges in 3 iterations and adds what the GA cannot give: standard errors and the correlation between the parameters (−0.07, so the two are well separated by these data). This is the workflow the two methods are designed for: the GA finds the basin, LM converges inside it and quantifies the uncertainty.</li>
+<li><strong>The interval for K_D just misses the truth.</strong> Both methods find a slightly better fit than the truth (−76.8 against −71.9), and the 95% interval for K_D (2.03 to 2.16) excludes the true value of 2. This happens for one data set in twenty by design; here the particular noise realization favours a slightly larger K_D. The error is 5%.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>Water flow is steady and saturated, imposed by the Fixed flow links; the hydraulic properties of the Groundwater cells play no part.</li>
+<li>Sorption is linear and first-order kinetic with a single site type. Copper sorption in real soils is often nonlinear (Freundlich or Langmuir) and may involve fast and slow sites.</li>
+<li>Dispersion is represented only by the numerical mixing of ten cells (about 0.05 m dispersivity). A finer discretization, or a dispersivity on the constituent, would be needed to separate dispersion from kinetic effects in real data.</li>
+<li>The column is 1 m² in cross-section. The source model was a laboratory column (8 cm² × 0.5 m in 20 cells), whose cells hold only 8 cm³ of water. OpenHydroQual computes concentration as mass/(Storage + 10⁻⁵ m³), and for a cell that small the 10⁻⁵ m³ term is larger than the water volume, which distorts every concentration. The physics is scale-independent, so the example uses lysimeter dimensions.</li>
+<li>The solver step is held at its initial value of 0.05 day (<code>max_timestep_increase_factor = 1</code>). With the default growth factor the step reaches 2.5 days, and the implicit time stepping smooths the breakthrough curve by up to about 15%.</li>
+<li>The GA run is short. Its result depends on the random initial population; with 20 individuals and 12 generations a rerun can land on a slightly different point. Larger populations and more generations make the result reproducible.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="140 40 720 2706" class="ohq-diagram" style="max-width:360px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Flow_01_02"><title>Flow_01_02 (Fixed flow)</title><path d="M300.0 300.0 L300.0 330.0 L300.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_02_03"><title>Flow_02_03 (Fixed flow)</title><path d="M300.0 560.0 L300.0 590.0 L300.0 620.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_03_04"><title>Flow_03_04 (Fixed flow)</title><path d="M300.0 820.0 L300.0 850.0 L300.0 880.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_04_05"><title>Flow_04_05 (Fixed flow)</title><path d="M300.0 1080.0 L300.0 1110.0 L300.0 1140.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_05_06"><title>Flow_05_06 (Fixed flow)</title><path d="M300.0 1340.0 L300.0 1370.0 L300.0 1400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_06_07"><title>Flow_06_07 (Fixed flow)</title><path d="M300.0 1600.0 L300.0 1630.0 L300.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_07_08"><title>Flow_07_08 (Fixed flow)</title><path d="M300.0 1860.0 L300.0 1890.0 L300.0 1920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_08_09"><title>Flow_08_09 (Fixed flow)</title><path d="M300.0 2120.0 L300.0 2150.0 L300.0 2180.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_09_10"><title>Flow_09_10 (Fixed flow)</title><path d="M300.0 2380.0 L300.0 2410.0 L300.0 2440.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outlet"><title>Outlet (Fixed flow)</title><path d="M400.0 2540.0 L500.0 2540.0 L600.0 2540.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Cell_01"><title>Cell_01 (Groundwater cell)</title><rect x="200" y="100" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="122" width="156" height="156"/>
+<text x="300" y="321" font-size="16" text-anchor="middle">Cell_01</text></g>
+<g class="d-node" data-name="Cell_02"><title>Cell_02 (Groundwater cell)</title><rect x="200" y="360" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="382" width="156" height="156"/>
+<text x="300" y="581" font-size="16" text-anchor="middle">Cell_02</text></g>
+<g class="d-node" data-name="Cell_03"><title>Cell_03 (Groundwater cell)</title><rect x="200" y="620" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="642" width="156" height="156"/>
+<text x="300" y="841" font-size="16" text-anchor="middle">Cell_03</text></g>
+<g class="d-node" data-name="Cell_04"><title>Cell_04 (Groundwater cell)</title><rect x="200" y="880" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="902" width="156" height="156"/>
+<text x="300" y="1101" font-size="16" text-anchor="middle">Cell_04</text></g>
+<g class="d-node" data-name="Cell_05"><title>Cell_05 (Groundwater cell)</title><rect x="200" y="1140" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1162" width="156" height="156"/>
+<text x="300" y="1361" font-size="16" text-anchor="middle">Cell_05</text></g>
+<g class="d-node" data-name="Cell_06"><title>Cell_06 (Groundwater cell)</title><rect x="200" y="1400" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1422" width="156" height="156"/>
+<text x="300" y="1621" font-size="16" text-anchor="middle">Cell_06</text></g>
+<g class="d-node" data-name="Cell_07"><title>Cell_07 (Groundwater cell)</title><rect x="200" y="1660" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1682" width="156" height="156"/>
+<text x="300" y="1881" font-size="16" text-anchor="middle">Cell_07</text></g>
+<g class="d-node" data-name="Cell_08"><title>Cell_08 (Groundwater cell)</title><rect x="200" y="1920" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="1942" width="156" height="156"/>
+<text x="300" y="2141" font-size="16" text-anchor="middle">Cell_08</text></g>
+<g class="d-node" data-name="Cell_09"><title>Cell_09 (Groundwater cell)</title><rect x="200" y="2180" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="2202" width="156" height="156"/>
+<text x="300" y="2401" font-size="16" text-anchor="middle">Cell_09</text></g>
+<g class="d-node" data-name="Cell_10"><title>Cell_10 (Groundwater cell)</title><rect x="200" y="2440" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="222" y="2462" width="156" height="156"/>
+<text x="300" y="2661" font-size="16" text-anchor="middle">Cell_10</text></g>
+<g class="d-node" data-name="Effluent_Collector"><title>Effluent_Collector (Reactor)</title><rect x="600" y="2440" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="622" y="2462" width="156" height="156"/>
+<text x="700" y="2661" font-size="16" text-anchor="middle">Effluent_Collector</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>11</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Cell-01'><summary><span class='cname'>Cell_01</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>First of ten Groundwater cells, each 0.1 m thick with 1 m² cross-section and porosity 0.4 (0.04 m³ of pore water). It receives the column inflow of 0.2 m³/day and the copper inflow concentration from inflow_concentration.txt.</p></span></summary><div class='cbody'><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cu_aq: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cu_aq: Time Variable Inflow concentration</td><td class='v'>inflow_concentration.txt</td><td>g/m^3</td><td></td></tr><tr><td>Cu_s: Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cell area</td><td class='v'>1.0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>-0.10</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>0.1</td><td>m</td><td></td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>1</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Inflow time series</td><td class='v'>inflow.txt</td><td>m^3/day</td><td>Time series representing external water input to the groundwater cell, such as recharge from precipitation or surface water.</td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.4</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.4</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Cell-02'><summary><span class='cname'>9 × Groundwater cell</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>The ten cells Cell_01 to Cell_10 that make up the 1 m column, numbered from the inlet. Each holds dissolved copper (Cu_aq) and sorbed copper (Cu_s).</p></span></summary><div class='cbody'><p class='members'>Cell_02, Cell_03, Cell_04, Cell_05, Cell_06, Cell_07, Cell_08, Cell_09 …</p><p class='muted'>Showing properties of <b>Cell_02</b>.</p><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cu_aq: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cu_s: Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cell area</td><td class='v'>1.0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>-0.20</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>0.1</td><td>m</td><td></td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>1</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.4</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.4</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Effluent-Collector'><summary><span class='cname'>Effluent_Collector</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A 1000 m³ Reactor block that receives the column effluent. It plays no part in the calibration.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cu_aq: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Cu_s: Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Initial Storage</td><td class='v'>1000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>-2</td><td>m</td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>0</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>10</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Flow-01-02'><summary><span class='cname'>10 × Fixed flow</span><span class='ctype'>Fixed flow · mass_transfer</span><span class='crole'><p>The links Flow_01_02 to Flow_09_10 and Outlet, each carrying 0.2 m³/day downward through the column (positive from the upstream to the downstream cell). Dissolved copper moves with the water; sorbed copper does not.</p></span></summary><div class='cbody'><p class='members'>Flow_01_02, Flow_02_03, Flow_03_04, Flow_04_05, Flow_05_06, Flow_06_07, Flow_07_08, Flow_08_09 …</p><p class='muted'>Showing properties of <b>Flow_01_02</b>.</p><p class=type-help><b>Fixed flow:</b> Fixed flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Flow rate</td><td class='v'>0.2</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>2</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-Cu-aq'><summary><span class='cname'>Cu_aq</span><span class='ctype'>Constituent</span><span class='crole'><p>Dissolved copper (g/m³ of pore water). Carried by the flow and exchanged with the sorbed phase.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/s</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Cu-s'><summary><span class='cname'>Cu_s</span><span class='ctype'>Immobile_Constituent · mass_transfer</span><span class='crole'><p>Sorbed copper, an Immobile_Constituent expressed as mass sorbed per mass of soil (mg/kg) through the stoichiometric factor porosity/rho_b. It does not move between cells.</p></span></summary><div class='cbody'><p class=type-help><b>Immobile_Constituent:</b> Immobile constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration per total volume</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>4</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-k-f'><summary><span class='cname'>k_f</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Sorption rate constant (1/day). Calibrated through p_k_f.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.0</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-K-D'><summary><span class='cname'>K_D</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Linear distribution coefficient (L/kg), the ratio Cu_s/Cu_aq at equilibrium. Calibrated through p_K_D.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>2.0</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-rho-b'><summary><span class='cname'>rho_b</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Dry bulk density of the soil, 1.6 kg/L.</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>1.6</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-porosity'><summary><span class='cname'>porosity</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Porosity used in the stoichiometric factor, 0.4 (equal to the cells' water content).</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.4</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reactions <small>2</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-Adsorption'><summary><span class='cname'>Adsorption</span><span class='ctype'>Reaction</span><span class='crole'><p>Transfer from water to soil, rate k_f·Cu_aq.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_f*Cu_aq)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Cu_aq</td><td class='v'>-1</td></tr><tr><td>Cu_s</td><td class='v'>(porosity/rho_b)</td></tr></tbody></table></div></div></details>
+<details class='comp' id='c-Desorption'><summary><span class='cname'>Desorption</span><span class='ctype'>Reaction</span><span class='crole'><p>Transfer from soil to water, rate (k_f/K_D)·Cu_s.</p></span></summary><div class='cbody'><p class=type-help><b>Reaction:</b> Chemical reaction</p><div class='rxn'><div class='rate'><span>Rate</span><code>(k_f/K_D*Cu_s)</code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Cu_aq</td><td class='v'>1</td></tr><tr><td>Cu_s</td><td class='v'>(0-porosity/rho_b)</td></tr></tbody></table></div></div></details>
+</div>
+<h3>Model parameters <small>2</small></h3><p class='kind-blurb'>Quantities flagged for estimation, with their search ranges or priors.</p><div class='comp-list'>
+<details class='comp' id='c-p-K-D'><summary><span class='cname'>p_K_D</span><span class='ctype'>Parameter</span><span class='crole'><p>Calibrated distribution coefficient (L/kg). Range 0.2 to 20, searched in log10. Truth 2 (retardation factor 9).</p></span></summary><div class='cbody'><p class=type-help><b>Parameter:</b> Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Lower Limit</td><td class='v'>0.2</td><td></td><td></td></tr><tr><td>Upper Limit</td><td class='v'>20</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.5</td><td></td><td></td></tr><tr><td>Prior distribution</td><td class='v'>log-normal</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-p-k-f'><summary><span class='cname'>p_k_f</span><span class='ctype'>Parameter</span><span class='crole'><p>Calibrated sorption rate constant (1/day). Range 0.02 to 20, searched in log10. Truth 1.</p></span></summary><div class='cbody'><p class=type-help><b>Parameter:</b> Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Lower Limit</td><td class='v'>0.02</td><td></td><td></td></tr><tr><td>Upper Limit</td><td class='v'>20</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>5</td><td></td><td></td></tr><tr><td>Prior distribution</td><td class='v'>log-normal</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Observations <small>1</small></h3><p class='kind-blurb'>Model outputs that are recorded and, when data are supplied, compared with measurements.</p><div class='comp-list'>
+<details class='comp' id='c-Effluent-Cu'><summary><span class='cname'>Effluent_Cu</span><span class='ctype'>Observation</span><span class='crole'><p>Observation of Cu_aq in Cell_10 (the column outlet), compared with observed_effluent.csv under a normal error model with a fixed SD of 0.2 g/m³.</p></span></summary><div class='cbody'><p class=type-help><b>Observation:</b> Observation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>Cu_aq:concentration</td><td></td><td>Expression evaluated on the chosen object at each output time step. Typically a single state variable (e.g. &#x27;Storage&#x27;) or a derived quantity (e.g. &#x27;Storage/Area&#x27;). The result becomes the modeled value compared against observed data.</td></tr><tr><td>Error probability distribution</td><td class='v'>normal</td><td></td><td>Distribution assumed for the residual between modeled and observed values. &#x27;normal&#x27; compares values directly; &#x27;log-normal&#x27; compares the logs (suitable for strictly positive quantities spanning multiple orders of magnitude, e.g. concentrations or flows).</td></tr><tr><td>Error standard deviation</td><td class='v'>0.2</td><td></td><td>Standard deviation of the residual under the chosen error structure. For &#x27;normal&#x27; errors, units match the observed quantity; for &#x27;log-normal&#x27; errors, this is the standard deviation of log-residuals. May be set per-observation or pushed in at runtime from a Truth Twin metadata sidecar.</td></tr><tr><td>Comparison Method</td><td class='v'>Least Squared</td><td></td><td>How modeled and observed series are compared. &#x27;Least Squared&#x27; uses standard sum of squared residuals (negative log-likelihood for normal/log-normal errors). &#x27;Similarity&#x27; compares autocorrelation structure and value distribution (Kolmogorov-Smirnov), useful when point-by-point matching is not meaningful. &#x27;Weighted Least Squared&#x27; applies a temporal kernel that downweights older observations, suited for streaming data assimilation where recent measurements should dominate. &#x27;EMC&#x27; compares event mean concentrations: for each event window in the EMC events file the modeled expression is weighted by the EMC weighting expression (e.g. flow) and averaged over the event, then compared with the observed value time-stamped within that window.</td></tr><tr><td>Observed data time series</td><td class='v'>observed_effluent.csv</td><td></td><td>Measured time series to compare the modeled output against. Used by all comparison methods. May be loaded from a file or pushed in at runtime by an external assimilation driver.</td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>inflow_concentration.txt</code></td><td><p>Copper concentration of the inflow (g/m³) versus time (days). 8 g/m³ from day 0 to day 25, then clean water.</p></td></tr><tr><td><code>inflow.txt</code></td><td><p>Water inflow to the top of the column (m³/day) versus time (days), constant 0.2 m³/day (a Darcy flux of 0.2 m/day over 1 m²).</p></td></tr><tr><td><code>observed_effluent.csv</code></td><td><p>Synthetic effluent copper concentrations (g/m³), one per day from day 1 to day 60. Made by running the model at K_D = 2 L/kg and k_f = 1 1/day and adding Gaussian noise with SD 0.2 g/m³ (random seed 7). Two columns, no header.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>60</td></tr><tr><td>Initial time step</td><td class='v'>0.05</td></tr><tr><td>Write interval (steps)</td><td class='v'>100</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>1e-06</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Effluent copper with the parameter values in the file' loading='lazy'><figcaption><b>Effluent copper with the parameter values in the file</b> With weak, fast sorption the pulse breaks through early and sharply, unlike the data. The genetic algorithm does not start from these values; it samples the whole parameter range. The calibrated fit is shown in the text.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/ga-calibration">View source on GitHub</a>.</div></footer>
+</body></html>

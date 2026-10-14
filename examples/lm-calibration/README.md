@@ -69,7 +69,7 @@ Calibration means choosing parameter values so that a model reproduces measureme
 | 2 | `sorption_calibration.ohq` | Kinetic sorption of copper in a closed cell | k_f, KD |
 | 3 | `monod_calibration.ohq` | Monod and second-order decay, dilution inflow, temperature pulse | k_A, K_s, k_B (+ 2 error SDs, profiled) |
 
-Each case also has an `*_at_truth.ohq` file, identical except that every parameter holds the value used to make the data. The models were built for the OpenHydroQual test suite (`Examples/LM_Calibration`) and are reproduced here with clearer names. The page shows the pond case; the other files are in the download.
+Each case also has an `*_at_truth.ohq` file, identical except that every parameter holds the value used to make the data. The data were generated with the OpenHydroQual 2.1.1 solver from the `*_at_truth.ohq` files, with fixed random seeds. The models were built for the OpenHydroQual test suite (`Examples/LM_Calibration`) and are reproduced here with clearer names. The page shows the pond case; the other files are in the download.
 
 ## How it works
 
@@ -157,29 +157,29 @@ All results below were produced with `OHQ-LM` (version 2.1.1, two threads) from 
 
 | Case | Parameter | Truth | Start | Estimate | 95% interval | Covers truth |
 |---|---|---:|---:|---:|---|:--:|
-| 1 | weir α | 794 880 | 400 000 | 722 818 | 587 109 to 889 895 | yes |
-| 1 | crest z₀ (m) | 1.5 | 1.35 | 1.4989 | 1.4958 to 1.5020 | yes |
-| 1 | k_d (1/day) | 1.2 | 0.45 | 1.2048 | 1.1895 to 1.2204 | yes |
-| 2 | k_f (1/day) | 5.0 | 1.5 | 5.012 | 4.996 to 5.029 | yes |
-| 2 | KD | 500 | 120 | 511.2 | 498.5 to 524.2 | yes |
-| 3 | k_A | 1.0 | 0.35 | 0.980 | 0.914 to 1.052 | yes |
-| 3 | K_s (g/m³) | 0.6 | 2.5 | 0.577 | 0.479 to 0.696 | yes |
-| 3 | k_B (m³/g/day) | 0.5 | 1.6 | 0.5097 | 0.4995 to 0.5201 | yes |
-| 3 | σ_A (g/m³) | 0.0393 | 0.05 | 0.0403 | profiled | |
-| 3 | σ_B (g/m³) | 0.0375 | 0.05 | 0.0355 | profiled | |
+| 1 | weir α | 794 880 | 400 000 | 774 197 | 622 448 to 962 941 | yes |
+| 1 | crest z₀ (m) | 1.5 | 1.35 | 1.4993 | 1.4961 to 1.5024 | yes |
+| 1 | k_d (1/day) | 1.2 | 0.45 | 1.2015 | 1.1862 to 1.2171 | yes |
+| 2 | k_f (1/day) | 5.0 | 1.5 | 4.989 | 4.972 to 5.005 | yes |
+| 2 | KD | 500 | 120 | 498.6 | 485.8 to 511.7 | yes |
+| 3 | k_A | 1.0 | 0.35 | 0.972 | 0.908 to 1.039 | yes |
+| 3 | K_s (g/m³) | 0.6 | 2.5 | 0.561 | 0.468 to 0.672 | yes |
+| 3 | k_B (m³/g/day) | 0.5 | 1.6 | 0.5003 | 0.4889 to 0.5121 | yes |
+| 3 | σ_A (g/m³) | 0.0393 | 0.05 | 0.0389 | profiled | |
+| 3 | σ_B (g/m³) | 0.0375 | 0.05 | 0.0410 | profiled | |
 
 | Case | Residuals | Iterations | Model solves | −ln L at truth | −ln L at estimate |
 |---|---:|---:|---:|---:|---:|
-| 1 | 360 | 6 | 35 | −1168.6 | −1169.3 |
-| 2 | 120 | 5 | 29 | −296.8 | −299.5 |
-| 3 | 160 | 12 | 68 | −441.6 | −443.9 |
+| 1 | 360 | 5 | 30 | −1173.8 | −1174.2 |
+| 2 | 120 | 4 | 24 | −285.5 | −286.4 |
+| 3 | 160 | 12 | 68 | −434.0 | −435.1 |
 
 ![Best objective so far against iteration for the four runs. The vertical axis is shifted so that the final value is 1.](results/convergence.png)
 
-- **Cost.** Each case converges in 5 to 12 iterations and 29 to 68 model solves, between about 10 and 20 s of wall time each. A genetic algorithm with its default 40 × 40 population would need about 1600 solves and would return no uncertainty.
+- **Cost.** Each case converges in 4 to 12 iterations and 24 to 68 model solves, between about 5 and 20 s of wall time each. A genetic algorithm with its default 40 × 40 population would need about 1600 solves and would return no uncertainty.
 - **The estimate fits slightly better than the truth.** In every case −ln L at the estimate is a little lower than at the true values. That is expected: the optimizer fits one particular noise realization, and the best fit to noisy data is never exactly the truth.
-- **Correlated pairs.** In the pond case the weir α and the crest elevation are correlated at +0.96. A higher crest and a larger coefficient give nearly the same discharge over the narrow range of stage in the record (1.50 to 1.54 m), so the interval on α is wide (about ±20%) while z₀ is fixed to about ±3 mm. In case 3, k_A and K_s are correlated at +0.985, which is the familiar trade-off in a Monod term; they remain identifiable only because the temperature pulse and the decline of A move the reactor through a range of A/K_s. k_d and k_B are nearly uncorrelated with everything else, because each is constrained by its own observation.
-- **A failure that looks like a success (case 1b).** `pond_calibration_4param.ohq` also calibrates the pond's stage-storage coefficient α_p. LM converges in 7 iterations to a lower −ln L than the truth (−1169.7), but returns α_p = 5314 (truth 4140, interval 4977 to 5674) and k_d = 0.938 (truth 1.2, interval 0.878 to 1.003). Both intervals miss the truth. The correlation between α_p and k_d is −0.98: a larger pond holds water longer, and a longer residence time with slower decay produces the same outflow concentration as a smaller pond with faster decay. The standard errors look small; only the correlation matrix shows that the pair is not identified. Fixing α_p at its known value, as the main model does, makes the other three recoverable.
+- **Correlated pairs.** In the pond case the weir α and the crest elevation are correlated at +0.96. A higher crest and a larger coefficient give nearly the same discharge over the narrow range of stage in the record (1.50 to 1.54 m), so the interval on α is wide (about ±25%) while z₀ is fixed to about ±3 mm. In case 3, k_A and K_s are correlated at +0.985, which is the familiar trade-off in a Monod term; they remain identifiable only because the temperature pulse and the decline of A move the reactor through a range of A/K_s. k_d and k_B are nearly uncorrelated with everything else, because each is constrained by its own observation.
+- **A pair the data cannot separate (case 1b).** `pond_calibration_4param.ohq` also calibrates the pond's stage-storage coefficient α_p. LM needs 9 iterations and 54 model solves, creeping slowly along a valley (see the convergence plot), and ends at α_p = 4188 (truth 4140) and k_d = 1.188 (truth 1.2), with essentially the same −ln L as the three-parameter fit (−1174.25 against −1174.24). The point estimates happen to be good, but the uncertainty tells the real story: the correlation between α_p and k_d is −0.999, and the 95% interval for k_d widens from 1.186 to 1.217 in the three-parameter fit to 0.82 to 1.73. A larger pond holds water longer, and a longer residence time with slower decay produces the same outflow concentration as a smaller pond with faster decay, so the data fix only the combination. With a different noise realization the same run can stop anywhere along that valley; only the correlation matrix and the wide intervals reveal it. Fixing α_p at its known value, as the main model does, makes the other three parameters well determined.
 
 ![Batch sorption case: observed data, starting guess and LM estimate on logarithmic axes.](results/sorption_fit.png)
 

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 -10 2300 1266" class="ohq-diagram" style="max-width:1150px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Channel_12"><title>Channel_12 (wide_channel)</title><path d="M300.0 450.0 L365.0 450.0 L430.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_23"><title>Channel_23 (wide_channel)</title><path d="M630.0 450.0 L695.0 450.0 L760.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_34"><title>Channel_34 (wide_channel)</title><path d="M960.0 450.0 L1025.0 450.0 L1090.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_45"><title>Channel_45 (wide_channel)</title><path d="M1290.0 450.0 L1355.0 450.0 L1420.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Channel_56"><title>Channel_56 (wide_channel)</title><path d="M1620.0 450.0 L1685.0 450.0 L1750.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outlet_weir"><title>Outlet_weir (wier)</title><path d="M1950.0 450.0 L2015.0 450.0 L2080.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pond_1_to_Bed_1"><title>Pond_1_to_Bed_1 (surface2groundwater_link)</title><path d="M200.0 550.0 L200.0 600.0 L200.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pond_2_to_Bed_2"><title>Pond_2_to_Bed_2 (surface2groundwater_link)</title><path d="M530.0 550.0 L530.0 600.0 L530.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pond_3_to_Bed_3"><title>Pond_3_to_Bed_3 (surface2groundwater_link)</title><path d="M860.0 550.0 L860.0 600.0 L860.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pond_4_to_Bed_4"><title>Pond_4_to_Bed_4 (surface2groundwater_link)</title><path d="M1190.0 550.0 L1190.0 600.0 L1190.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pond_5_to_Bed_5"><title>Pond_5_to_Bed_5 (surface2groundwater_link)</title><path d="M1520.0 550.0 L1520.0 600.0 L1520.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pond_6_to_Bed_6"><title>Pond_6_to_Bed_6 (surface2groundwater_link)</title><path d="M1850.0 550.0 L1850.0 600.0 L1850.0 650.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Seepage_1"><title>Seepage_1 (groundwater_link)</title><path d="M282.1 850.0 Q523.6 1144.3 925.0 1068.8"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(563.6 1051.9) rotate(18.8) scale(1.6)"/></g>
+<g class="d-link" data-name="Seepage_2"><title>Seepage_2 (groundwater_link)</title><path d="M630.0 810.6 L777.5 900.0 L925.0 989.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Seepage_3"><title>Seepage_3 (groundwater_link)</title><path d="M915.0 850.0 L942.5 900.0 L970.0 950.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Seepage_4"><title>Seepage_4 (groundwater_link)</title><path d="M1135.0 850.0 L1107.5 900.0 L1080.0 950.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Seepage_5"><title>Seepage_5 (groundwater_link)</title><path d="M1420.0 810.6 L1272.5 900.0 L1125.0 989.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Seepage_6"><title>Seepage_6 (groundwater_link)</title><path d="M1767.9 850.0 Q1526.4 1144.3 1125.0 1068.8"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1486.4 1051.9) rotate(161.2) scale(1.6)"/></g>
+<g class="d-link" data-name="Reaeration_1"><title>Reaeration_1 (Time-Dependent flow)</title><path d="M925.0 131.2 Q523.6 55.7 282.1 350.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(563.6 148.1) rotate(161.2) scale(1.6)"/></g>
+<g class="d-link" data-name="Reaeration_2"><title>Reaeration_2 (Time-Dependent flow)</title><path d="M925.0 210.6 L777.5 300.0 L630.0 389.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Reaeration_3"><title>Reaeration_3 (Time-Dependent flow)</title><path d="M970.0 250.0 L942.5 300.0 L915.0 350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Reaeration_4"><title>Reaeration_4 (Time-Dependent flow)</title><path d="M1080.0 250.0 L1107.5 300.0 L1135.0 350.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Reaeration_5"><title>Reaeration_5 (Time-Dependent flow)</title><path d="M1125.0 210.6 L1272.5 300.0 L1420.0 389.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Reaeration_6"><title>Reaeration_6 (Time-Dependent flow)</title><path d="M1125.0 131.2 Q1526.4 55.7 1767.9 350.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1486.4 148.1) rotate(18.8) scale(1.6)"/></g>
+<g class="d-node" data-name="Pond_1"><title>Pond_1 (Pond)</title><rect x="100" y="350" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="122" y="372" width="156" height="156"/>
+<text x="200" y="593" font-size="33" text-anchor="middle">Pond_1</text></g>
+<g class="d-node" data-name="Pond_2"><title>Pond_2 (Pond)</title><rect x="430" y="350" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="452" y="372" width="156" height="156"/>
+<text x="530" y="593" font-size="33" text-anchor="middle">Pond_2</text></g>
+<g class="d-node" data-name="Pond_3"><title>Pond_3 (Pond)</title><rect x="760" y="350" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="782" y="372" width="156" height="156"/>
+<text x="860" y="593" font-size="33" text-anchor="middle">Pond_3</text></g>
+<g class="d-node" data-name="Pond_4"><title>Pond_4 (Pond)</title><rect x="1090" y="350" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="1112" y="372" width="156" height="156"/>
+<text x="1190" y="593" font-size="33" text-anchor="middle">Pond_4</text></g>
+<g class="d-node" data-name="Pond_5"><title>Pond_5 (Pond)</title><rect x="1420" y="350" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="1442" y="372" width="156" height="156"/>
+<text x="1520" y="593" font-size="33" text-anchor="middle">Pond_5</text></g>
+<g class="d-node" data-name="Pond_6"><title>Pond_6 (Pond)</title><rect x="1750" y="350" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="1772" y="372" width="156" height="156"/>
+<text x="1850" y="593" font-size="33" text-anchor="middle">Pond_6</text></g>
+<g class="d-node" data-name="Bed_1"><title>Bed_1 (Groundwater cell)</title><rect x="100" y="650" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="122" y="672" width="156" height="156"/>
+<text x="200" y="893" font-size="33" text-anchor="middle">Bed_1</text></g>
+<g class="d-node" data-name="Bed_2"><title>Bed_2 (Groundwater cell)</title><rect x="430" y="650" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="452" y="672" width="156" height="156"/>
+<text x="530" y="893" font-size="33" text-anchor="middle">Bed_2</text></g>
+<g class="d-node" data-name="Bed_3"><title>Bed_3 (Groundwater cell)</title><rect x="760" y="650" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="782" y="672" width="156" height="156"/>
+<text x="860" y="893" font-size="33" text-anchor="middle">Bed_3</text></g>
+<g class="d-node" data-name="Bed_4"><title>Bed_4 (Groundwater cell)</title><rect x="1090" y="650" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="1112" y="672" width="156" height="156"/>
+<text x="1190" y="893" font-size="33" text-anchor="middle">Bed_4</text></g>
+<g class="d-node" data-name="Bed_5"><title>Bed_5 (Groundwater cell)</title><rect x="1420" y="650" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="1442" y="672" width="156" height="156"/>
+<text x="1520" y="893" font-size="33" text-anchor="middle">Bed_5</text></g>
+<g class="d-node" data-name="Bed_6"><title>Bed_6 (Groundwater cell)</title><rect x="1750" y="650" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="1772" y="672" width="156" height="156"/>
+<text x="1850" y="893" font-size="33" text-anchor="middle">Bed_6</text></g>
+<g class="d-node" data-name="Atmosphere"><title>Atmosphere (Reactor)</title><rect x="925" y="50" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="947" y="72" width="156" height="156"/>
+<text x="1025" y="293" font-size="33" text-anchor="middle">Atmosphere</text></g>
+<g class="d-node" data-name="Outlet"><title>Outlet (Reactor)</title><rect x="2080" y="350" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="2102" y="372" width="156" height="156"/>
+<text x="2180" y="593" font-size="33" text-anchor="middle">Outlet</text></g>
+<g class="d-node" data-name="Aquifer"><title>Aquifer (Groundwater cell)</title><rect x="925" y="950" width="200" height="200" rx="16"/>
+<image href="icons/Groundwater.png" x="947" y="972" width="156" height="156"/>
+<text x="1025" y="1193" font-size="33" text-anchor="middle">Aquifer</text></g>
+</svg>

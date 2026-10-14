@@ -27,3 +27,4 @@ setvalue; object=system, quantity=simulation_end_time, value=6
 setvalue; object=system, quantity=initial_time_step, value=0.001
 setvalue; object=system, quantity=minimum_timestep, value=1e-06
 setvalue; object=system, quantity=write_interval, value=1
+setvalue; object=system, quantity=max_timestep_increase_factor, value=1

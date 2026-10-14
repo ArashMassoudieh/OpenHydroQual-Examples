@@ -72,7 +72,7 @@
 </tr>
 </tbody>
 </table>
-<p>Each case also has an <code>*_at_truth.ohq</code> file, identical except that every parameter holds the value used to make the data. The models were built for the OpenHydroQual test suite (<code>Examples/LM_Calibration</code>) and are reproduced here with clearer names. The page shows the pond case; the other files are in the download.</p>
+<p>Each case also has an <code>*_at_truth.ohq</code> file, identical except that every parameter holds the value used to make the data. The data were generated with the OpenHydroQual 2.1.1 solver from the <code>*_at_truth.ohq</code> files, with fixed random seeds. The models were built for the OpenHydroQual test suite (<code>Examples/LM_Calibration</code>) and are reproduced here with clearer names. The page shows the pond case; the other files are in the download.</p>
 <h2>How it works</h2>
 <h3>The likelihood</h3>
 <p>Every <strong>Observation</strong> that has observed data contributes a Gaussian negative log-likelihood. For an observation compared at n points, with observed values oᵢ, modeled values mᵢ (interpolated to the observation times) and error standard deviation σ:</p>
@@ -156,8 +156,8 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <td>weir α</td>
 <td style="text-align: right;">794 880</td>
 <td style="text-align: right;">400 000</td>
-<td style="text-align: right;">722 818</td>
-<td>587 109 to 889 895</td>
+<td style="text-align: right;">774 197</td>
+<td>622 448 to 962 941</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
@@ -165,8 +165,8 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <td>crest z₀ (m)</td>
 <td style="text-align: right;">1.5</td>
 <td style="text-align: right;">1.35</td>
-<td style="text-align: right;">1.4989</td>
-<td>1.4958 to 1.5020</td>
+<td style="text-align: right;">1.4993</td>
+<td>1.4961 to 1.5024</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
@@ -174,8 +174,8 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <td>k_d (1/day)</td>
 <td style="text-align: right;">1.2</td>
 <td style="text-align: right;">0.45</td>
-<td style="text-align: right;">1.2048</td>
-<td>1.1895 to 1.2204</td>
+<td style="text-align: right;">1.2015</td>
+<td>1.1862 to 1.2171</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
@@ -183,8 +183,8 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <td>k_f (1/day)</td>
 <td style="text-align: right;">5.0</td>
 <td style="text-align: right;">1.5</td>
-<td style="text-align: right;">5.012</td>
-<td>4.996 to 5.029</td>
+<td style="text-align: right;">4.989</td>
+<td>4.972 to 5.005</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
@@ -192,8 +192,8 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <td>KD</td>
 <td style="text-align: right;">500</td>
 <td style="text-align: right;">120</td>
-<td style="text-align: right;">511.2</td>
-<td>498.5 to 524.2</td>
+<td style="text-align: right;">498.6</td>
+<td>485.8 to 511.7</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
@@ -201,8 +201,8 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <td>k_A</td>
 <td style="text-align: right;">1.0</td>
 <td style="text-align: right;">0.35</td>
-<td style="text-align: right;">0.980</td>
-<td>0.914 to 1.052</td>
+<td style="text-align: right;">0.972</td>
+<td>0.908 to 1.039</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
@@ -210,8 +210,8 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <td>K_s (g/m³)</td>
 <td style="text-align: right;">0.6</td>
 <td style="text-align: right;">2.5</td>
-<td style="text-align: right;">0.577</td>
-<td>0.479 to 0.696</td>
+<td style="text-align: right;">0.561</td>
+<td>0.468 to 0.672</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
@@ -219,8 +219,8 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <td>k_B (m³/g/day)</td>
 <td style="text-align: right;">0.5</td>
 <td style="text-align: right;">1.6</td>
-<td style="text-align: right;">0.5097</td>
-<td>0.4995 to 0.5201</td>
+<td style="text-align: right;">0.5003</td>
+<td>0.4889 to 0.5121</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
@@ -228,7 +228,7 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <td>σ_A (g/m³)</td>
 <td style="text-align: right;">0.0393</td>
 <td style="text-align: right;">0.05</td>
-<td style="text-align: right;">0.0403</td>
+<td style="text-align: right;">0.0389</td>
 <td>profiled</td>
 <td style="text-align: center;"></td>
 </tr>
@@ -237,7 +237,7 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <td>σ_B (g/m³)</td>
 <td style="text-align: right;">0.0375</td>
 <td style="text-align: right;">0.05</td>
-<td style="text-align: right;">0.0355</td>
+<td style="text-align: right;">0.0410</td>
 <td>profiled</td>
 <td style="text-align: center;"></td>
 </tr>
@@ -258,35 +258,35 @@ OHQ-LM pond_calibration.ohq results/ --verify-residuals
 <tr>
 <td>1</td>
 <td style="text-align: right;">360</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">35</td>
-<td style="text-align: right;">−1168.6</td>
-<td style="text-align: right;">−1169.3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">−1173.8</td>
+<td style="text-align: right;">−1174.2</td>
 </tr>
 <tr>
 <td>2</td>
 <td style="text-align: right;">120</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">29</td>
-<td style="text-align: right;">−296.8</td>
-<td style="text-align: right;">−299.5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">−285.5</td>
+<td style="text-align: right;">−286.4</td>
 </tr>
 <tr>
 <td>3</td>
 <td style="text-align: right;">160</td>
 <td style="text-align: right;">12</td>
 <td style="text-align: right;">68</td>
-<td style="text-align: right;">−441.6</td>
-<td style="text-align: right;">−443.9</td>
+<td style="text-align: right;">−434.0</td>
+<td style="text-align: right;">−435.1</td>
 </tr>
 </tbody>
 </table>
 <p><img alt="Best objective so far against iteration for the four runs. The vertical axis is shifted so that the final value is 1." src="results/convergence.png" /></p>
 <ul>
-<li><strong>Cost.</strong> Each case converges in 5 to 12 iterations and 29 to 68 model solves, between about 10 and 20 s of wall time each. A genetic algorithm with its default 40 × 40 population would need about 1600 solves and would return no uncertainty.</li>
+<li><strong>Cost.</strong> Each case converges in 4 to 12 iterations and 24 to 68 model solves, between about 5 and 20 s of wall time each. A genetic algorithm with its default 40 × 40 population would need about 1600 solves and would return no uncertainty.</li>
 <li><strong>The estimate fits slightly better than the truth.</strong> In every case −ln L at the estimate is a little lower than at the true values. That is expected: the optimizer fits one particular noise realization, and the best fit to noisy data is never exactly the truth.</li>
-<li><strong>Correlated pairs.</strong> In the pond case the weir α and the crest elevation are correlated at +0.96. A higher crest and a larger coefficient give nearly the same discharge over the narrow range of stage in the record (1.50 to 1.54 m), so the interval on α is wide (about ±20%) while z₀ is fixed to about ±3 mm. In case 3, k_A and K_s are correlated at +0.985, which is the familiar trade-off in a Monod term; they remain identifiable only because the temperature pulse and the decline of A move the reactor through a range of A/K_s. k_d and k_B are nearly uncorrelated with everything else, because each is constrained by its own observation.</li>
-<li><strong>A failure that looks like a success (case 1b).</strong> <code>pond_calibration_4param.ohq</code> also calibrates the pond's stage-storage coefficient α_p. LM converges in 7 iterations to a lower −ln L than the truth (−1169.7), but returns α_p = 5314 (truth 4140, interval 4977 to 5674) and k_d = 0.938 (truth 1.2, interval 0.878 to 1.003). Both intervals miss the truth. The correlation between α_p and k_d is −0.98: a larger pond holds water longer, and a longer residence time with slower decay produces the same outflow concentration as a smaller pond with faster decay. The standard errors look small; only the correlation matrix shows that the pair is not identified. Fixing α_p at its known value, as the main model does, makes the other three recoverable.</li>
+<li><strong>Correlated pairs.</strong> In the pond case the weir α and the crest elevation are correlated at +0.96. A higher crest and a larger coefficient give nearly the same discharge over the narrow range of stage in the record (1.50 to 1.54 m), so the interval on α is wide (about ±25%) while z₀ is fixed to about ±3 mm. In case 3, k_A and K_s are correlated at +0.985, which is the familiar trade-off in a Monod term; they remain identifiable only because the temperature pulse and the decline of A move the reactor through a range of A/K_s. k_d and k_B are nearly uncorrelated with everything else, because each is constrained by its own observation.</li>
+<li><strong>A pair the data cannot separate (case 1b).</strong> <code>pond_calibration_4param.ohq</code> also calibrates the pond's stage-storage coefficient α_p. LM needs 9 iterations and 54 model solves, creeping slowly along a valley (see the convergence plot), and ends at α_p = 4188 (truth 4140) and k_d = 1.188 (truth 1.2), with essentially the same −ln L as the three-parameter fit (−1174.25 against −1174.24). The point estimates happen to be good, but the uncertainty tells the real story: the correlation between α_p and k_d is −0.999, and the 95% interval for k_d widens from 1.186 to 1.217 in the three-parameter fit to 0.82 to 1.73. A larger pond holds water longer, and a longer residence time with slower decay produces the same outflow concentration as a smaller pond with faster decay, so the data fix only the combination. With a different noise realization the same run can stop anywhere along that valley; only the correlation matrix and the wide intervals reveal it. Fixing α_p at its known value, as the main model does, makes the other three parameters well determined.</li>
 </ul>
 <p><img alt="Batch sorption case: observed data, starting guess and LM estimate on logarithmic axes." src="results/sorption_fit.png" /></p>
 <p><img alt="Monod reactor case: A (log scale) and B (linear scale)." src="results/monod_fit.png" /></p>

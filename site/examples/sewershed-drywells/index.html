@@ -1,0 +1,988 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sewershed with Infiltration Pond and Drywell · OpenHydroQual Examples</title>
+<meta name="description" content="An 11.3 ha Los Angeles sewershed drains through two storm-sewer lines into an infiltration pond with a 42 m drywell. A 133-cell radial grid follows the injected water through 70 m of layered vadose zone, and a build-up and wash-off pollutant tracks the first flush.">
+<meta name="keywords" content="drywell, dry well, class v injection well, infiltration basin, infiltration pond, sewershed, storm sewer, pipe network, managed aquifer recharge, stormwater capture, groundwater recharge, vadose zone, unsaturated flow, van genuchten, radial grid, axisymmetric, build-up, wash-off, first flush, pollutant transport, penman, los angeles, case study, large model">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#5b9a2c">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Stormwater &amp; Green Infrastructure</div>
+<h1>Sewershed with Infiltration Pond and Drywell</h1>
+<p class="lede">An 11.3 ha Los Angeles sewershed drains through two storm-sewer lines into an infiltration pond with a 42 m drywell. A 133-cell radial grid follows the injected water through 70 m of layered vadose zone, and a build-up and wash-off pollutant tracks the first flush.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class='f'></b><span>Advanced</span></span><a class='plug' href='../../?plugin=Sewer_system'>Sewer_system</a><a class='plug' href='../../?plugin=Well'>Well</a><a class='plug' href='../../?plugin=unsaturated_soil'>unsaturated_soil</a><a class='plug' href='../../?plugin=Pond_Plugin'>Pond_Plugin</a><a class='plug' href='../../?plugin=buildup_washoff'>buildup_washoff</a><a class='plug' href='../../?plugin=soil_evapotranspiration_models'>soil_evapotranspiration_models</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/sewershed-drywells.zip" download>Download model (.zip)</a>
+    <div class="muted">37 KB · 6 files · open <code>sewershed_drywell.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>In arid and semi-arid cities such as Los Angeles, stormwater is increasingly treated as a resource: it is collected by the storm-sewer network and infiltrated, in place of being sent to the ocean. Where the near-surface soils are tight, <strong>drywells</strong> are used: vertical shafts, here 2 m wide and 42 m deep, that bypass the surface layers and put the water directly into deeper, more permeable strata. Their performance depends on how much water the surrounding vadose zone can accept, and their risk depends on what the water carries: the first flush of a storm washes the pollutants accumulated on streets and roofs during the dry season straight into the drywell.</p>
+<p>This model is a complete small sewershed with such a system:</p>
+<ul>
+<li><strong>13 paved sub-catchments</strong> (11.3 ha) drain into <strong>two 0.91 m storm-sewer lines</strong>.</li>
+<li>Both lines discharge into an <strong>infiltration pond</strong> (519 m³ at its spillway crest).</li>
+<li>The pond drains into a <strong>42 m drywell</strong>, infiltrates through its floor, and spills to a downstream outlet when full.</li>
+<li>An <strong>axisymmetric grid of 133 soil cells</strong> (13 layers by 11 columns) represents the 70 m vadose zone around the drywell down to the water table.</li>
+<li>A <strong>build-up and wash-off</strong> pollutant is carried from the catchment surfaces through the sewers, the pond and the drywell into the soil.</li>
+</ul>
+<p>It is driven by observed hourly precipitation and weather at Los Angeles International Airport for the first storms of the 2018 to 2019 wet season, 18 November to 10 December 2018. It is the largest example in this collection (163 blocks and 302 links) and runs in about five minutes.</p>
+<h2>How it works</h2>
+<p><strong>Catchments and sewers.</strong> Each catchment is a paved surface without infiltration or depression storage. Rain enters its storage and drains by kinematic sheet flow to its sewer segment,</p>
+<p>Q = 86400 · (W/n) · S^½ · d^(5/3)</p>
+<p>with the width W equal to the length of the segment it drains along, S = 0.015 and n = 0.2. Sewer segments are <code>Sewerchannelsegment</code> blocks: the depth follows from the stored volume through a polynomial fit of a circular section, and the head is invert + depth. Consecutive segments are joined by Manning links,</p>
+<p>Q = 86400 · (1/n̄) · A · R^(2/3) · √(Δh/L̄)</p>
+<p>where A is the flowing area of the segment with the higher head, R the hydraulic radius from the mean wetted perimeter, n̄ and L̄ the mean roughness and mean length. The last segment of each line discharges into the pond through a <code>sewer2pond</code> link, the same Manning relation with the upstream flowing area (free outfall: the sewer inverts are above the pond crest). The two lines meet only in the pond.</p>
+<p><strong>Infiltration pond (<code>Pond</code>).</strong> Storage and depth are related by S = 86.06·d^2.766, so the water surface area is 238·d^1.766 m² (about 750 m² at the crest). Water leaves the pond in three ways:</p>
+<ul>
+<li>over the <strong>spillway</strong>, Q = 392,619 · (h − 1.914)₊^2.995 m³/day;</li>
+<li>into the <strong>drywell</strong> around its rim, Q = 86400 · √((h_pond − h_well)/L) / n · π·D · d_pond^(5/3) with L = 3 m, n = 100 and D = 2 m (negative when the well level is higher);</li>
+<li>through its <strong>floor</strong> into the top cell of each ring, Q = K_sat · (h_pond − h_soil)/(Δz/2) · min(A_pond, A_cell), switched off smoothly as the pond empties.</li>
+</ul>
+<p><strong>Drywell.</strong> The well is a cylinder with storage π·D²/4 · depth. Each wall link is</p>
+<p>Q = K_sat · [ (h_well − h_soil)₊ · A_wet / L − (h_soil − z_top)₊ · A_cell / L ] · d_well/(d_well + 0.01)</p>
+<p>with L = 0.48 m (from the well wall to the centre of ring 1), A_wet = π·D times the wetted height of that layer, A_cell = π·D times the full layer thickness, and z_top the top of the layer. The first term is injection from the well; the second lets a layer whose pressure head is positive drain back into the well. The bottom link is Darcy flow through the 3.14 m² base into the cell below.</p>
+<p><strong>Vadose zone.</strong> Every soil cell is a van Genuchten block: moisture content θ = V/(A·Δz), effective saturation S_e, suction ψ = −(1/α)·(S_e^(−1/m) − 1)^(1/n) with m = 1 − 1/n, and head h = z_bottom + Δz + ψ. Above saturation the cell stores water elastically with specific storage S_s = 0.001 1/m. Vertical links use</p>
+<p>Q = A · K_sat · k_r(S_e) · (h_upper − h_lower) / L,  k_r = [1 − (1 − S_e^(1/m))^m]²</p>
+<p>with the larger S_e of the two cells, the smaller K_sat and L the distance between cell centres. Radial links use the same relation with the mean K_sat and the cylindrical interface 2π·r·Δz between rings. The rings have outer radii 1.96, 3.12, 4.51, 6.17, 8.17, 10.6, 13.4, 16.9, 21.0 and 26.0 m; the outer boundary at 26 m is closed. The bottom layer drains to the water table at −70.28 m. The layers (K_sat already multiplied by the calibrated factor of 40 applied to every cell):</p>
+<table>
+<thead>
+<tr>
+<th>Layers</th>
+<th>Depth (m)</th>
+<th>K_sat (m/day)</th>
+<th>α (1/m)</th>
+<th>n</th>
+<th>θ_s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 and 2</td>
+<td>0 to 8.4</td>
+<td>2.8</td>
+<td>2.49</td>
+<td>1.17</td>
+<td>0.392</td>
+</tr>
+<tr>
+<td>3 to 5</td>
+<td>8.4 to 26.7</td>
+<td>0.011</td>
+<td>4.3</td>
+<td>1.52</td>
+<td>0.366</td>
+</tr>
+<tr>
+<td>6 to 8</td>
+<td>26.7 to 35.9</td>
+<td>0.0035</td>
+<td>0.159</td>
+<td>1.21</td>
+<td>0.285</td>
+</tr>
+<tr>
+<td>9</td>
+<td>35.9 to 38.9</td>
+<td>0.53</td>
+<td>0.405</td>
+<td>1.19</td>
+<td>0.348</td>
+</tr>
+<tr>
+<td>10 to 13</td>
+<td>38.9 to 70.3</td>
+<td>0.011</td>
+<td>4.3</td>
+<td>1.52</td>
+<td>0.366</td>
+</tr>
+</tbody>
+</table>
+<p>All cells start at θ = 0.2. The top layer loses water by Penman evapotranspiration, E = [Δ·E_r + γ·E_a]/(Δ + γ), with E_r the incoming solar radiation converted to an evaporation rate, E_a = B·e_s(T)·(RH − 1) the aerodynamic term and B a function of wind speed and roughness height (0.3 mm), scaled by θ/θ_s.</p>
+<p><strong>Pollutant.</strong> <code>Pollutant_surface</code> is an immobile load (g/m²) on the catchments. It grows by <code>Buildup</code> at 0.01 g/m²/day and is converted into the dissolved <code>Pollutant</code> by <code>Washoff</code> at a rate, per unit area,</p>
+<p>r = k_washoff · L_s · d²</p>
+<p>with L_s the surface load and d the water depth on the surface. With k_washoff = 10⁶, the rate constant k_washoff·d² is 1 per day at 1 mm of water and 100 per day at 1 cm, so a storm that produces a few millimetres of sheet flow strips the surface within hours. The dissolved pollutant moves with the water by advection through every link (no decay, no sorption). Its build-up rate and initial load are illustrative.</p>
+<p><strong>Time step.</strong> <code>initial_time_step</code> is one hour, matching the forcing data, and <code>max_timestep_increase_factor = 1</code> keeps the steps at one hour or less.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Fast surface, slow subsurface.</strong> The sewers deliver 11,680 m³ to the pond, 103 mm on the paved area, with hourly peaks near 4,900 m³/day per line. The vadose zone accepts water at a few hundred cubic metres per day at most.</li>
+<li><strong>The drywell saturates its surroundings.</strong> In the first storm (day 4) the empty drywell takes 940 m³/day and fills to 39 m within a day. The ring-1 cells beside it saturate in hours. Almost all of the drywell's outflow goes into layer 9, the only permeable stratum it reaches (510 m³ over the run, against 10 to 60 m³ for each of the tight layers). The well then drains slowly and is still 14 m deep a week later.</li>
+<li><strong>Back-flow into the well.</strong> Layers 1 and 2 are wetted from above by infiltration through the pond floor. Once their pressure head is positive they drain back into the drywell (about 570 m³ over the run, shown by the negative injection in those layers). The drywell is then partly a conduit that carries water from the shallow soil down to layer 9.</li>
+<li><strong>The pond becomes perched.</strong> Pond infiltration saturates layers 1 and 2, but layer 3 (K_sat = 0.011 m/day) lets water through at only about 20 m³/day across the 2,120 m² grid. From the 30 mm storm on day 11, the pond stays near its crest and the drywell stays full, so the 61 mm storm of days 17 to 19 mostly overflows: 6,420 m³ (55 % of the inflow over the whole run, almost all of it in that storm) leaves over the spillway. Floor infiltration takes 4,490 m³ (38 %) and the drywell only 300 m³ (3 %).</li>
+<li><strong>First flush.</strong> The first storm washes almost all of the initial 113 kg of surface pollutant off the catchments; the sewer outfalls carry up to 150 kg/day and the pond concentration exceeds 100 g/m³. This load arrives while the pond and drywell still have room: by day 5, 83 kg have entered the soil under the pond and around the drywell and 12.7 kg are in the drywell. Only 10.5 kg (8 % of the 138 kg supplied, including build-up) leaves over the spillway, mostly in the third storm, which washes off the 5 to 6 kg rebuilt since the first storm together with pollutant left in the pond. The pollutant mass balance closes: at the end 121 kg are in the soil, 1.9 kg in the drywell and 1.2 kg in the pond.</li>
+<li><strong>Nothing reaches the water table yet.</strong> Only 3.7 m³ of water and practically no pollutant reach −70 m in 22 days; this drainage comes from the initial moisture of the deep layers. Travel times through the tight layers are years.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li><strong>Shortened period.</strong> The author's original model ran three years (2018 to 2020); this version covers the first three storms of the 2018 to 2019 season so that it runs in minutes. Long-term questions (seasonal drainage of the drywell, arrival at the water table) need the longer run.</li>
+<li><strong>Calibrated values.</strong> Manning n = 0.2 for the catchments and 0.1 for the sewers, and the factor of 40 on all soil conductivities, are calibrated values carried over from the original model. A Manning n of 0.1 is much rougher than a concrete pipe (about 0.013); it compensates for storage and delays the model does not represent explicitly (inlets, laterals, manholes).</li>
+<li><strong>Pond infiltration area.</strong> Each pond-to-soil link uses the smaller of the pond surface and the ring area. Summed over the ten rings this exceeds the actual pond surface (at the crest, 2,120 m² against about 750 m²), so floor infiltration is overestimated while the pond is shallow.</li>
+<li><strong>Closed outer boundary.</strong> No water leaves the grid sideways beyond 26 m. Lateral spreading in layer 9 is therefore limited, which keeps the drywell full longer than in an unbounded formation.</li>
+<li><strong>Uniform initial moisture.</strong> All cells start at θ = 0.2, which is not in equilibrium with the layering; the deep layers drain slowly during the run.</li>
+<li><strong>Water table and overflow as reservoirs.</strong> Both boundaries are very large reservoirs whose level does not change appreciably; they act as fixed heads and record cumulative volume and pollutant mass.</li>
+<li><strong>Paved catchments.</strong> All catchment area is impervious and connected; there is no pervious area or interception.</li>
+<li><strong>Generic pollutant.</strong> The pollutant is conservative and dissolved; no sorption to soil, decay or particle settling in the pond.</li>
+<li><strong>Evapotranspiration</strong> uses incoming shortwave radiation without albedo or long-wave losses, which overestimates the radiation term.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 3520 4506" class="ohq-diagram" style="max-width:1760px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Runoff_05"><title>Runoff_05 (Catchment_link)</title><path d="M2100.0 200.0 L2100.0 265.0 L2100.0 330.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_04"><title>Runoff_04 (Catchment_link)</title><path d="M1700.0 200.0 L1700.0 265.0 L1700.0 330.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_03"><title>Runoff_03 (Catchment_link)</title><path d="M1300.0 200.0 L1300.0 265.0 L1300.0 330.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_02"><title>Runoff_02 (Catchment_link)</title><path d="M900.0 200.0 L900.0 265.0 L900.0 330.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_01"><title>Runoff_01 (Catchment_link)</title><path d="M500.0 200.0 L500.0 265.0 L500.0 330.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_05_04"><title>Pipe_05_04 (Sewer2Sewer_link)</title><path d="M2000.0 430.0 L1900.0 430.0 L1800.0 430.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_04_03"><title>Pipe_04_03 (Sewer2Sewer_link)</title><path d="M1600.0 430.0 L1500.0 430.0 L1400.0 430.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_03_02"><title>Pipe_03_02 (Sewer2Sewer_link)</title><path d="M1200.0 430.0 L1100.0 430.0 L1000.0 430.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_02_01"><title>Pipe_02_01 (Sewer2Sewer_link)</title><path d="M800.0 430.0 L700.0 430.0 L600.0 430.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outfall_01"><title>Outfall_01 (sewer2pond)</title><path d="M400.0 471.2 L300.0 512.5 L200.0 553.8" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_13"><title>Runoff_13 (Catchment_link)</title><path d="M3300.0 990.0 L3300.0 925.0 L3300.0 860.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_12"><title>Runoff_12 (Catchment_link)</title><path d="M2900.0 990.0 L2900.0 925.0 L2900.0 860.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_11"><title>Runoff_11 (Catchment_link)</title><path d="M2500.0 990.0 L2500.0 925.0 L2500.0 860.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_10"><title>Runoff_10 (Catchment_link)</title><path d="M2100.0 990.0 L2100.0 925.0 L2100.0 860.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_09"><title>Runoff_09 (Catchment_link)</title><path d="M1700.0 990.0 L1700.0 925.0 L1700.0 860.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_08"><title>Runoff_08 (Catchment_link)</title><path d="M1300.0 990.0 L1300.0 925.0 L1300.0 860.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_07"><title>Runoff_07 (Catchment_link)</title><path d="M900.0 990.0 L900.0 925.0 L900.0 860.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_06"><title>Runoff_06 (Catchment_link)</title><path d="M500.0 990.0 L500.0 925.0 L500.0 860.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_13_12"><title>Pipe_13_12 (Sewer2Sewer_link)</title><path d="M3200.0 760.0 L3100.0 760.0 L3000.0 760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_12_11"><title>Pipe_12_11 (Sewer2Sewer_link)</title><path d="M2800.0 760.0 L2700.0 760.0 L2600.0 760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_11_10"><title>Pipe_11_10 (Sewer2Sewer_link)</title><path d="M2400.0 760.0 L2300.0 760.0 L2200.0 760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_10_09"><title>Pipe_10_09 (Sewer2Sewer_link)</title><path d="M2000.0 760.0 L1900.0 760.0 L1800.0 760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_09_08"><title>Pipe_09_08 (Sewer2Sewer_link)</title><path d="M1600.0 760.0 L1500.0 760.0 L1400.0 760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_08_07"><title>Pipe_08_07 (Sewer2Sewer_link)</title><path d="M1200.0 760.0 L1100.0 760.0 L1000.0 760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Pipe_07_06"><title>Pipe_07_06 (Sewer2Sewer_link)</title><path d="M800.0 760.0 L700.0 760.0 L600.0 760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Outfall_06"><title>Outfall_06 (sewer2pond)</title><path d="M400.0 718.8 L300.0 677.5 L200.0 636.2" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Overflow_weir"><title>Overflow_weir (wier)</title><path d="M100.0 495.0 L100.0 377.5 L100.0 260.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Drywell_inlet"><title>Drywell_inlet (Surface water to well)</title><path d="M100.0 695.0 L100.0 1072.5 L100.0 1450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Infiltration_R01"><title>Infiltration_R01 (surfacewater_to_soil_link)</title><path d="M135.2 695.0 L267.9 1072.5 L400.7 1450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Infiltration_R02"><title>Infiltration_R02 (surfacewater_to_soil_link)</title><path d="M117.2 695.0 Q209.3 1231.8 640.0 1453.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(294.0 1153.0) rotate(55.4) scale(1.6)"/></g>
+<g class="d-link" data-name="Infiltration_R03"><title>Infiltration_R03 (surfacewater_to_soil_link)</title><path d="M200.0 627.1 Q829.1 829.3 1041.2 1450.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(724.8 933.9) rotate(44.4) scale(1.6)"/></g>
+<g class="d-link" data-name="Infiltration_R04"><title>Infiltration_R04 (surfacewater_to_soil_link)</title><path d="M200.0 609.9 Q986.5 727.3 1352.2 1450.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(881.3 878.6) rotate(36.1) scale(1.6)"/></g>
+<g class="d-link" data-name="Infiltration_R05"><title>Infiltration_R05 (surfacewater_to_soil_link)</title><path d="M200.0 598.4 Q1141.1 629.9 1664.9 1450.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1036.8 827.1) rotate(30.2) scale(1.6)"/></g>
+<g class="d-link" data-name="Infiltration_R06"><title>Infiltration_R06 (surfacewater_to_soil_link)</title><path d="M200.0 589.9 Q1304.6 534.0 1979.5 1450.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1197.2 777.0) rotate(25.8) scale(1.6)"/></g>
+<g class="d-link" data-name="Infiltration_R07"><title>Infiltration_R07 (surfacewater_to_soil_link)</title><path d="M200.0 583.5 Q1468.6 438.0 2295.1 1450.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1358.1 727.4) rotate(22.5) scale(1.6)"/></g>
+<g class="d-link" data-name="Infiltration_R08"><title>Infiltration_R08 (surfacewater_to_soil_link)</title><path d="M200.0 578.5 Q1631.7 342.0 2611.4 1450.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1518.7 678.1) rotate(19.9) scale(1.6)"/></g>
+<g class="d-link" data-name="Infiltration_R09"><title>Infiltration_R09 (surfacewater_to_soil_link)</title><path d="M200.0 574.4 Q1794.0 246.0 2928.2 1450.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1679.1 629.1) rotate(17.8) scale(1.6)"/></g>
+<g class="d-link" data-name="Infiltration_R10"><title>Infiltration_R10 (surfacewater_to_soil_link)</title><path d="M200.0 571.0 Q1955.9 150.0 3245.4 1450.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1839.3 580.3) rotate(16.1) scale(1.6)"/></g>
+<g class="d-link" data-name="Injection_L01"><title>Injection_L01 (Well2soil horizontal link)</title><path d="M32.6 1450.0 Q54.4 1774.0 345.2 1560.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(121.7 1639.5) rotate(19.4) scale(1.6)"/></g>
+<g class="d-link" data-name="Injection_L02"><title>Injection_L02 (Well2soil horizontal link)</title><path d="M27.8 1450.0 Q59.6 1891.4 320.0 1763.9"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(116.8 1749.2) rotate(47.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Injection_L03"><title>Injection_L03 (Well2soil horizontal link)</title><path d="M36.4 1450.0 Q71.2 1997.6 320.0 1945.8"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(124.7 1847.8) rotate(60.2) scale(1.6)"/></g>
+<g class="d-link" data-name="Injection_L04"><title>Injection_L04 (Well2soil horizontal link)</title><path d="M200.0 2351.6 L282.1 2270.8 L364.1 2190.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Injection_L05"><title>Injection_L05 (Well2soil horizontal link)</title><path d="M200.0 2417.2 L260.0 2397.5 L320.0 2377.8" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Injection_L06"><title>Injection_L06 (Well2soil horizontal link)</title><path d="M200.0 2482.8 L260.0 2502.5 L320.0 2522.2" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Injection_L07"><title>Injection_L07 (Well2soil horizontal link)</title><path d="M200.0 2548.4 L282.1 2629.2 L364.1 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Injection_L08"><title>Injection_L08 (Well2soil horizontal link)</title><path d="M36.4 3450.0 Q71.2 2902.4 320.0 2954.2"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(124.7 3052.2) rotate(-60.2) scale(1.6)"/></g>
+<g class="d-link" data-name="Injection_L09"><title>Injection_L09 (Well2soil horizontal link)</title><path d="M27.8 3450.0 Q59.6 3008.6 320.0 3136.1"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(116.8 3150.8) rotate(-47.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Injection_L10"><title>Injection_L10 (Well2soil horizontal link)</title><path d="M32.6 3450.0 Q54.4 3126.0 345.2 3340.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(121.7 3260.5) rotate(-19.4) scale(1.6)"/></g>
+<g class="d-link" data-name="Injection_bottom"><title>Injection_bottom (Well2soil vertical link)</title><path d="M100.0 3450.0 L100.0 3500.0 L100.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L01_R01"><title>Vertical_L01_R01 (soil_to_soil_link)</title><path d="M420.0 1560.0 L420.0 1610.0 L420.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L01_R01"><title>Radial_L01_R01 (soil_to_soil_H_link)</title><path d="M520.0 1505.0 L580.0 1505.0 L640.0 1505.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L01_R02"><title>Vertical_L01_R02 (soil_to_soil_link)</title><path d="M740.0 1560.0 L740.0 1610.0 L740.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L01_R02"><title>Radial_L01_R02 (soil_to_soil_H_link)</title><path d="M840.0 1505.0 L900.0 1505.0 L960.0 1505.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L01_R03"><title>Vertical_L01_R03 (soil_to_soil_link)</title><path d="M1060.0 1560.0 L1060.0 1610.0 L1060.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L01_R03"><title>Radial_L01_R03 (soil_to_soil_H_link)</title><path d="M1160.0 1505.0 L1220.0 1505.0 L1280.0 1505.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L01_R04"><title>Vertical_L01_R04 (soil_to_soil_link)</title><path d="M1380.0 1560.0 L1380.0 1610.0 L1380.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L01_R04"><title>Radial_L01_R04 (soil_to_soil_H_link)</title><path d="M1480.0 1505.0 L1540.0 1505.0 L1600.0 1505.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L01_R05"><title>Vertical_L01_R05 (soil_to_soil_link)</title><path d="M1700.0 1560.0 L1700.0 1610.0 L1700.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L01_R05"><title>Radial_L01_R05 (soil_to_soil_H_link)</title><path d="M1800.0 1505.0 L1860.0 1505.0 L1920.0 1505.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L01_R06"><title>Vertical_L01_R06 (soil_to_soil_link)</title><path d="M2020.0 1560.0 L2020.0 1610.0 L2020.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L01_R06"><title>Radial_L01_R06 (soil_to_soil_H_link)</title><path d="M2120.0 1505.0 L2180.0 1505.0 L2240.0 1505.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L01_R07"><title>Vertical_L01_R07 (soil_to_soil_link)</title><path d="M2340.0 1560.0 L2340.0 1610.0 L2340.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L01_R07"><title>Radial_L01_R07 (soil_to_soil_H_link)</title><path d="M2440.0 1505.0 L2500.0 1505.0 L2560.0 1505.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L01_R08"><title>Vertical_L01_R08 (soil_to_soil_link)</title><path d="M2660.0 1560.0 L2660.0 1610.0 L2660.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L01_R08"><title>Radial_L01_R08 (soil_to_soil_H_link)</title><path d="M2760.0 1505.0 L2820.0 1505.0 L2880.0 1505.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L01_R09"><title>Vertical_L01_R09 (soil_to_soil_link)</title><path d="M2980.0 1560.0 L2980.0 1610.0 L2980.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L01_R09"><title>Radial_L01_R09 (soil_to_soil_H_link)</title><path d="M3080.0 1505.0 L3140.0 1505.0 L3200.0 1505.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L01_R10"><title>Vertical_L01_R10 (soil_to_soil_link)</title><path d="M3300.0 1560.0 L3300.0 1610.0 L3300.0 1660.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L02_R01"><title>Vertical_L02_R01 (soil_to_soil_link)</title><path d="M420.0 1770.0 L420.0 1820.0 L420.0 1870.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L02_R01"><title>Radial_L02_R01 (soil_to_soil_H_link)</title><path d="M520.0 1715.0 L580.0 1715.0 L640.0 1715.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L02_R02"><title>Vertical_L02_R02 (soil_to_soil_link)</title><path d="M740.0 1770.0 L740.0 1820.0 L740.0 1870.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L02_R02"><title>Radial_L02_R02 (soil_to_soil_H_link)</title><path d="M840.0 1715.0 L900.0 1715.0 L960.0 1715.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L02_R03"><title>Vertical_L02_R03 (soil_to_soil_link)</title><path d="M1060.0 1770.0 L1060.0 1820.0 L1060.0 1870.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L02_R03"><title>Radial_L02_R03 (soil_to_soil_H_link)</title><path d="M1160.0 1715.0 L1220.0 1715.0 L1280.0 1715.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L02_R04"><title>Vertical_L02_R04 (soil_to_soil_link)</title><path d="M1380.0 1770.0 L1380.0 1820.0 L1380.0 1870.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L02_R04"><title>Radial_L02_R04 (soil_to_soil_H_link)</title><path d="M1480.0 1715.0 L1540.0 1715.0 L1600.0 1715.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L02_R05"><title>Vertical_L02_R05 (soil_to_soil_link)</title><path d="M1700.0 1770.0 L1700.0 1820.0 L1700.0 1870.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L02_R05"><title>Radial_L02_R05 (soil_to_soil_H_link)</title><path d="M1800.0 1715.0 L1860.0 1715.0 L1920.0 1715.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L02_R06"><title>Vertical_L02_R06 (soil_to_soil_link)</title><path d="M2020.0 1770.0 L2020.0 1820.0 L2020.0 1870.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L02_R06"><title>Radial_L02_R06 (soil_to_soil_H_link)</title><path d="M2120.0 1715.0 L2180.0 1715.0 L2240.0 1715.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L02_R07"><title>Vertical_L02_R07 (soil_to_soil_link)</title><path d="M2340.0 1770.0 L2340.0 1820.0 L2340.0 1870.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L02_R07"><title>Radial_L02_R07 (soil_to_soil_H_link)</title><path d="M2440.0 1715.0 L2500.0 1715.0 L2560.0 1715.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L02_R08"><title>Vertical_L02_R08 (soil_to_soil_link)</title><path d="M2660.0 1770.0 L2660.0 1820.0 L2660.0 1870.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L02_R08"><title>Radial_L02_R08 (soil_to_soil_H_link)</title><path d="M2760.0 1715.0 L2820.0 1715.0 L2880.0 1715.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L02_R09"><title>Vertical_L02_R09 (soil_to_soil_link)</title><path d="M2980.0 1770.0 L2980.0 1820.0 L2980.0 1870.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L02_R09"><title>Radial_L02_R09 (soil_to_soil_H_link)</title><path d="M3080.0 1715.0 L3140.0 1715.0 L3200.0 1715.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L02_R10"><title>Vertical_L02_R10 (soil_to_soil_link)</title><path d="M3300.0 1770.0 L3300.0 1820.0 L3300.0 1870.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L03_R01"><title>Vertical_L03_R01 (soil_to_soil_link)</title><path d="M420.0 1980.0 L420.0 2030.0 L420.0 2080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L03_R01"><title>Radial_L03_R01 (soil_to_soil_H_link)</title><path d="M520.0 1925.0 L580.0 1925.0 L640.0 1925.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L03_R02"><title>Vertical_L03_R02 (soil_to_soil_link)</title><path d="M740.0 1980.0 L740.0 2030.0 L740.0 2080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L03_R02"><title>Radial_L03_R02 (soil_to_soil_H_link)</title><path d="M840.0 1925.0 L900.0 1925.0 L960.0 1925.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L03_R03"><title>Vertical_L03_R03 (soil_to_soil_link)</title><path d="M1060.0 1980.0 L1060.0 2030.0 L1060.0 2080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L03_R03"><title>Radial_L03_R03 (soil_to_soil_H_link)</title><path d="M1160.0 1925.0 L1220.0 1925.0 L1280.0 1925.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L03_R04"><title>Vertical_L03_R04 (soil_to_soil_link)</title><path d="M1380.0 1980.0 L1380.0 2030.0 L1380.0 2080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L03_R04"><title>Radial_L03_R04 (soil_to_soil_H_link)</title><path d="M1480.0 1925.0 L1540.0 1925.0 L1600.0 1925.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L03_R05"><title>Vertical_L03_R05 (soil_to_soil_link)</title><path d="M1700.0 1980.0 L1700.0 2030.0 L1700.0 2080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L03_R05"><title>Radial_L03_R05 (soil_to_soil_H_link)</title><path d="M1800.0 1925.0 L1860.0 1925.0 L1920.0 1925.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L03_R06"><title>Vertical_L03_R06 (soil_to_soil_link)</title><path d="M2020.0 1980.0 L2020.0 2030.0 L2020.0 2080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L03_R06"><title>Radial_L03_R06 (soil_to_soil_H_link)</title><path d="M2120.0 1925.0 L2180.0 1925.0 L2240.0 1925.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L03_R07"><title>Vertical_L03_R07 (soil_to_soil_link)</title><path d="M2340.0 1980.0 L2340.0 2030.0 L2340.0 2080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L03_R07"><title>Radial_L03_R07 (soil_to_soil_H_link)</title><path d="M2440.0 1925.0 L2500.0 1925.0 L2560.0 1925.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L03_R08"><title>Vertical_L03_R08 (soil_to_soil_link)</title><path d="M2660.0 1980.0 L2660.0 2030.0 L2660.0 2080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L03_R08"><title>Radial_L03_R08 (soil_to_soil_H_link)</title><path d="M2760.0 1925.0 L2820.0 1925.0 L2880.0 1925.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L03_R09"><title>Vertical_L03_R09 (soil_to_soil_link)</title><path d="M2980.0 1980.0 L2980.0 2030.0 L2980.0 2080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L03_R09"><title>Radial_L03_R09 (soil_to_soil_H_link)</title><path d="M3080.0 1925.0 L3140.0 1925.0 L3200.0 1925.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L03_R10"><title>Vertical_L03_R10 (soil_to_soil_link)</title><path d="M3300.0 1980.0 L3300.0 2030.0 L3300.0 2080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L04_R01"><title>Vertical_L04_R01 (soil_to_soil_link)</title><path d="M420.0 2190.0 L420.0 2240.0 L420.0 2290.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L04_R01"><title>Radial_L04_R01 (soil_to_soil_H_link)</title><path d="M520.0 2135.0 L580.0 2135.0 L640.0 2135.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L04_R02"><title>Vertical_L04_R02 (soil_to_soil_link)</title><path d="M740.0 2190.0 L740.0 2240.0 L740.0 2290.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L04_R02"><title>Radial_L04_R02 (soil_to_soil_H_link)</title><path d="M840.0 2135.0 L900.0 2135.0 L960.0 2135.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L04_R03"><title>Vertical_L04_R03 (soil_to_soil_link)</title><path d="M1060.0 2190.0 L1060.0 2240.0 L1060.0 2290.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L04_R03"><title>Radial_L04_R03 (soil_to_soil_H_link)</title><path d="M1160.0 2135.0 L1220.0 2135.0 L1280.0 2135.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L04_R04"><title>Vertical_L04_R04 (soil_to_soil_link)</title><path d="M1380.0 2190.0 L1380.0 2240.0 L1380.0 2290.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L04_R04"><title>Radial_L04_R04 (soil_to_soil_H_link)</title><path d="M1480.0 2135.0 L1540.0 2135.0 L1600.0 2135.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L04_R05"><title>Vertical_L04_R05 (soil_to_soil_link)</title><path d="M1700.0 2190.0 L1700.0 2240.0 L1700.0 2290.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L04_R05"><title>Radial_L04_R05 (soil_to_soil_H_link)</title><path d="M1800.0 2135.0 L1860.0 2135.0 L1920.0 2135.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L04_R06"><title>Vertical_L04_R06 (soil_to_soil_link)</title><path d="M2020.0 2190.0 L2020.0 2240.0 L2020.0 2290.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L04_R06"><title>Radial_L04_R06 (soil_to_soil_H_link)</title><path d="M2120.0 2135.0 L2180.0 2135.0 L2240.0 2135.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L04_R07"><title>Vertical_L04_R07 (soil_to_soil_link)</title><path d="M2340.0 2190.0 L2340.0 2240.0 L2340.0 2290.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L04_R07"><title>Radial_L04_R07 (soil_to_soil_H_link)</title><path d="M2440.0 2135.0 L2500.0 2135.0 L2560.0 2135.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L04_R08"><title>Vertical_L04_R08 (soil_to_soil_link)</title><path d="M2660.0 2190.0 L2660.0 2240.0 L2660.0 2290.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L04_R08"><title>Radial_L04_R08 (soil_to_soil_H_link)</title><path d="M2760.0 2135.0 L2820.0 2135.0 L2880.0 2135.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L04_R09"><title>Vertical_L04_R09 (soil_to_soil_link)</title><path d="M2980.0 2190.0 L2980.0 2240.0 L2980.0 2290.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L04_R09"><title>Radial_L04_R09 (soil_to_soil_H_link)</title><path d="M3080.0 2135.0 L3140.0 2135.0 L3200.0 2135.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L04_R10"><title>Vertical_L04_R10 (soil_to_soil_link)</title><path d="M3300.0 2190.0 L3300.0 2240.0 L3300.0 2290.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L05_R01"><title>Vertical_L05_R01 (soil_to_soil_link)</title><path d="M420.0 2400.0 L420.0 2450.0 L420.0 2500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L05_R01"><title>Radial_L05_R01 (soil_to_soil_H_link)</title><path d="M520.0 2345.0 L580.0 2345.0 L640.0 2345.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L05_R02"><title>Vertical_L05_R02 (soil_to_soil_link)</title><path d="M740.0 2400.0 L740.0 2450.0 L740.0 2500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L05_R02"><title>Radial_L05_R02 (soil_to_soil_H_link)</title><path d="M840.0 2345.0 L900.0 2345.0 L960.0 2345.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L05_R03"><title>Vertical_L05_R03 (soil_to_soil_link)</title><path d="M1060.0 2400.0 L1060.0 2450.0 L1060.0 2500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L05_R03"><title>Radial_L05_R03 (soil_to_soil_H_link)</title><path d="M1160.0 2345.0 L1220.0 2345.0 L1280.0 2345.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L05_R04"><title>Vertical_L05_R04 (soil_to_soil_link)</title><path d="M1380.0 2400.0 L1380.0 2450.0 L1380.0 2500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L05_R04"><title>Radial_L05_R04 (soil_to_soil_H_link)</title><path d="M1480.0 2345.0 L1540.0 2345.0 L1600.0 2345.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L05_R05"><title>Vertical_L05_R05 (soil_to_soil_link)</title><path d="M1700.0 2400.0 L1700.0 2450.0 L1700.0 2500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L05_R05"><title>Radial_L05_R05 (soil_to_soil_H_link)</title><path d="M1800.0 2345.0 L1860.0 2345.0 L1920.0 2345.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L05_R06"><title>Vertical_L05_R06 (soil_to_soil_link)</title><path d="M2020.0 2400.0 L2020.0 2450.0 L2020.0 2500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L05_R06"><title>Radial_L05_R06 (soil_to_soil_H_link)</title><path d="M2120.0 2345.0 L2180.0 2345.0 L2240.0 2345.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L05_R07"><title>Vertical_L05_R07 (soil_to_soil_link)</title><path d="M2340.0 2400.0 L2340.0 2450.0 L2340.0 2500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L05_R07"><title>Radial_L05_R07 (soil_to_soil_H_link)</title><path d="M2440.0 2345.0 L2500.0 2345.0 L2560.0 2345.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L05_R08"><title>Vertical_L05_R08 (soil_to_soil_link)</title><path d="M2660.0 2400.0 L2660.0 2450.0 L2660.0 2500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L05_R08"><title>Radial_L05_R08 (soil_to_soil_H_link)</title><path d="M2760.0 2345.0 L2820.0 2345.0 L2880.0 2345.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L05_R09"><title>Vertical_L05_R09 (soil_to_soil_link)</title><path d="M2980.0 2400.0 L2980.0 2450.0 L2980.0 2500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L05_R09"><title>Radial_L05_R09 (soil_to_soil_H_link)</title><path d="M3080.0 2345.0 L3140.0 2345.0 L3200.0 2345.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L05_R10"><title>Vertical_L05_R10 (soil_to_soil_link)</title><path d="M3300.0 2400.0 L3300.0 2450.0 L3300.0 2500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L06_R01"><title>Vertical_L06_R01 (soil_to_soil_link)</title><path d="M420.0 2610.0 L420.0 2660.0 L420.0 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L06_R01"><title>Radial_L06_R01 (soil_to_soil_H_link)</title><path d="M520.0 2555.0 L580.0 2555.0 L640.0 2555.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L06_R02"><title>Vertical_L06_R02 (soil_to_soil_link)</title><path d="M740.0 2610.0 L740.0 2660.0 L740.0 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L06_R02"><title>Radial_L06_R02 (soil_to_soil_H_link)</title><path d="M840.0 2555.0 L900.0 2555.0 L960.0 2555.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L06_R03"><title>Vertical_L06_R03 (soil_to_soil_link)</title><path d="M1060.0 2610.0 L1060.0 2660.0 L1060.0 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L06_R03"><title>Radial_L06_R03 (soil_to_soil_H_link)</title><path d="M1160.0 2555.0 L1220.0 2555.0 L1280.0 2555.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L06_R04"><title>Vertical_L06_R04 (soil_to_soil_link)</title><path d="M1380.0 2610.0 L1380.0 2660.0 L1380.0 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L06_R04"><title>Radial_L06_R04 (soil_to_soil_H_link)</title><path d="M1480.0 2555.0 L1540.0 2555.0 L1600.0 2555.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L06_R05"><title>Vertical_L06_R05 (soil_to_soil_link)</title><path d="M1700.0 2610.0 L1700.0 2660.0 L1700.0 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L06_R05"><title>Radial_L06_R05 (soil_to_soil_H_link)</title><path d="M1800.0 2555.0 L1860.0 2555.0 L1920.0 2555.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L06_R06"><title>Vertical_L06_R06 (soil_to_soil_link)</title><path d="M2020.0 2610.0 L2020.0 2660.0 L2020.0 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L06_R06"><title>Radial_L06_R06 (soil_to_soil_H_link)</title><path d="M2120.0 2555.0 L2180.0 2555.0 L2240.0 2555.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L06_R07"><title>Vertical_L06_R07 (soil_to_soil_link)</title><path d="M2340.0 2610.0 L2340.0 2660.0 L2340.0 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L06_R07"><title>Radial_L06_R07 (soil_to_soil_H_link)</title><path d="M2440.0 2555.0 L2500.0 2555.0 L2560.0 2555.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L06_R08"><title>Vertical_L06_R08 (soil_to_soil_link)</title><path d="M2660.0 2610.0 L2660.0 2660.0 L2660.0 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L06_R08"><title>Radial_L06_R08 (soil_to_soil_H_link)</title><path d="M2760.0 2555.0 L2820.0 2555.0 L2880.0 2555.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L06_R09"><title>Vertical_L06_R09 (soil_to_soil_link)</title><path d="M2980.0 2610.0 L2980.0 2660.0 L2980.0 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L06_R09"><title>Radial_L06_R09 (soil_to_soil_H_link)</title><path d="M3080.0 2555.0 L3140.0 2555.0 L3200.0 2555.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L06_R10"><title>Vertical_L06_R10 (soil_to_soil_link)</title><path d="M3300.0 2610.0 L3300.0 2660.0 L3300.0 2710.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L07_R01"><title>Vertical_L07_R01 (soil_to_soil_link)</title><path d="M420.0 2820.0 L420.0 2870.0 L420.0 2920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L07_R01"><title>Radial_L07_R01 (soil_to_soil_H_link)</title><path d="M520.0 2765.0 L580.0 2765.0 L640.0 2765.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L07_R02"><title>Vertical_L07_R02 (soil_to_soil_link)</title><path d="M740.0 2820.0 L740.0 2870.0 L740.0 2920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L07_R02"><title>Radial_L07_R02 (soil_to_soil_H_link)</title><path d="M840.0 2765.0 L900.0 2765.0 L960.0 2765.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L07_R03"><title>Vertical_L07_R03 (soil_to_soil_link)</title><path d="M1060.0 2820.0 L1060.0 2870.0 L1060.0 2920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L07_R03"><title>Radial_L07_R03 (soil_to_soil_H_link)</title><path d="M1160.0 2765.0 L1220.0 2765.0 L1280.0 2765.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L07_R04"><title>Vertical_L07_R04 (soil_to_soil_link)</title><path d="M1380.0 2820.0 L1380.0 2870.0 L1380.0 2920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L07_R04"><title>Radial_L07_R04 (soil_to_soil_H_link)</title><path d="M1480.0 2765.0 L1540.0 2765.0 L1600.0 2765.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L07_R05"><title>Vertical_L07_R05 (soil_to_soil_link)</title><path d="M1700.0 2820.0 L1700.0 2870.0 L1700.0 2920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L07_R05"><title>Radial_L07_R05 (soil_to_soil_H_link)</title><path d="M1800.0 2765.0 L1860.0 2765.0 L1920.0 2765.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L07_R06"><title>Vertical_L07_R06 (soil_to_soil_link)</title><path d="M2020.0 2820.0 L2020.0 2870.0 L2020.0 2920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L07_R06"><title>Radial_L07_R06 (soil_to_soil_H_link)</title><path d="M2120.0 2765.0 L2180.0 2765.0 L2240.0 2765.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L07_R07"><title>Vertical_L07_R07 (soil_to_soil_link)</title><path d="M2340.0 2820.0 L2340.0 2870.0 L2340.0 2920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L07_R07"><title>Radial_L07_R07 (soil_to_soil_H_link)</title><path d="M2440.0 2765.0 L2500.0 2765.0 L2560.0 2765.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L07_R08"><title>Vertical_L07_R08 (soil_to_soil_link)</title><path d="M2660.0 2820.0 L2660.0 2870.0 L2660.0 2920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L07_R08"><title>Radial_L07_R08 (soil_to_soil_H_link)</title><path d="M2760.0 2765.0 L2820.0 2765.0 L2880.0 2765.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L07_R09"><title>Vertical_L07_R09 (soil_to_soil_link)</title><path d="M2980.0 2820.0 L2980.0 2870.0 L2980.0 2920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L07_R09"><title>Radial_L07_R09 (soil_to_soil_H_link)</title><path d="M3080.0 2765.0 L3140.0 2765.0 L3200.0 2765.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L07_R10"><title>Vertical_L07_R10 (soil_to_soil_link)</title><path d="M3300.0 2820.0 L3300.0 2870.0 L3300.0 2920.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L08_R01"><title>Vertical_L08_R01 (soil_to_soil_link)</title><path d="M420.0 3030.0 L420.0 3080.0 L420.0 3130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L08_R01"><title>Radial_L08_R01 (soil_to_soil_H_link)</title><path d="M520.0 2975.0 L580.0 2975.0 L640.0 2975.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L08_R02"><title>Vertical_L08_R02 (soil_to_soil_link)</title><path d="M740.0 3030.0 L740.0 3080.0 L740.0 3130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L08_R02"><title>Radial_L08_R02 (soil_to_soil_H_link)</title><path d="M840.0 2975.0 L900.0 2975.0 L960.0 2975.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L08_R03"><title>Vertical_L08_R03 (soil_to_soil_link)</title><path d="M1060.0 3030.0 L1060.0 3080.0 L1060.0 3130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L08_R03"><title>Radial_L08_R03 (soil_to_soil_H_link)</title><path d="M1160.0 2975.0 L1220.0 2975.0 L1280.0 2975.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L08_R04"><title>Vertical_L08_R04 (soil_to_soil_link)</title><path d="M1380.0 3030.0 L1380.0 3080.0 L1380.0 3130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L08_R04"><title>Radial_L08_R04 (soil_to_soil_H_link)</title><path d="M1480.0 2975.0 L1540.0 2975.0 L1600.0 2975.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L08_R05"><title>Vertical_L08_R05 (soil_to_soil_link)</title><path d="M1700.0 3030.0 L1700.0 3080.0 L1700.0 3130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L08_R05"><title>Radial_L08_R05 (soil_to_soil_H_link)</title><path d="M1800.0 2975.0 L1860.0 2975.0 L1920.0 2975.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L08_R06"><title>Vertical_L08_R06 (soil_to_soil_link)</title><path d="M2020.0 3030.0 L2020.0 3080.0 L2020.0 3130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L08_R06"><title>Radial_L08_R06 (soil_to_soil_H_link)</title><path d="M2120.0 2975.0 L2180.0 2975.0 L2240.0 2975.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L08_R07"><title>Vertical_L08_R07 (soil_to_soil_link)</title><path d="M2340.0 3030.0 L2340.0 3080.0 L2340.0 3130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L08_R07"><title>Radial_L08_R07 (soil_to_soil_H_link)</title><path d="M2440.0 2975.0 L2500.0 2975.0 L2560.0 2975.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L08_R08"><title>Vertical_L08_R08 (soil_to_soil_link)</title><path d="M2660.0 3030.0 L2660.0 3080.0 L2660.0 3130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L08_R08"><title>Radial_L08_R08 (soil_to_soil_H_link)</title><path d="M2760.0 2975.0 L2820.0 2975.0 L2880.0 2975.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L08_R09"><title>Vertical_L08_R09 (soil_to_soil_link)</title><path d="M2980.0 3030.0 L2980.0 3080.0 L2980.0 3130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L08_R09"><title>Radial_L08_R09 (soil_to_soil_H_link)</title><path d="M3080.0 2975.0 L3140.0 2975.0 L3200.0 2975.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L08_R10"><title>Vertical_L08_R10 (soil_to_soil_link)</title><path d="M3300.0 3030.0 L3300.0 3080.0 L3300.0 3130.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L09_R01"><title>Vertical_L09_R01 (soil_to_soil_link)</title><path d="M420.0 3240.0 L420.0 3290.0 L420.0 3340.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L09_R01"><title>Radial_L09_R01 (soil_to_soil_H_link)</title><path d="M520.0 3185.0 L580.0 3185.0 L640.0 3185.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L09_R02"><title>Vertical_L09_R02 (soil_to_soil_link)</title><path d="M740.0 3240.0 L740.0 3290.0 L740.0 3340.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L09_R02"><title>Radial_L09_R02 (soil_to_soil_H_link)</title><path d="M840.0 3185.0 L900.0 3185.0 L960.0 3185.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L09_R03"><title>Vertical_L09_R03 (soil_to_soil_link)</title><path d="M1060.0 3240.0 L1060.0 3290.0 L1060.0 3340.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L09_R03"><title>Radial_L09_R03 (soil_to_soil_H_link)</title><path d="M1160.0 3185.0 L1220.0 3185.0 L1280.0 3185.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L09_R04"><title>Vertical_L09_R04 (soil_to_soil_link)</title><path d="M1380.0 3240.0 L1380.0 3290.0 L1380.0 3340.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L09_R04"><title>Radial_L09_R04 (soil_to_soil_H_link)</title><path d="M1480.0 3185.0 L1540.0 3185.0 L1600.0 3185.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L09_R05"><title>Vertical_L09_R05 (soil_to_soil_link)</title><path d="M1700.0 3240.0 L1700.0 3290.0 L1700.0 3340.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L09_R05"><title>Radial_L09_R05 (soil_to_soil_H_link)</title><path d="M1800.0 3185.0 L1860.0 3185.0 L1920.0 3185.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L09_R06"><title>Vertical_L09_R06 (soil_to_soil_link)</title><path d="M2020.0 3240.0 L2020.0 3290.0 L2020.0 3340.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L09_R06"><title>Radial_L09_R06 (soil_to_soil_H_link)</title><path d="M2120.0 3185.0 L2180.0 3185.0 L2240.0 3185.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L09_R07"><title>Vertical_L09_R07 (soil_to_soil_link)</title><path d="M2340.0 3240.0 L2340.0 3290.0 L2340.0 3340.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L09_R07"><title>Radial_L09_R07 (soil_to_soil_H_link)</title><path d="M2440.0 3185.0 L2500.0 3185.0 L2560.0 3185.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L09_R08"><title>Vertical_L09_R08 (soil_to_soil_link)</title><path d="M2660.0 3240.0 L2660.0 3290.0 L2660.0 3340.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L09_R08"><title>Radial_L09_R08 (soil_to_soil_H_link)</title><path d="M2760.0 3185.0 L2820.0 3185.0 L2880.0 3185.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L09_R09"><title>Vertical_L09_R09 (soil_to_soil_link)</title><path d="M2980.0 3240.0 L2980.0 3290.0 L2980.0 3340.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L09_R09"><title>Radial_L09_R09 (soil_to_soil_H_link)</title><path d="M3080.0 3185.0 L3140.0 3185.0 L3200.0 3185.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L09_R10"><title>Vertical_L09_R10 (soil_to_soil_link)</title><path d="M3300.0 3240.0 L3300.0 3290.0 L3300.0 3340.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L10_R01"><title>Vertical_L10_R01 (soil_to_soil_link)</title><path d="M420.0 3450.0 L420.0 3500.0 L420.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L10_R01"><title>Radial_L10_R01 (soil_to_soil_H_link)</title><path d="M520.0 3395.0 L580.0 3395.0 L640.0 3395.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L10_R02"><title>Vertical_L10_R02 (soil_to_soil_link)</title><path d="M740.0 3450.0 L740.0 3500.0 L740.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L10_R02"><title>Radial_L10_R02 (soil_to_soil_H_link)</title><path d="M840.0 3395.0 L900.0 3395.0 L960.0 3395.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L10_R03"><title>Vertical_L10_R03 (soil_to_soil_link)</title><path d="M1060.0 3450.0 L1060.0 3500.0 L1060.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L10_R03"><title>Radial_L10_R03 (soil_to_soil_H_link)</title><path d="M1160.0 3395.0 L1220.0 3395.0 L1280.0 3395.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L10_R04"><title>Vertical_L10_R04 (soil_to_soil_link)</title><path d="M1380.0 3450.0 L1380.0 3500.0 L1380.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L10_R04"><title>Radial_L10_R04 (soil_to_soil_H_link)</title><path d="M1480.0 3395.0 L1540.0 3395.0 L1600.0 3395.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L10_R05"><title>Vertical_L10_R05 (soil_to_soil_link)</title><path d="M1700.0 3450.0 L1700.0 3500.0 L1700.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L10_R05"><title>Radial_L10_R05 (soil_to_soil_H_link)</title><path d="M1800.0 3395.0 L1860.0 3395.0 L1920.0 3395.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L10_R06"><title>Vertical_L10_R06 (soil_to_soil_link)</title><path d="M2020.0 3450.0 L2020.0 3500.0 L2020.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L10_R06"><title>Radial_L10_R06 (soil_to_soil_H_link)</title><path d="M2120.0 3395.0 L2180.0 3395.0 L2240.0 3395.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L10_R07"><title>Vertical_L10_R07 (soil_to_soil_link)</title><path d="M2340.0 3450.0 L2340.0 3500.0 L2340.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L10_R07"><title>Radial_L10_R07 (soil_to_soil_H_link)</title><path d="M2440.0 3395.0 L2500.0 3395.0 L2560.0 3395.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L10_R08"><title>Vertical_L10_R08 (soil_to_soil_link)</title><path d="M2660.0 3450.0 L2660.0 3500.0 L2660.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L10_R08"><title>Radial_L10_R08 (soil_to_soil_H_link)</title><path d="M2760.0 3395.0 L2820.0 3395.0 L2880.0 3395.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L10_R09"><title>Vertical_L10_R09 (soil_to_soil_link)</title><path d="M2980.0 3450.0 L2980.0 3500.0 L2980.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L10_R09"><title>Radial_L10_R09 (soil_to_soil_H_link)</title><path d="M3080.0 3395.0 L3140.0 3395.0 L3200.0 3395.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L10_R10"><title>Vertical_L10_R10 (soil_to_soil_link)</title><path d="M3300.0 3450.0 L3300.0 3500.0 L3300.0 3550.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R00"><title>Vertical_L11_R00 (soil_to_soil_link)</title><path d="M100.0 3660.0 L100.0 3710.0 L100.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L11_R00"><title>Radial_L11_R00 (soil_to_soil_H_link)</title><path d="M200.0 3605.0 L260.0 3605.0 L320.0 3605.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R01"><title>Vertical_L11_R01 (soil_to_soil_link)</title><path d="M420.0 3660.0 L420.0 3710.0 L420.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L11_R01"><title>Radial_L11_R01 (soil_to_soil_H_link)</title><path d="M520.0 3605.0 L580.0 3605.0 L640.0 3605.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R02"><title>Vertical_L11_R02 (soil_to_soil_link)</title><path d="M740.0 3660.0 L740.0 3710.0 L740.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L11_R02"><title>Radial_L11_R02 (soil_to_soil_H_link)</title><path d="M840.0 3605.0 L900.0 3605.0 L960.0 3605.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R03"><title>Vertical_L11_R03 (soil_to_soil_link)</title><path d="M1060.0 3660.0 L1060.0 3710.0 L1060.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L11_R03"><title>Radial_L11_R03 (soil_to_soil_H_link)</title><path d="M1160.0 3605.0 L1220.0 3605.0 L1280.0 3605.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R04"><title>Vertical_L11_R04 (soil_to_soil_link)</title><path d="M1380.0 3660.0 L1380.0 3710.0 L1380.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L11_R04"><title>Radial_L11_R04 (soil_to_soil_H_link)</title><path d="M1480.0 3605.0 L1540.0 3605.0 L1600.0 3605.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R05"><title>Vertical_L11_R05 (soil_to_soil_link)</title><path d="M1700.0 3660.0 L1700.0 3710.0 L1700.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L11_R05"><title>Radial_L11_R05 (soil_to_soil_H_link)</title><path d="M1800.0 3605.0 L1860.0 3605.0 L1920.0 3605.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R06"><title>Vertical_L11_R06 (soil_to_soil_link)</title><path d="M2020.0 3660.0 L2020.0 3710.0 L2020.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L11_R06"><title>Radial_L11_R06 (soil_to_soil_H_link)</title><path d="M2120.0 3605.0 L2180.0 3605.0 L2240.0 3605.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R07"><title>Vertical_L11_R07 (soil_to_soil_link)</title><path d="M2340.0 3660.0 L2340.0 3710.0 L2340.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L11_R07"><title>Radial_L11_R07 (soil_to_soil_H_link)</title><path d="M2440.0 3605.0 L2500.0 3605.0 L2560.0 3605.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R08"><title>Vertical_L11_R08 (soil_to_soil_link)</title><path d="M2660.0 3660.0 L2660.0 3710.0 L2660.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L11_R08"><title>Radial_L11_R08 (soil_to_soil_H_link)</title><path d="M2760.0 3605.0 L2820.0 3605.0 L2880.0 3605.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R09"><title>Vertical_L11_R09 (soil_to_soil_link)</title><path d="M2980.0 3660.0 L2980.0 3710.0 L2980.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L11_R09"><title>Radial_L11_R09 (soil_to_soil_H_link)</title><path d="M3080.0 3605.0 L3140.0 3605.0 L3200.0 3605.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L11_R10"><title>Vertical_L11_R10 (soil_to_soil_link)</title><path d="M3300.0 3660.0 L3300.0 3710.0 L3300.0 3760.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R00"><title>Vertical_L12_R00 (soil_to_soil_link)</title><path d="M100.0 3870.0 L100.0 3920.0 L100.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L12_R00"><title>Radial_L12_R00 (soil_to_soil_H_link)</title><path d="M200.0 3815.0 L260.0 3815.0 L320.0 3815.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R01"><title>Vertical_L12_R01 (soil_to_soil_link)</title><path d="M420.0 3870.0 L420.0 3920.0 L420.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L12_R01"><title>Radial_L12_R01 (soil_to_soil_H_link)</title><path d="M520.0 3815.0 L580.0 3815.0 L640.0 3815.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R02"><title>Vertical_L12_R02 (soil_to_soil_link)</title><path d="M740.0 3870.0 L740.0 3920.0 L740.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L12_R02"><title>Radial_L12_R02 (soil_to_soil_H_link)</title><path d="M840.0 3815.0 L900.0 3815.0 L960.0 3815.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R03"><title>Vertical_L12_R03 (soil_to_soil_link)</title><path d="M1060.0 3870.0 L1060.0 3920.0 L1060.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L12_R03"><title>Radial_L12_R03 (soil_to_soil_H_link)</title><path d="M1160.0 3815.0 L1220.0 3815.0 L1280.0 3815.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R04"><title>Vertical_L12_R04 (soil_to_soil_link)</title><path d="M1380.0 3870.0 L1380.0 3920.0 L1380.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L12_R04"><title>Radial_L12_R04 (soil_to_soil_H_link)</title><path d="M1480.0 3815.0 L1540.0 3815.0 L1600.0 3815.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R05"><title>Vertical_L12_R05 (soil_to_soil_link)</title><path d="M1700.0 3870.0 L1700.0 3920.0 L1700.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L12_R05"><title>Radial_L12_R05 (soil_to_soil_H_link)</title><path d="M1800.0 3815.0 L1860.0 3815.0 L1920.0 3815.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R06"><title>Vertical_L12_R06 (soil_to_soil_link)</title><path d="M2020.0 3870.0 L2020.0 3920.0 L2020.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L12_R06"><title>Radial_L12_R06 (soil_to_soil_H_link)</title><path d="M2120.0 3815.0 L2180.0 3815.0 L2240.0 3815.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R07"><title>Vertical_L12_R07 (soil_to_soil_link)</title><path d="M2340.0 3870.0 L2340.0 3920.0 L2340.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L12_R07"><title>Radial_L12_R07 (soil_to_soil_H_link)</title><path d="M2440.0 3815.0 L2500.0 3815.0 L2560.0 3815.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R08"><title>Vertical_L12_R08 (soil_to_soil_link)</title><path d="M2660.0 3870.0 L2660.0 3920.0 L2660.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L12_R08"><title>Radial_L12_R08 (soil_to_soil_H_link)</title><path d="M2760.0 3815.0 L2820.0 3815.0 L2880.0 3815.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R09"><title>Vertical_L12_R09 (soil_to_soil_link)</title><path d="M2980.0 3870.0 L2980.0 3920.0 L2980.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L12_R09"><title>Radial_L12_R09 (soil_to_soil_H_link)</title><path d="M3080.0 3815.0 L3140.0 3815.0 L3200.0 3815.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Vertical_L12_R10"><title>Vertical_L12_R10 (soil_to_soil_link)</title><path d="M3300.0 3870.0 L3300.0 3920.0 L3300.0 3970.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L13_R00"><title>Radial_L13_R00 (soil_to_soil_H_link)</title><path d="M200.0 4025.0 L260.0 4025.0 L320.0 4025.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L13_R01"><title>Radial_L13_R01 (soil_to_soil_H_link)</title><path d="M520.0 4025.0 L580.0 4025.0 L640.0 4025.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L13_R02"><title>Radial_L13_R02 (soil_to_soil_H_link)</title><path d="M840.0 4025.0 L900.0 4025.0 L960.0 4025.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L13_R03"><title>Radial_L13_R03 (soil_to_soil_H_link)</title><path d="M1160.0 4025.0 L1220.0 4025.0 L1280.0 4025.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L13_R04"><title>Radial_L13_R04 (soil_to_soil_H_link)</title><path d="M1480.0 4025.0 L1540.0 4025.0 L1600.0 4025.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L13_R05"><title>Radial_L13_R05 (soil_to_soil_H_link)</title><path d="M1800.0 4025.0 L1860.0 4025.0 L1920.0 4025.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L13_R06"><title>Radial_L13_R06 (soil_to_soil_H_link)</title><path d="M2120.0 4025.0 L2180.0 4025.0 L2240.0 4025.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L13_R07"><title>Radial_L13_R07 (soil_to_soil_H_link)</title><path d="M2440.0 4025.0 L2500.0 4025.0 L2560.0 4025.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L13_R08"><title>Radial_L13_R08 (soil_to_soil_H_link)</title><path d="M2760.0 4025.0 L2820.0 4025.0 L2880.0 4025.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Radial_L13_R09"><title>Radial_L13_R09 (soil_to_soil_H_link)</title><path d="M3080.0 4025.0 L3140.0 4025.0 L3200.0 4025.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Recharge_R00"><title>Recharge_R00 (soil_to_fixedhead_link)</title><path d="M174.0 4080.0 Q739.5 4500.2 1471.5 4340.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(781.2 4355.1) rotate(11.3) scale(1.6)"/></g>
+<g class="d-link" data-name="Recharge_R01"><title>Recharge_R01 (soil_to_fixedhead_link)</title><path d="M490.4 4080.0 Q931.0 4424.4 1413.9 4340.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(941.5 4317.2) rotate(15.7) scale(1.6)"/></g>
+<g class="d-link" data-name="Recharge_R02"><title>Recharge_R02 (soil_to_fixedhead_link)</title><path d="M794.8 4080.0 Q1110.3 4396.9 1424.2 4340.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1109.9 4303.5) rotate(22.4) scale(1.6)"/></g>
+<g class="d-link" data-name="Recharge_R03"><title>Recharge_R03 (soil_to_fixedhead_link)</title><path d="M1160.0 4066.4 L1369.6 4153.2 L1579.2 4240.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Recharge_R04"><title>Recharge_R04 (soil_to_fixedhead_link)</title><path d="M1446.4 4080.0 L1543.0 4160.0 L1639.6 4240.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Recharge_R05"><title>Recharge_R05 (soil_to_fixedhead_link)</title><path d="M1700.0 4080.0 L1700.0 4160.0 L1700.0 4240.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Recharge_R06"><title>Recharge_R06 (soil_to_fixedhead_link)</title><path d="M1953.6 4080.0 L1857.0 4160.0 L1760.4 4240.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Recharge_R07"><title>Recharge_R07 (soil_to_fixedhead_link)</title><path d="M2240.0 4066.4 L2030.4 4153.2 L1820.8 4240.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Recharge_R08"><title>Recharge_R08 (soil_to_fixedhead_link)</title><path d="M2605.2 4080.0 Q2289.7 4396.9 1975.8 4340.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(2290.1 4303.5) rotate(157.6) scale(1.6)"/></g>
+<g class="d-link" data-name="Recharge_R09"><title>Recharge_R09 (soil_to_fixedhead_link)</title><path d="M2909.6 4080.0 Q2469.0 4424.4 1986.1 4340.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(2458.5 4317.2) rotate(164.3) scale(1.6)"/></g>
+<g class="d-link" data-name="Recharge_R10"><title>Recharge_R10 (soil_to_fixedhead_link)</title><path d="M3226.0 4080.0 Q2660.5 4500.2 1928.5 4340.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(2618.8 4355.1) rotate(168.7) scale(1.6)"/></g>
+<g class="d-node" data-name="Catch_05"><title>Catch_05 (Catchment)</title><rect x="2000" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="2022" y="22" width="156" height="156"/>
+<text x="2100" y="302" font-size="78" text-anchor="middle">Catch_05</text></g>
+<g class="d-node" data-name="Sewer_05"><title>Sewer_05 (Sewerchannelsegment)</title><rect x="2000" y="330" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="2022" y="352" width="156" height="156"/>
+<text x="2100" y="632" font-size="78" text-anchor="middle">Sewer_05</text></g>
+<g class="d-node" data-name="Catch_04"><title>Catch_04 (Catchment)</title><rect x="1600" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="1622" y="22" width="156" height="156"/>
+<text x="1700" y="302" font-size="78" text-anchor="middle">Catch_04</text></g>
+<g class="d-node" data-name="Sewer_04"><title>Sewer_04 (Sewerchannelsegment)</title><rect x="1600" y="330" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="1622" y="352" width="156" height="156"/>
+<text x="1700" y="632" font-size="78" text-anchor="middle">Sewer_04</text></g>
+<g class="d-node" data-name="Catch_03"><title>Catch_03 (Catchment)</title><rect x="1200" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="1222" y="22" width="156" height="156"/>
+<text x="1300" y="302" font-size="78" text-anchor="middle">Catch_03</text></g>
+<g class="d-node" data-name="Sewer_03"><title>Sewer_03 (Sewerchannelsegment)</title><rect x="1200" y="330" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="1222" y="352" width="156" height="156"/>
+<text x="1300" y="632" font-size="78" text-anchor="middle">Sewer_03</text></g>
+<g class="d-node" data-name="Catch_02"><title>Catch_02 (Catchment)</title><rect x="800" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="822" y="22" width="156" height="156"/>
+<text x="900" y="302" font-size="78" text-anchor="middle">Catch_02</text></g>
+<g class="d-node" data-name="Sewer_02"><title>Sewer_02 (Sewerchannelsegment)</title><rect x="800" y="330" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="822" y="352" width="156" height="156"/>
+<text x="900" y="632" font-size="78" text-anchor="middle">Sewer_02</text></g>
+<g class="d-node" data-name="Catch_01"><title>Catch_01 (Catchment)</title><rect x="400" y="0" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="422" y="22" width="156" height="156"/>
+<text x="500" y="302" font-size="78" text-anchor="middle">Catch_01</text></g>
+<g class="d-node" data-name="Sewer_01"><title>Sewer_01 (Sewerchannelsegment)</title><rect x="400" y="330" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="422" y="352" width="156" height="156"/>
+<text x="500" y="632" font-size="78" text-anchor="middle">Sewer_01</text></g>
+<g class="d-node" data-name="Catch_13"><title>Catch_13 (Catchment)</title><rect x="3200" y="990" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="3222" y="1012" width="156" height="156"/>
+<text x="3300" y="1292" font-size="78" text-anchor="middle">Catch_13</text></g>
+<g class="d-node" data-name="Sewer_13"><title>Sewer_13 (Sewerchannelsegment)</title><rect x="3200" y="660" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="3222" y="682" width="156" height="156"/>
+<text x="3300" y="962" font-size="78" text-anchor="middle">Sewer_13</text></g>
+<g class="d-node" data-name="Catch_12"><title>Catch_12 (Catchment)</title><rect x="2800" y="990" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="2822" y="1012" width="156" height="156"/>
+<text x="2900" y="1292" font-size="78" text-anchor="middle">Catch_12</text></g>
+<g class="d-node" data-name="Sewer_12"><title>Sewer_12 (Sewerchannelsegment)</title><rect x="2800" y="660" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="2822" y="682" width="156" height="156"/>
+<text x="2900" y="962" font-size="78" text-anchor="middle">Sewer_12</text></g>
+<g class="d-node" data-name="Catch_11"><title>Catch_11 (Catchment)</title><rect x="2400" y="990" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="2422" y="1012" width="156" height="156"/>
+<text x="2500" y="1292" font-size="78" text-anchor="middle">Catch_11</text></g>
+<g class="d-node" data-name="Sewer_11"><title>Sewer_11 (Sewerchannelsegment)</title><rect x="2400" y="660" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="2422" y="682" width="156" height="156"/>
+<text x="2500" y="962" font-size="78" text-anchor="middle">Sewer_11</text></g>
+<g class="d-node" data-name="Catch_10"><title>Catch_10 (Catchment)</title><rect x="2000" y="990" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="2022" y="1012" width="156" height="156"/>
+<text x="2100" y="1292" font-size="78" text-anchor="middle">Catch_10</text></g>
+<g class="d-node" data-name="Sewer_10"><title>Sewer_10 (Sewerchannelsegment)</title><rect x="2000" y="660" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="2022" y="682" width="156" height="156"/>
+<text x="2100" y="962" font-size="78" text-anchor="middle">Sewer_10</text></g>
+<g class="d-node" data-name="Catch_09"><title>Catch_09 (Catchment)</title><rect x="1600" y="990" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="1622" y="1012" width="156" height="156"/>
+<text x="1700" y="1292" font-size="78" text-anchor="middle">Catch_09</text></g>
+<g class="d-node" data-name="Sewer_09"><title>Sewer_09 (Sewerchannelsegment)</title><rect x="1600" y="660" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="1622" y="682" width="156" height="156"/>
+<text x="1700" y="962" font-size="78" text-anchor="middle">Sewer_09</text></g>
+<g class="d-node" data-name="Catch_08"><title>Catch_08 (Catchment)</title><rect x="1200" y="990" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="1222" y="1012" width="156" height="156"/>
+<text x="1300" y="1292" font-size="78" text-anchor="middle">Catch_08</text></g>
+<g class="d-node" data-name="Sewer_08"><title>Sewer_08 (Sewerchannelsegment)</title><rect x="1200" y="660" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="1222" y="682" width="156" height="156"/>
+<text x="1300" y="962" font-size="78" text-anchor="middle">Sewer_08</text></g>
+<g class="d-node" data-name="Catch_07"><title>Catch_07 (Catchment)</title><rect x="800" y="990" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="822" y="1012" width="156" height="156"/>
+<text x="900" y="1292" font-size="78" text-anchor="middle">Catch_07</text></g>
+<g class="d-node" data-name="Sewer_07"><title>Sewer_07 (Sewerchannelsegment)</title><rect x="800" y="660" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="822" y="682" width="156" height="156"/>
+<text x="900" y="962" font-size="78" text-anchor="middle">Sewer_07</text></g>
+<g class="d-node" data-name="Catch_06"><title>Catch_06 (Catchment)</title><rect x="400" y="990" width="200" height="200" rx="16"/>
+<image href="icons/rainwater-catchment.png" x="422" y="1012" width="156" height="156"/>
+<text x="500" y="1292" font-size="78" text-anchor="middle">Catch_06</text></g>
+<g class="d-node" data-name="Sewer_06"><title>Sewer_06 (Sewerchannelsegment)</title><rect x="400" y="660" width="200" height="200" rx="16"/>
+<image href="icons/Sewer_pipe_section.png" x="422" y="682" width="156" height="156"/>
+<text x="500" y="962" font-size="78" text-anchor="middle">Sewer_06</text></g>
+<g class="d-node" data-name="Pond"><title>Pond (Pond)</title><rect x="0" y="495" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="22" y="517" width="156" height="156"/>
+<text x="100" y="797" font-size="78" text-anchor="middle">Pond</text></g>
+<g class="d-node" data-name="Overflow"><title>Overflow (Pond)</title><rect x="0" y="60" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="22" y="82" width="156" height="156"/>
+<text x="100" y="362" font-size="78" text-anchor="middle">Overflow</text></g>
+<g class="d-node" data-name="Drywell"><title>Drywell (Well)</title><rect x="0" y="1450" width="200" height="2000" rx="16"/>
+<image href="icons/Well.png" x="22" y="2372" width="156" height="156"/>
+<text x="100" y="3552" font-size="78" text-anchor="middle">Drywell</text></g>
+<g class="d-node" data-name="L01_R01"><title>L01_R01 (Soil)</title><rect x="320" y="1450" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="1462" width="86" height="86"/>
+<text x="420" y="1662" font-size="78" text-anchor="middle">L01_R01</text></g>
+<g class="d-node" data-name="L01_R02"><title>L01_R02 (Soil)</title><rect x="640" y="1450" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="1462" width="86" height="86"/>
+<text x="740" y="1662" font-size="78" text-anchor="middle">L01_R02</text></g>
+<g class="d-node" data-name="L01_R03"><title>L01_R03 (Soil)</title><rect x="960" y="1450" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="1462" width="86" height="86"/>
+<text x="1060" y="1662" font-size="78" text-anchor="middle">L01_R03</text></g>
+<g class="d-node" data-name="L01_R04"><title>L01_R04 (Soil)</title><rect x="1280" y="1450" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="1462" width="86" height="86"/>
+<text x="1380" y="1662" font-size="78" text-anchor="middle">L01_R04</text></g>
+<g class="d-node" data-name="L01_R05"><title>L01_R05 (Soil)</title><rect x="1600" y="1450" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="1462" width="86" height="86"/>
+<text x="1700" y="1662" font-size="78" text-anchor="middle">L01_R05</text></g>
+<g class="d-node" data-name="L01_R06"><title>L01_R06 (Soil)</title><rect x="1920" y="1450" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="1462" width="86" height="86"/>
+<text x="2020" y="1662" font-size="78" text-anchor="middle">L01_R06</text></g>
+<g class="d-node" data-name="L01_R07"><title>L01_R07 (Soil)</title><rect x="2240" y="1450" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="1462" width="86" height="86"/>
+<text x="2340" y="1662" font-size="78" text-anchor="middle">L01_R07</text></g>
+<g class="d-node" data-name="L01_R08"><title>L01_R08 (Soil)</title><rect x="2560" y="1450" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="1462" width="86" height="86"/>
+<text x="2660" y="1662" font-size="78" text-anchor="middle">L01_R08</text></g>
+<g class="d-node" data-name="L01_R09"><title>L01_R09 (Soil)</title><rect x="2880" y="1450" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="1462" width="86" height="86"/>
+<text x="2980" y="1662" font-size="78" text-anchor="middle">L01_R09</text></g>
+<g class="d-node" data-name="L01_R10"><title>L01_R10 (Soil)</title><rect x="3200" y="1450" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="1462" width="86" height="86"/>
+<text x="3300" y="1662" font-size="78" text-anchor="middle">L01_R10</text></g>
+<g class="d-node" data-name="L02_R01"><title>L02_R01 (Soil)</title><rect x="320" y="1660" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="1672" width="86" height="86"/>
+<text x="420" y="1872" font-size="78" text-anchor="middle">L02_R01</text></g>
+<g class="d-node" data-name="L02_R02"><title>L02_R02 (Soil)</title><rect x="640" y="1660" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="1672" width="86" height="86"/>
+<text x="740" y="1872" font-size="78" text-anchor="middle">L02_R02</text></g>
+<g class="d-node" data-name="L02_R03"><title>L02_R03 (Soil)</title><rect x="960" y="1660" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="1672" width="86" height="86"/>
+<text x="1060" y="1872" font-size="78" text-anchor="middle">L02_R03</text></g>
+<g class="d-node" data-name="L02_R04"><title>L02_R04 (Soil)</title><rect x="1280" y="1660" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="1672" width="86" height="86"/>
+<text x="1380" y="1872" font-size="78" text-anchor="middle">L02_R04</text></g>
+<g class="d-node" data-name="L02_R05"><title>L02_R05 (Soil)</title><rect x="1600" y="1660" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="1672" width="86" height="86"/>
+<text x="1700" y="1872" font-size="78" text-anchor="middle">L02_R05</text></g>
+<g class="d-node" data-name="L02_R06"><title>L02_R06 (Soil)</title><rect x="1920" y="1660" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="1672" width="86" height="86"/>
+<text x="2020" y="1872" font-size="78" text-anchor="middle">L02_R06</text></g>
+<g class="d-node" data-name="L02_R07"><title>L02_R07 (Soil)</title><rect x="2240" y="1660" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="1672" width="86" height="86"/>
+<text x="2340" y="1872" font-size="78" text-anchor="middle">L02_R07</text></g>
+<g class="d-node" data-name="L02_R08"><title>L02_R08 (Soil)</title><rect x="2560" y="1660" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="1672" width="86" height="86"/>
+<text x="2660" y="1872" font-size="78" text-anchor="middle">L02_R08</text></g>
+<g class="d-node" data-name="L02_R09"><title>L02_R09 (Soil)</title><rect x="2880" y="1660" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="1672" width="86" height="86"/>
+<text x="2980" y="1872" font-size="78" text-anchor="middle">L02_R09</text></g>
+<g class="d-node" data-name="L02_R10"><title>L02_R10 (Soil)</title><rect x="3200" y="1660" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="1672" width="86" height="86"/>
+<text x="3300" y="1872" font-size="78" text-anchor="middle">L02_R10</text></g>
+<g class="d-node" data-name="L03_R01"><title>L03_R01 (Soil)</title><rect x="320" y="1870" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="1882" width="86" height="86"/>
+<text x="420" y="2082" font-size="78" text-anchor="middle">L03_R01</text></g>
+<g class="d-node" data-name="L03_R02"><title>L03_R02 (Soil)</title><rect x="640" y="1870" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="1882" width="86" height="86"/>
+<text x="740" y="2082" font-size="78" text-anchor="middle">L03_R02</text></g>
+<g class="d-node" data-name="L03_R03"><title>L03_R03 (Soil)</title><rect x="960" y="1870" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="1882" width="86" height="86"/>
+<text x="1060" y="2082" font-size="78" text-anchor="middle">L03_R03</text></g>
+<g class="d-node" data-name="L03_R04"><title>L03_R04 (Soil)</title><rect x="1280" y="1870" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="1882" width="86" height="86"/>
+<text x="1380" y="2082" font-size="78" text-anchor="middle">L03_R04</text></g>
+<g class="d-node" data-name="L03_R05"><title>L03_R05 (Soil)</title><rect x="1600" y="1870" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="1882" width="86" height="86"/>
+<text x="1700" y="2082" font-size="78" text-anchor="middle">L03_R05</text></g>
+<g class="d-node" data-name="L03_R06"><title>L03_R06 (Soil)</title><rect x="1920" y="1870" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="1882" width="86" height="86"/>
+<text x="2020" y="2082" font-size="78" text-anchor="middle">L03_R06</text></g>
+<g class="d-node" data-name="L03_R07"><title>L03_R07 (Soil)</title><rect x="2240" y="1870" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="1882" width="86" height="86"/>
+<text x="2340" y="2082" font-size="78" text-anchor="middle">L03_R07</text></g>
+<g class="d-node" data-name="L03_R08"><title>L03_R08 (Soil)</title><rect x="2560" y="1870" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="1882" width="86" height="86"/>
+<text x="2660" y="2082" font-size="78" text-anchor="middle">L03_R08</text></g>
+<g class="d-node" data-name="L03_R09"><title>L03_R09 (Soil)</title><rect x="2880" y="1870" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="1882" width="86" height="86"/>
+<text x="2980" y="2082" font-size="78" text-anchor="middle">L03_R09</text></g>
+<g class="d-node" data-name="L03_R10"><title>L03_R10 (Soil)</title><rect x="3200" y="1870" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="1882" width="86" height="86"/>
+<text x="3300" y="2082" font-size="78" text-anchor="middle">L03_R10</text></g>
+<g class="d-node" data-name="L04_R01"><title>L04_R01 (Soil)</title><rect x="320" y="2080" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="2092" width="86" height="86"/>
+<text x="420" y="2292" font-size="78" text-anchor="middle">L04_R01</text></g>
+<g class="d-node" data-name="L04_R02"><title>L04_R02 (Soil)</title><rect x="640" y="2080" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="2092" width="86" height="86"/>
+<text x="740" y="2292" font-size="78" text-anchor="middle">L04_R02</text></g>
+<g class="d-node" data-name="L04_R03"><title>L04_R03 (Soil)</title><rect x="960" y="2080" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="2092" width="86" height="86"/>
+<text x="1060" y="2292" font-size="78" text-anchor="middle">L04_R03</text></g>
+<g class="d-node" data-name="L04_R04"><title>L04_R04 (Soil)</title><rect x="1280" y="2080" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="2092" width="86" height="86"/>
+<text x="1380" y="2292" font-size="78" text-anchor="middle">L04_R04</text></g>
+<g class="d-node" data-name="L04_R05"><title>L04_R05 (Soil)</title><rect x="1600" y="2080" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="2092" width="86" height="86"/>
+<text x="1700" y="2292" font-size="78" text-anchor="middle">L04_R05</text></g>
+<g class="d-node" data-name="L04_R06"><title>L04_R06 (Soil)</title><rect x="1920" y="2080" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="2092" width="86" height="86"/>
+<text x="2020" y="2292" font-size="78" text-anchor="middle">L04_R06</text></g>
+<g class="d-node" data-name="L04_R07"><title>L04_R07 (Soil)</title><rect x="2240" y="2080" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="2092" width="86" height="86"/>
+<text x="2340" y="2292" font-size="78" text-anchor="middle">L04_R07</text></g>
+<g class="d-node" data-name="L04_R08"><title>L04_R08 (Soil)</title><rect x="2560" y="2080" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="2092" width="86" height="86"/>
+<text x="2660" y="2292" font-size="78" text-anchor="middle">L04_R08</text></g>
+<g class="d-node" data-name="L04_R09"><title>L04_R09 (Soil)</title><rect x="2880" y="2080" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="2092" width="86" height="86"/>
+<text x="2980" y="2292" font-size="78" text-anchor="middle">L04_R09</text></g>
+<g class="d-node" data-name="L04_R10"><title>L04_R10 (Soil)</title><rect x="3200" y="2080" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="2092" width="86" height="86"/>
+<text x="3300" y="2292" font-size="78" text-anchor="middle">L04_R10</text></g>
+<g class="d-node" data-name="L05_R01"><title>L05_R01 (Soil)</title><rect x="320" y="2290" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="2302" width="86" height="86"/>
+<text x="420" y="2502" font-size="78" text-anchor="middle">L05_R01</text></g>
+<g class="d-node" data-name="L05_R02"><title>L05_R02 (Soil)</title><rect x="640" y="2290" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="2302" width="86" height="86"/>
+<text x="740" y="2502" font-size="78" text-anchor="middle">L05_R02</text></g>
+<g class="d-node" data-name="L05_R03"><title>L05_R03 (Soil)</title><rect x="960" y="2290" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="2302" width="86" height="86"/>
+<text x="1060" y="2502" font-size="78" text-anchor="middle">L05_R03</text></g>
+<g class="d-node" data-name="L05_R04"><title>L05_R04 (Soil)</title><rect x="1280" y="2290" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="2302" width="86" height="86"/>
+<text x="1380" y="2502" font-size="78" text-anchor="middle">L05_R04</text></g>
+<g class="d-node" data-name="L05_R05"><title>L05_R05 (Soil)</title><rect x="1600" y="2290" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="2302" width="86" height="86"/>
+<text x="1700" y="2502" font-size="78" text-anchor="middle">L05_R05</text></g>
+<g class="d-node" data-name="L05_R06"><title>L05_R06 (Soil)</title><rect x="1920" y="2290" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="2302" width="86" height="86"/>
+<text x="2020" y="2502" font-size="78" text-anchor="middle">L05_R06</text></g>
+<g class="d-node" data-name="L05_R07"><title>L05_R07 (Soil)</title><rect x="2240" y="2290" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="2302" width="86" height="86"/>
+<text x="2340" y="2502" font-size="78" text-anchor="middle">L05_R07</text></g>
+<g class="d-node" data-name="L05_R08"><title>L05_R08 (Soil)</title><rect x="2560" y="2290" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="2302" width="86" height="86"/>
+<text x="2660" y="2502" font-size="78" text-anchor="middle">L05_R08</text></g>
+<g class="d-node" data-name="L05_R09"><title>L05_R09 (Soil)</title><rect x="2880" y="2290" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="2302" width="86" height="86"/>
+<text x="2980" y="2502" font-size="78" text-anchor="middle">L05_R09</text></g>
+<g class="d-node" data-name="L05_R10"><title>L05_R10 (Soil)</title><rect x="3200" y="2290" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="2302" width="86" height="86"/>
+<text x="3300" y="2502" font-size="78" text-anchor="middle">L05_R10</text></g>
+<g class="d-node" data-name="L06_R01"><title>L06_R01 (Soil)</title><rect x="320" y="2500" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="2512" width="86" height="86"/>
+<text x="420" y="2712" font-size="78" text-anchor="middle">L06_R01</text></g>
+<g class="d-node" data-name="L06_R02"><title>L06_R02 (Soil)</title><rect x="640" y="2500" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="2512" width="86" height="86"/>
+<text x="740" y="2712" font-size="78" text-anchor="middle">L06_R02</text></g>
+<g class="d-node" data-name="L06_R03"><title>L06_R03 (Soil)</title><rect x="960" y="2500" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="2512" width="86" height="86"/>
+<text x="1060" y="2712" font-size="78" text-anchor="middle">L06_R03</text></g>
+<g class="d-node" data-name="L06_R04"><title>L06_R04 (Soil)</title><rect x="1280" y="2500" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="2512" width="86" height="86"/>
+<text x="1380" y="2712" font-size="78" text-anchor="middle">L06_R04</text></g>
+<g class="d-node" data-name="L06_R05"><title>L06_R05 (Soil)</title><rect x="1600" y="2500" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="2512" width="86" height="86"/>
+<text x="1700" y="2712" font-size="78" text-anchor="middle">L06_R05</text></g>
+<g class="d-node" data-name="L06_R06"><title>L06_R06 (Soil)</title><rect x="1920" y="2500" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="2512" width="86" height="86"/>
+<text x="2020" y="2712" font-size="78" text-anchor="middle">L06_R06</text></g>
+<g class="d-node" data-name="L06_R07"><title>L06_R07 (Soil)</title><rect x="2240" y="2500" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="2512" width="86" height="86"/>
+<text x="2340" y="2712" font-size="78" text-anchor="middle">L06_R07</text></g>
+<g class="d-node" data-name="L06_R08"><title>L06_R08 (Soil)</title><rect x="2560" y="2500" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="2512" width="86" height="86"/>
+<text x="2660" y="2712" font-size="78" text-anchor="middle">L06_R08</text></g>
+<g class="d-node" data-name="L06_R09"><title>L06_R09 (Soil)</title><rect x="2880" y="2500" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="2512" width="86" height="86"/>
+<text x="2980" y="2712" font-size="78" text-anchor="middle">L06_R09</text></g>
+<g class="d-node" data-name="L06_R10"><title>L06_R10 (Soil)</title><rect x="3200" y="2500" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="2512" width="86" height="86"/>
+<text x="3300" y="2712" font-size="78" text-anchor="middle">L06_R10</text></g>
+<g class="d-node" data-name="L07_R01"><title>L07_R01 (Soil)</title><rect x="320" y="2710" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="2722" width="86" height="86"/>
+<text x="420" y="2922" font-size="78" text-anchor="middle">L07_R01</text></g>
+<g class="d-node" data-name="L07_R02"><title>L07_R02 (Soil)</title><rect x="640" y="2710" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="2722" width="86" height="86"/>
+<text x="740" y="2922" font-size="78" text-anchor="middle">L07_R02</text></g>
+<g class="d-node" data-name="L07_R03"><title>L07_R03 (Soil)</title><rect x="960" y="2710" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="2722" width="86" height="86"/>
+<text x="1060" y="2922" font-size="78" text-anchor="middle">L07_R03</text></g>
+<g class="d-node" data-name="L07_R04"><title>L07_R04 (Soil)</title><rect x="1280" y="2710" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="2722" width="86" height="86"/>
+<text x="1380" y="2922" font-size="78" text-anchor="middle">L07_R04</text></g>
+<g class="d-node" data-name="L07_R05"><title>L07_R05 (Soil)</title><rect x="1600" y="2710" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="2722" width="86" height="86"/>
+<text x="1700" y="2922" font-size="78" text-anchor="middle">L07_R05</text></g>
+<g class="d-node" data-name="L07_R06"><title>L07_R06 (Soil)</title><rect x="1920" y="2710" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="2722" width="86" height="86"/>
+<text x="2020" y="2922" font-size="78" text-anchor="middle">L07_R06</text></g>
+<g class="d-node" data-name="L07_R07"><title>L07_R07 (Soil)</title><rect x="2240" y="2710" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="2722" width="86" height="86"/>
+<text x="2340" y="2922" font-size="78" text-anchor="middle">L07_R07</text></g>
+<g class="d-node" data-name="L07_R08"><title>L07_R08 (Soil)</title><rect x="2560" y="2710" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="2722" width="86" height="86"/>
+<text x="2660" y="2922" font-size="78" text-anchor="middle">L07_R08</text></g>
+<g class="d-node" data-name="L07_R09"><title>L07_R09 (Soil)</title><rect x="2880" y="2710" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="2722" width="86" height="86"/>
+<text x="2980" y="2922" font-size="78" text-anchor="middle">L07_R09</text></g>
+<g class="d-node" data-name="L07_R10"><title>L07_R10 (Soil)</title><rect x="3200" y="2710" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="2722" width="86" height="86"/>
+<text x="3300" y="2922" font-size="78" text-anchor="middle">L07_R10</text></g>
+<g class="d-node" data-name="L08_R01"><title>L08_R01 (Soil)</title><rect x="320" y="2920" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="2932" width="86" height="86"/>
+<text x="420" y="3132" font-size="78" text-anchor="middle">L08_R01</text></g>
+<g class="d-node" data-name="L08_R02"><title>L08_R02 (Soil)</title><rect x="640" y="2920" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="2932" width="86" height="86"/>
+<text x="740" y="3132" font-size="78" text-anchor="middle">L08_R02</text></g>
+<g class="d-node" data-name="L08_R03"><title>L08_R03 (Soil)</title><rect x="960" y="2920" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="2932" width="86" height="86"/>
+<text x="1060" y="3132" font-size="78" text-anchor="middle">L08_R03</text></g>
+<g class="d-node" data-name="L08_R04"><title>L08_R04 (Soil)</title><rect x="1280" y="2920" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="2932" width="86" height="86"/>
+<text x="1380" y="3132" font-size="78" text-anchor="middle">L08_R04</text></g>
+<g class="d-node" data-name="L08_R05"><title>L08_R05 (Soil)</title><rect x="1600" y="2920" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="2932" width="86" height="86"/>
+<text x="1700" y="3132" font-size="78" text-anchor="middle">L08_R05</text></g>
+<g class="d-node" data-name="L08_R06"><title>L08_R06 (Soil)</title><rect x="1920" y="2920" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="2932" width="86" height="86"/>
+<text x="2020" y="3132" font-size="78" text-anchor="middle">L08_R06</text></g>
+<g class="d-node" data-name="L08_R07"><title>L08_R07 (Soil)</title><rect x="2240" y="2920" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="2932" width="86" height="86"/>
+<text x="2340" y="3132" font-size="78" text-anchor="middle">L08_R07</text></g>
+<g class="d-node" data-name="L08_R08"><title>L08_R08 (Soil)</title><rect x="2560" y="2920" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="2932" width="86" height="86"/>
+<text x="2660" y="3132" font-size="78" text-anchor="middle">L08_R08</text></g>
+<g class="d-node" data-name="L08_R09"><title>L08_R09 (Soil)</title><rect x="2880" y="2920" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="2932" width="86" height="86"/>
+<text x="2980" y="3132" font-size="78" text-anchor="middle">L08_R09</text></g>
+<g class="d-node" data-name="L08_R10"><title>L08_R10 (Soil)</title><rect x="3200" y="2920" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="2932" width="86" height="86"/>
+<text x="3300" y="3132" font-size="78" text-anchor="middle">L08_R10</text></g>
+<g class="d-node" data-name="L09_R01"><title>L09_R01 (Soil)</title><rect x="320" y="3130" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="3142" width="86" height="86"/>
+<text x="420" y="3342" font-size="78" text-anchor="middle">L09_R01</text></g>
+<g class="d-node" data-name="L09_R02"><title>L09_R02 (Soil)</title><rect x="640" y="3130" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="3142" width="86" height="86"/>
+<text x="740" y="3342" font-size="78" text-anchor="middle">L09_R02</text></g>
+<g class="d-node" data-name="L09_R03"><title>L09_R03 (Soil)</title><rect x="960" y="3130" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="3142" width="86" height="86"/>
+<text x="1060" y="3342" font-size="78" text-anchor="middle">L09_R03</text></g>
+<g class="d-node" data-name="L09_R04"><title>L09_R04 (Soil)</title><rect x="1280" y="3130" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="3142" width="86" height="86"/>
+<text x="1380" y="3342" font-size="78" text-anchor="middle">L09_R04</text></g>
+<g class="d-node" data-name="L09_R05"><title>L09_R05 (Soil)</title><rect x="1600" y="3130" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="3142" width="86" height="86"/>
+<text x="1700" y="3342" font-size="78" text-anchor="middle">L09_R05</text></g>
+<g class="d-node" data-name="L09_R06"><title>L09_R06 (Soil)</title><rect x="1920" y="3130" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="3142" width="86" height="86"/>
+<text x="2020" y="3342" font-size="78" text-anchor="middle">L09_R06</text></g>
+<g class="d-node" data-name="L09_R07"><title>L09_R07 (Soil)</title><rect x="2240" y="3130" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="3142" width="86" height="86"/>
+<text x="2340" y="3342" font-size="78" text-anchor="middle">L09_R07</text></g>
+<g class="d-node" data-name="L09_R08"><title>L09_R08 (Soil)</title><rect x="2560" y="3130" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="3142" width="86" height="86"/>
+<text x="2660" y="3342" font-size="78" text-anchor="middle">L09_R08</text></g>
+<g class="d-node" data-name="L09_R09"><title>L09_R09 (Soil)</title><rect x="2880" y="3130" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="3142" width="86" height="86"/>
+<text x="2980" y="3342" font-size="78" text-anchor="middle">L09_R09</text></g>
+<g class="d-node" data-name="L09_R10"><title>L09_R10 (Soil)</title><rect x="3200" y="3130" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="3142" width="86" height="86"/>
+<text x="3300" y="3342" font-size="78" text-anchor="middle">L09_R10</text></g>
+<g class="d-node" data-name="L10_R01"><title>L10_R01 (Soil)</title><rect x="320" y="3340" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="3352" width="86" height="86"/>
+<text x="420" y="3552" font-size="78" text-anchor="middle">L10_R01</text></g>
+<g class="d-node" data-name="L10_R02"><title>L10_R02 (Soil)</title><rect x="640" y="3340" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="3352" width="86" height="86"/>
+<text x="740" y="3552" font-size="78" text-anchor="middle">L10_R02</text></g>
+<g class="d-node" data-name="L10_R03"><title>L10_R03 (Soil)</title><rect x="960" y="3340" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="3352" width="86" height="86"/>
+<text x="1060" y="3552" font-size="78" text-anchor="middle">L10_R03</text></g>
+<g class="d-node" data-name="L10_R04"><title>L10_R04 (Soil)</title><rect x="1280" y="3340" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="3352" width="86" height="86"/>
+<text x="1380" y="3552" font-size="78" text-anchor="middle">L10_R04</text></g>
+<g class="d-node" data-name="L10_R05"><title>L10_R05 (Soil)</title><rect x="1600" y="3340" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="3352" width="86" height="86"/>
+<text x="1700" y="3552" font-size="78" text-anchor="middle">L10_R05</text></g>
+<g class="d-node" data-name="L10_R06"><title>L10_R06 (Soil)</title><rect x="1920" y="3340" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="3352" width="86" height="86"/>
+<text x="2020" y="3552" font-size="78" text-anchor="middle">L10_R06</text></g>
+<g class="d-node" data-name="L10_R07"><title>L10_R07 (Soil)</title><rect x="2240" y="3340" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="3352" width="86" height="86"/>
+<text x="2340" y="3552" font-size="78" text-anchor="middle">L10_R07</text></g>
+<g class="d-node" data-name="L10_R08"><title>L10_R08 (Soil)</title><rect x="2560" y="3340" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="3352" width="86" height="86"/>
+<text x="2660" y="3552" font-size="78" text-anchor="middle">L10_R08</text></g>
+<g class="d-node" data-name="L10_R09"><title>L10_R09 (Soil)</title><rect x="2880" y="3340" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="3352" width="86" height="86"/>
+<text x="2980" y="3552" font-size="78" text-anchor="middle">L10_R09</text></g>
+<g class="d-node" data-name="L10_R10"><title>L10_R10 (Soil)</title><rect x="3200" y="3340" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="3352" width="86" height="86"/>
+<text x="3300" y="3552" font-size="78" text-anchor="middle">L10_R10</text></g>
+<g class="d-node" data-name="L11_R00"><title>L11_R00 (Soil)</title><rect x="0" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="57" y="3562" width="86" height="86"/>
+<text x="100" y="3762" font-size="78" text-anchor="middle">L11_R00</text></g>
+<g class="d-node" data-name="L11_R01"><title>L11_R01 (Soil)</title><rect x="320" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="3562" width="86" height="86"/>
+<text x="420" y="3762" font-size="78" text-anchor="middle">L11_R01</text></g>
+<g class="d-node" data-name="L11_R02"><title>L11_R02 (Soil)</title><rect x="640" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="3562" width="86" height="86"/>
+<text x="740" y="3762" font-size="78" text-anchor="middle">L11_R02</text></g>
+<g class="d-node" data-name="L11_R03"><title>L11_R03 (Soil)</title><rect x="960" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="3562" width="86" height="86"/>
+<text x="1060" y="3762" font-size="78" text-anchor="middle">L11_R03</text></g>
+<g class="d-node" data-name="L11_R04"><title>L11_R04 (Soil)</title><rect x="1280" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="3562" width="86" height="86"/>
+<text x="1380" y="3762" font-size="78" text-anchor="middle">L11_R04</text></g>
+<g class="d-node" data-name="L11_R05"><title>L11_R05 (Soil)</title><rect x="1600" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="3562" width="86" height="86"/>
+<text x="1700" y="3762" font-size="78" text-anchor="middle">L11_R05</text></g>
+<g class="d-node" data-name="L11_R06"><title>L11_R06 (Soil)</title><rect x="1920" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="3562" width="86" height="86"/>
+<text x="2020" y="3762" font-size="78" text-anchor="middle">L11_R06</text></g>
+<g class="d-node" data-name="L11_R07"><title>L11_R07 (Soil)</title><rect x="2240" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="3562" width="86" height="86"/>
+<text x="2340" y="3762" font-size="78" text-anchor="middle">L11_R07</text></g>
+<g class="d-node" data-name="L11_R08"><title>L11_R08 (Soil)</title><rect x="2560" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="3562" width="86" height="86"/>
+<text x="2660" y="3762" font-size="78" text-anchor="middle">L11_R08</text></g>
+<g class="d-node" data-name="L11_R09"><title>L11_R09 (Soil)</title><rect x="2880" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="3562" width="86" height="86"/>
+<text x="2980" y="3762" font-size="78" text-anchor="middle">L11_R09</text></g>
+<g class="d-node" data-name="L11_R10"><title>L11_R10 (Soil)</title><rect x="3200" y="3550" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="3562" width="86" height="86"/>
+<text x="3300" y="3762" font-size="78" text-anchor="middle">L11_R10</text></g>
+<g class="d-node" data-name="L12_R00"><title>L12_R00 (Soil)</title><rect x="0" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="57" y="3772" width="86" height="86"/>
+<text x="100" y="3972" font-size="78" text-anchor="middle">L12_R00</text></g>
+<g class="d-node" data-name="L12_R01"><title>L12_R01 (Soil)</title><rect x="320" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="3772" width="86" height="86"/>
+<text x="420" y="3972" font-size="78" text-anchor="middle">L12_R01</text></g>
+<g class="d-node" data-name="L12_R02"><title>L12_R02 (Soil)</title><rect x="640" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="3772" width="86" height="86"/>
+<text x="740" y="3972" font-size="78" text-anchor="middle">L12_R02</text></g>
+<g class="d-node" data-name="L12_R03"><title>L12_R03 (Soil)</title><rect x="960" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="3772" width="86" height="86"/>
+<text x="1060" y="3972" font-size="78" text-anchor="middle">L12_R03</text></g>
+<g class="d-node" data-name="L12_R04"><title>L12_R04 (Soil)</title><rect x="1280" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="3772" width="86" height="86"/>
+<text x="1380" y="3972" font-size="78" text-anchor="middle">L12_R04</text></g>
+<g class="d-node" data-name="L12_R05"><title>L12_R05 (Soil)</title><rect x="1600" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="3772" width="86" height="86"/>
+<text x="1700" y="3972" font-size="78" text-anchor="middle">L12_R05</text></g>
+<g class="d-node" data-name="L12_R06"><title>L12_R06 (Soil)</title><rect x="1920" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="3772" width="86" height="86"/>
+<text x="2020" y="3972" font-size="78" text-anchor="middle">L12_R06</text></g>
+<g class="d-node" data-name="L12_R07"><title>L12_R07 (Soil)</title><rect x="2240" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="3772" width="86" height="86"/>
+<text x="2340" y="3972" font-size="78" text-anchor="middle">L12_R07</text></g>
+<g class="d-node" data-name="L12_R08"><title>L12_R08 (Soil)</title><rect x="2560" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="3772" width="86" height="86"/>
+<text x="2660" y="3972" font-size="78" text-anchor="middle">L12_R08</text></g>
+<g class="d-node" data-name="L12_R09"><title>L12_R09 (Soil)</title><rect x="2880" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="3772" width="86" height="86"/>
+<text x="2980" y="3972" font-size="78" text-anchor="middle">L12_R09</text></g>
+<g class="d-node" data-name="L12_R10"><title>L12_R10 (Soil)</title><rect x="3200" y="3760" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="3772" width="86" height="86"/>
+<text x="3300" y="3972" font-size="78" text-anchor="middle">L12_R10</text></g>
+<g class="d-node" data-name="L13_R00"><title>L13_R00 (Soil)</title><rect x="0" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="57" y="3982" width="86" height="86"/>
+<text x="100" y="4182" font-size="78" text-anchor="middle">L13_R00</text></g>
+<g class="d-node" data-name="L13_R01"><title>L13_R01 (Soil)</title><rect x="320" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="377" y="3982" width="86" height="86"/>
+<text x="420" y="4182" font-size="78" text-anchor="middle">L13_R01</text></g>
+<g class="d-node" data-name="L13_R02"><title>L13_R02 (Soil)</title><rect x="640" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="697" y="3982" width="86" height="86"/>
+<text x="740" y="4182" font-size="78" text-anchor="middle">L13_R02</text></g>
+<g class="d-node" data-name="L13_R03"><title>L13_R03 (Soil)</title><rect x="960" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1017" y="3982" width="86" height="86"/>
+<text x="1060" y="4182" font-size="78" text-anchor="middle">L13_R03</text></g>
+<g class="d-node" data-name="L13_R04"><title>L13_R04 (Soil)</title><rect x="1280" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1337" y="3982" width="86" height="86"/>
+<text x="1380" y="4182" font-size="78" text-anchor="middle">L13_R04</text></g>
+<g class="d-node" data-name="L13_R05"><title>L13_R05 (Soil)</title><rect x="1600" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1657" y="3982" width="86" height="86"/>
+<text x="1700" y="4182" font-size="78" text-anchor="middle">L13_R05</text></g>
+<g class="d-node" data-name="L13_R06"><title>L13_R06 (Soil)</title><rect x="1920" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="1977" y="3982" width="86" height="86"/>
+<text x="2020" y="4182" font-size="78" text-anchor="middle">L13_R06</text></g>
+<g class="d-node" data-name="L13_R07"><title>L13_R07 (Soil)</title><rect x="2240" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2297" y="3982" width="86" height="86"/>
+<text x="2340" y="4182" font-size="78" text-anchor="middle">L13_R07</text></g>
+<g class="d-node" data-name="L13_R08"><title>L13_R08 (Soil)</title><rect x="2560" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2617" y="3982" width="86" height="86"/>
+<text x="2660" y="4182" font-size="78" text-anchor="middle">L13_R08</text></g>
+<g class="d-node" data-name="L13_R09"><title>L13_R09 (Soil)</title><rect x="2880" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="2937" y="3982" width="86" height="86"/>
+<text x="2980" y="4182" font-size="78" text-anchor="middle">L13_R09</text></g>
+<g class="d-node" data-name="L13_R10"><title>L13_R10 (Soil)</title><rect x="3200" y="3970" width="200" height="110" rx="9"/>
+<image href="icons/Soil.png" x="3257" y="3982" width="86" height="86"/>
+<text x="3300" y="4182" font-size="78" text-anchor="middle">L13_R10</text></g>
+<g class="d-node" data-name="Water_Table"><title>Water_Table (Pond)</title><rect x="0" y="4240" width="3400" height="100" rx="8"/>
+<image href="icons/stormwaterpond.png" x="1661" y="4251" width="78" height="78"/>
+<text x="1700" y="4442" font-size="78" text-anchor="middle">Water_Table</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>163</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Catch-05'><summary><span class='cname'>13 × Catchment</span><span class='ctype'>Catchment</span><span class='crole'><p>13 paved sub-catchments, Catch_01 to Catch_13 (2,600 to 33,300 m², 11.3 ha in total), each draining along one sewer segment (overland flow width equal to the segment length, slope 0.015, Manning n = 0.2, no depression storage, no infiltration).</p></span></summary><div class='cbody'><p class='members'>Catch_05, Catch_04, Catch_03, Catch_02, Catch_01, Catch_13, Catch_12, Catch_11 …</p><p class='muted'>Showing properties of <b>Catch_05</b>.</p><p class=type-help><b>Catchment:</b> Catchment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Catchment area</td><td class='v'>9688.46</td><td>m<sup>2</sup></td><td>Total horizontal surface area of the catchment. Used to compute initial storage and flow-related parameters.</td></tr><tr><td>The width of the catchment</td><td class='v'>57.3816</td><td>m</td><td>The average width of the catchment perpendicular to the dominant flow direction</td></tr><tr><td>Catchment slope in the direction of flow</td><td class='v'>0.015</td><td></td><td>The average slope of the catchment along the dominant flow direction</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.2</td><td></td><td>The Manning&#x27;s roughness coefficient representing surface resistance to flow. Typical values vary by land cover type.</td></tr><tr><td>Depression storage</td><td class='v'>0</td><td>m</td><td>The depth of water that is retained in surface depressions and does not contribute to surface runoff.</td></tr><tr><td>Runoff coefficient</td><td class='v'>1</td><td></td><td>This is the fraction of rain that converts to runoff in case infiltration is not explicitly modeled</td></tr><tr><td>Loss coefficient</td><td class='v'>0</td><td>1/day</td><td>A coefficient representing losses (e.g., infiltration or leakage) as a first-order rate constant. Used in loss expression.</td></tr><tr><td>Mean elevation of the catchment</td><td class='v'>0</td><td>m</td><td>The elevation of the centroid of the catchment based on the model datum.</td></tr><tr><td>Average water depth</td><td class='v'>0</td><td>m</td><td>The initial depth of the standing water before the simulation start time. Most of the times, this value is zero</td></tr><tr><td>Precipitation</td><td class='v'>Rain</td><td>m^3/day</td><td>A precipitation source object must be selected.</td></tr><tr><td>Pollutant_surface: External source</td><td class='v'>Buildup</td><td></td><td>Optional reference to another source object providing external loading of the constituent.</td></tr><tr><td>Pollutant_surface: Concentration per unit surface area</td><td class='v'>1</td><td>g/m<sup>2</sup></td><td>Initial surface concentration of the immobile constituent per unit area. Used to compute initial mass on surfaces.</td></tr><tr><td>Washoff: exponent_of_depth</td><td class='v'>2</td><td></td><td></td></tr><tr><td>Washoff: release_coefficient</td><td class='v'>1</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Sewer-05'><summary><span class='cname'>13 × Sewerchannelsegment</span><span class='ctype'>Sewerchannelsegment · Sewer_system</span><span class='crole'><p>13 segments of 0.914 m (36 inch) storm sewer, 9 to 116 m long, Manning n = 0.1, in two lines: Sewer_05 to Sewer_01 (inverts 7.5 to 2.2 m) and Sewer_13 to Sewer_06 (inverts 10.7 to 2.4 m).</p></span></summary><div class='cbody'><p class='members'>Sewer_05, Sewer_04, Sewer_03, Sewer_02, Sewer_01, Sewer_13, Sewer_12, Sewer_11 …</p><p class='muted'>Showing properties of <b>Sewer_05</b>.</p><p class=type-help><b>Sewerchannelsegment:</b> Sewer Channel Segment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Diameter</td><td class='v'>0.9144</td><td>m</td><td>Internal diameter of the sewer channel. Affects storage volume and flow capacity.</td></tr><tr><td>Segment length</td><td class='v'>57.38</td><td>m</td><td>Length of the sewer channel segment. Affects storage and travel time of flow.</td></tr><tr><td>Bottom Elevation</td><td class='v'>7.51</td><td>m</td><td>Elevation of the sewer pipe bottom relative to the system datum at the center of the sewer pipe. Influences flow direction and energy gradient.</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.1</td><td></td><td>Roughness coefficient representing flow resistance inside the sewer channel. Higher values indicate more resistance.</td></tr><tr><td>Initial Water Depth</td><td class='v'>0</td><td>m</td><td>Initial water depth in the sewer segment at the start of simulation.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Pond'><summary><span class='cname'>Pond</span><span class='ctype'>Pond · Pond_Plugin</span><span class='crole'><p>Infiltration pond receiving both sewer lines. Stage-storage S = 86.06·d^2.766: 519 m³ and about 750 m² of water surface at the 1.914 m spillway crest. It drains into the drywell, into the soil beneath it and over its spillway.</p></span></summary><div class='cbody'><p class=type-help><b>Pond:</b> Stormwater pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>The coefficient (α) in the rating curve S = α d^β</td><td class='v'>86.061</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>The exponent (β) in the rating curve S = α d^β</td><td class='v'>2.766</td><td></td><td>The exponent (β) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Bottom elevation of pond</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the pond at the beginning of the simulation.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Overflow'><summary><span class='cname'>Overflow</span><span class='ctype'>Pond · Pond_Plugin</span><span class='crole'><p>Very large, flat reservoir (bottom −1 m) that collects the spillway overflow, so its storage and pollutant mass are the cumulative volume and load leaving the site.</p></span></summary><div class='cbody'><p class=type-help><b>Pond:</b> Stormwater pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>The coefficient (α) in the rating curve S = α d^β</td><td class='v'>1e+08</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>The exponent (β) in the rating curve S = α d^β</td><td class='v'>1</td><td></td><td>The exponent (β) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Bottom elevation of pond</td><td class='v'>-1</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the pond at the beginning of the simulation.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Drywell'><summary><span class='cname'>Drywell</span><span class='ctype'>Well · Well</span><span class='crole'><p>Drywell 2 m in diameter and 41.95 m deep (bottom at −41.95 m), starting empty. Water leaves through its wall into the ten soil layers it penetrates and through its bottom.</p></span></summary><div class='cbody'><p class=type-help><b>Well:</b> Well</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Well Diameter</td><td class='v'>2</td><td>m</td><td>Well Diameter</td></tr><tr><td>Bottom elevation of the well</td><td class='v'>-41.95</td><td>m</td><td>Bottom elevation of the well</td></tr><tr><td>Water depth</td><td class='v'>0</td><td>m</td><td>Water depth</td></tr></tbody></table></div></details>
+<details class='comp' id='c-L01-R01'><summary><span class='cname'>133 × Soil</span><span class='ctype'>Soil · unsaturated_soil</span><span class='crole'><p>133 van Genuchten soil cells in an axisymmetric grid around the drywell: 13 layers (L01 to L13) by 10 rings (R01 to R10, outer radii 1.96 to 26.0 m) plus a column under the well (R00, layers 11 to 13 only). Cell Lii_Rjj is layer ii of ring jj. Layer properties are listed in the table under How it works.</p></span></summary><div class='cbody'><p class='members'>L01_R01, L01_R02, L01_R03, L01_R04, L01_R05, L01_R06, L01_R07, L01_R08 …</p><p class='muted'>Showing properties of <b>L01_R01</b>.</p><p class=type-help><b>Soil:</b> Variably Saturated Soil Block</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Bottom Area of the soil block</td><td class='v'>8.96471</td><td>m<sup>2</sup></td><td>Bottom Area of the soil block</td></tr><tr><td>Depth of the soil block</td><td class='v'>4.2</td><td>m</td><td>Depth of the soil block</td></tr><tr><td>Bottom Elevation of the soil block</td><td class='v'>-4.2</td><td>m</td><td>Bottom Elevation of the soil block</td></tr><tr><td>Saturated Hydraulic Conductivity</td><td class='v'>0.07</td><td>m/day</td><td>Saturated Hydraulc Conductivity</td></tr><tr><td>Hydraulic conductivity scale factor</td><td class='v'>40</td><td></td><td>Hydraulic conductivity scale factor</td></tr><tr><td>Van Genuchten&#x27;s alpha parameter</td><td class='v'>2.49</td><td>1/m</td><td>Van Genuchten&#x27;s alpha parameter</td></tr><tr><td>Van Genuchten&#x27;s n parameter</td><td class='v'>1.1689</td><td></td><td>Van Genuchten&#x27;s n parameter</td></tr><tr><td>Saturated Moisture Content</td><td class='v'>0.392</td><td></td><td>Saturated Moisture Content</td></tr><tr><td>Residual Moisture Content</td><td class='v'>0.001</td><td></td><td>Residual Moisture Content</td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.2</td><td></td><td>Initial Moisture Content; Moisture Content</td></tr><tr><td>Specific storage</td><td class='v'>0.001</td><td>1/m</td><td>Specific storage</td></tr><tr><td>Evapotranspiration</td><td class='v'>Soil_ET</td><td>m^3/day</td><td>Evapotranspiration</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Water-Table'><summary><span class='cname'>Water_Table</span><span class='ctype'>Pond · Pond_Plugin</span><span class='crole'><p>Very large, flat reservoir with its bottom at −70.28 m. It holds the water table at −70.28 m and records the cumulative recharge (volume and pollutant mass) that reaches it.</p></span></summary><div class='cbody'><p class=type-help><b>Pond:</b> Stormwater pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>The coefficient (α) in the rating curve S = α d^β</td><td class='v'>1e+08</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>The exponent (β) in the rating curve S = α d^β</td><td class='v'>1</td><td></td><td>The exponent (β) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Bottom elevation of pond</td><td class='v'>-70.28</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the pond at the beginning of the simulation.</td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>302</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Runoff-05'><summary><span class='cname'>13 × Catchment_link</span><span class='ctype'>Catchment_link</span><span class='crole'><p>Kinematic sheet flow from each catchment into its sewer segment.</p></span></summary><div class='cbody'><p class='members'>Runoff_05, Runoff_04, Runoff_03, Runoff_02, Runoff_01, Runoff_13, Runoff_12, Runoff_11 …</p><p class='muted'>Showing properties of <b>Runoff_05</b>.</p><p class=type-help><b>Catchment_link:</b> Link from a catchment</p></div></details>
+<details class='comp' id='c-Pipe-05-04'><summary><span class='cname'>11 × Sewer2Sewer_link</span><span class='ctype'>Sewer2Sewer_link · Sewer_system</span><span class='crole'><p>Manning flow between consecutive sewer segments, driven by the head difference.</p></span></summary><div class='cbody'><p class='members'>Pipe_05_04, Pipe_04_03, Pipe_03_02, Pipe_02_01, Pipe_13_12, Pipe_12_11, Pipe_11_10, Pipe_10_09 …</p><p class='muted'>Showing properties of <b>Pipe_05_04</b>.</p><p class=type-help><b>Sewer2Sewer_link:</b> Link from a sewer pipe block to another</p></div></details>
+<details class='comp' id='c-Outfall-01'><summary><span class='cname'>Outfall_01</span><span class='ctype'>sewer2pond · Sewer_system</span><span class='crole'><p>sewer2pond link: outfall of the Sewer_05 to Sewer_01 line into the pond.</p></span></summary><div class='cbody'><p class=type-help><b>sewer2pond:</b> Link from a sewer pipe segment to a pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Pipe bottom elevation at the pond</td><td class='v'>0</td><td>m</td><td>Pipe bottom elevation at the pond (user input required).</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Outfall-06'><summary><span class='cname'>Outfall_06</span><span class='ctype'>sewer2pond · Sewer_system</span><span class='crole'><p>sewer2pond link: outfall of the Sewer_13 to Sewer_06 line into the pond.</p></span></summary><div class='cbody'><p class=type-help><b>sewer2pond:</b> Link from a sewer pipe segment to a pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Pipe bottom elevation at the pond</td><td class='v'>0</td><td>m</td><td>Pipe bottom elevation at the pond (user input required).</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Overflow-weir'><summary><span class='cname'>Overflow_weir</span><span class='ctype'>wier · Pond_Plugin</span><span class='crole'><p>Spillway of the pond: Q = 392,619·(h − 1.914)^2.995 m³/day.</p></span></summary><div class='cbody'><p class=type-help><b>wier:</b> Weir based on a power-law rating curve</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Crest Elevation</td><td class='v'>1.914</td><td>m</td><td></td></tr><tr><td>Coefficient alpha in Q=alpha*(h-z_0)^beta (SI-day units)</td><td class='v'>392619</td><td></td><td></td></tr><tr><td>Exponent beta in Q=alpha*(h-z_0)^beta</td><td class='v'>2.995</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Drywell-inlet'><summary><span class='cname'>Drywell_inlet</span><span class='ctype'>Surface water to well · Well</span><span class='crole'><p>Inflow from the pond into the drywell around its 2 m rim. Negative when the well head exceeds the pond level.</p></span></summary><div class='cbody'><p class=type-help><b>Surface water to well:</b> Surface water to well link</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Connector length</td><td class='v'>3</td><td></td><td>Connector length</td></tr><tr><td>Manning&#x27;s roughness coefficient</td><td class='v'>100</td><td></td><td>Manning&#x27;s roughness coefficient</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Infiltration-R01'><summary><span class='cname'>10 × surfacewater_to_soil_link</span><span class='ctype'>surfacewater_to_soil_link · unsaturated_soil</span><span class='crole'><p>Infiltration from the pond into the top cell of each ring (Infiltration_R01 to R10).</p></span></summary><div class='cbody'><p class='members'>Infiltration_R01, Infiltration_R02, Infiltration_R03, Infiltration_R04, Infiltration_R05, Infiltration_R06, Infiltration_R07, Infiltration_R08 …</p><p class='muted'>Showing properties of <b>Infiltration_R01</b>.</p><p class=type-help><b>surfacewater_to_soil_link:</b> Surfacewater to soil connector</p></div></details>
+<details class='comp' id='c-Injection-L01'><summary><span class='cname'>10 × Well2soil horizontal link</span><span class='ctype'>Well2soil horizontal link · Well</span><span class='crole'><p>Radial flow from the drywell through its wall into the ring-1 cell of each of layers 1 to 10 (Injection_L01 to L10). Negative when the soil drains back into the well.</p></span></summary><div class='cbody'><p class='members'>Injection_L01, Injection_L02, Injection_L03, Injection_L04, Injection_L05, Injection_L06, Injection_L07, Injection_L08 …</p><p class='muted'>Showing properties of <b>Injection_L01</b>.</p><p class=type-help><b>Well2soil horizontal link:</b> Horizontal link from well to soil</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Connector length</td><td class='v'>0.4815</td><td></td><td>Connector length</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Injection-bottom'><summary><span class='cname'>Injection_bottom</span><span class='ctype'>Well2soil vertical link · Well</span><span class='crole'><p>Flow through the bottom of the drywell into the cell beneath it (L11_R00).</p></span></summary><div class='cbody'><p class=type-help><b>Well2soil vertical link:</b> Vertical link from well to soil</p></div></details>
+<details class='comp' id='c-Vertical-L01-R01'><summary><span class='cname'>122 × soil_to_soil_link</span><span class='ctype'>soil_to_soil_link · unsaturated_soil</span><span class='crole'><p>Vertical unsaturated flow between stacked cells (Vertical_Lii_Rjj).</p></span></summary><div class='cbody'><p class='members'>Vertical_L01_R01, Vertical_L01_R02, Vertical_L01_R03, Vertical_L01_R04, Vertical_L01_R05, Vertical_L01_R06, Vertical_L01_R07, Vertical_L01_R08 …</p><p class='muted'>Showing properties of <b>Vertical_L01_R01</b>.</p><p class=type-help><b>soil_to_soil_link:</b> Vertical soil to soil connector</p></div></details>
+<details class='comp' id='c-Radial-L01-R01'><summary><span class='cname'>120 × soil_to_soil_H_link</span><span class='ctype'>soil_to_soil_H_link · unsaturated_soil</span><span class='crole'><p>Radial unsaturated flow between neighbouring rings (Radial_Lii_Rjj), over a cylindrical interface of area 2π·r·thickness.</p></span></summary><div class='cbody'><p class='members'>Radial_L01_R01, Radial_L01_R02, Radial_L01_R03, Radial_L01_R04, Radial_L01_R05, Radial_L01_R06, Radial_L01_R07, Radial_L01_R08 …</p><p class='muted'>Showing properties of <b>Radial_L01_R01</b>.</p><p class=type-help><b>soil_to_soil_H_link:</b> Horizontal soil to soil connector</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Length</td><td class='v'>1.0594</td><td>m</td><td>Length</td></tr><tr><td>Interface area</td><td class='v'>51.804</td><td>m<sup>2</sup></td><td>Interface area</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Recharge-R00'><summary><span class='cname'>11 × soil_to_fixedhead_link</span><span class='ctype'>soil_to_fixedhead_link · unsaturated_soil</span><span class='crole'><p>Drainage from the bottom layer (L13) of each column into the water table (Recharge_R00 to R10).</p></span></summary><div class='cbody'><p class='members'>Recharge_R00, Recharge_R01, Recharge_R02, Recharge_R03, Recharge_R04, Recharge_R05, Recharge_R06, Recharge_R07 …</p><p class='muted'>Showing properties of <b>Recharge_R00</b>.</p><p class=type-help><b>soil_to_fixedhead_link:</b> Soil to fixed head connector</p></div></details>
+</div>
+<h3>Sources <small>3</small></h3><p class='kind-blurb'>External inputs or sinks applied to blocks: rainfall, evaporation, loads, exchange with the atmosphere.</p><div class='comp-list'>
+<details class='comp' id='c-Rain'><summary><span class='cname'>Rain</span><span class='ctype'>Precipitation</span><span class='crole'><p>Hourly precipitation for 18 November to 10 December 2018 at Los Angeles International Airport (103 mm in three storms). It falls on the 13 catchments.</p></span></summary><div class='cbody'><p class=type-help><b>Precipitation:</b> Precipitation</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Precipitation Cumulative</td><td class='v'>precipitation.csv</td><td>m</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Soil-ET'><summary><span class='cname'>Soil_ET</span><span class='ctype'>Evapotranspiration_Penman (Soil) · soil_evapotranspiration_models</span><span class='crole'><p>Penman evapotranspiration from the top soil layer under the pond, driven by hourly air temperature, relative humidity, solar radiation and wind speed at the same location.</p></span></summary><div class='cbody'><p class=type-help><b>Evapotranspiration_Penman (Soil):</b> Penman Evapotranspiration model for soil</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Relative humidity time series (fraction, 0-1)</td><td class='v'>relative_humidity.csv</td><td></td><td></td></tr><tr><td>Temperature time series (°C)</td><td class='v'>air_temperature.csv</td><td></td><td></td></tr><tr><td>Solar Radiation (W/m^2)</td><td class='v'>solar_radiation.csv</td><td></td><td></td></tr><tr><td>wind time series</td><td class='v'>wind_speed.csv</td><td>m/s</td><td></td></tr><tr><td>Roughness height</td><td class='v'>0.0003</td><td>m</td><td></td></tr><tr><td>Wind measurement elevation</td><td class='v'>2</td><td>m</td><td></td></tr><tr><td>psychrometric constant (Pa/C)</td><td class='v'>66.8</td><td></td><td></td></tr><tr><td>Solar radiation scale factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Wind scale factor</td><td class='v'>1</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Buildup'><summary><span class='cname'>Buildup</span><span class='ctype'>Build up · buildup_washoff</span><span class='crole'><p>Constant build-up of the surface pollutant on every catchment, 0.01 g/m²/day.</p></span></summary><div class='cbody'><p class=type-help><b>Build up:</b> Buildup constant-rate</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Build up rate (mass/time/area)</td><td class='v'>0.01</td><td>g/day/m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>2</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-Pollutant-surface'><summary><span class='cname'>Pollutant_surface</span><span class='ctype'>Immobile_Constituent · buildup_washoff</span><span class='crole'><p>Pollutant bound to the catchment surfaces (g/m²). Starts at 1 g/m², the load accumulated over about 100 dry days, and grows by Buildup between storms.</p></span></summary><div class='cbody'><p class=type-help><b>Immobile_Constituent:</b> Immobile chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td>Factor used to convert between constituent forms in reactions (e.g., from nitrogen to nitrate).</td></tr><tr><td>Concentration per unit surface area</td><td class='v'>0</td><td>g/m<sup>2</sup></td><td>Initial surface concentration of the immobile constituent per unit area. Used to compute initial mass on surfaces.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Pollutant'><summary><span class='cname'>Pollutant</span><span class='ctype'>Constituent</span><span class='crole'><p>Dissolved pollutant (g/m³) carried by the water from the catchments through the sewers, the pond, the drywell and the soil.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Diffusion Coefficient</td><td class='v'>0</td><td>m<sup>2</sup>/s</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reaction parameters <small>1</small></h3><p class='kind-blurb'>Named coefficients used in reaction rate expressions.</p><div class='comp-list'>
+<details class='comp' id='c-k-washoff'><summary><span class='cname'>k_washoff</span><span class='ctype'>ReactionParameter</span><span class='crole'><p>Wash-off rate coefficient, 10⁶ (1/m²/day when multiplied by the squared water depth).</p></span></summary><div class='cbody'><p class=type-help><b>ReactionParameter:</b> Reaction Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Value</td><td class='v'>1e+06</td><td></td><td></td></tr><tr><td>Arrhenius temperature correction factor</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Reference Temperature</td><td class='v'>20</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Reactions <small>1</small></h3><p class='kind-blurb'>Transformations among constituents, each with a stoichiometry and a rate expression.</p><div class='comp-list'>
+<details class='comp' id='c-Washoff'><summary><span class='cname'>Washoff</span><span class='ctype'>surface_release · buildup_washoff</span><span class='crole'><p>Transfer from Pollutant_surface to Pollutant on wet surfaces, at a rate of k_washoff × load × depth² per unit area.</p></span></summary><div class='cbody'><p class=type-help><b>surface_release:</b> Release from surface</p><div class='rxn'><div class='rate'><span>Rate</span><code></code></div><table class='props stoich'><thead><tr><th>Constituent</th><th>Stoichiometric coefficient</th></tr></thead><tbody><tr><td>Pollutant_surface</td><td class='v'>-1</td></tr><tr><td>Pollutant</td><td class='v'>1</td></tr></tbody></table></div><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration dependence function</td><td class='v'>(k_washoff*Pollutant_surface)</td><td></td><td>This expression indicates the dependence of the release rate to the concentration of attached constituent per surface area</td></tr><tr><td>Release coefficient</td><td class='v'>1</td><td></td><td>Indicates the coefficient in the power function relating the release rate and water depth (alpha*d^beta)</td></tr><tr><td>Depth exponent</td><td class='v'>2</td><td></td><td>Indicates the exponent in the power function relating the release rate and water depth (alpha*d^beta)</td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>precipitation.csv</code></td><td><p>Hourly precipitation. Three columns, no header: interval start (day), interval end (day), depth in the interval (m). Day 0 is 18 November 2018 00:00 Pacific Standard Time. NASA POWER hourly precipitation for the grid cell that contains Los Angeles International Airport (LAX).</p></td></tr><tr><td><code>relative_humidity.csv</code></td><td><p>Hourly relative humidity at 2 m as a fraction (0 to 1), two columns: time (day), value. Same source and location.</p></td></tr><tr><td><code>air_temperature.csv</code></td><td><p>Hourly air temperature at 2 m (°C), two columns: time (day), value. Same source and location.</p></td></tr><tr><td><code>solar_radiation.csv</code></td><td><p>Hourly incoming shortwave radiation at the surface (W/m²), two columns: time (day), value. Same source and location.</p></td></tr><tr><td><code>wind_speed.csv</code></td><td><p>Hourly wind speed (m/s), two columns: time (day), value. Same source and location.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>22</td></tr><tr><td>Initial time step</td><td class='v'>0.0416667</td></tr><tr><td>Write interval (steps)</td><td class='v'>1</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Rainfall' loading='lazy'><figcaption><b>Rainfall</b> Three storms: 9 mm on 21 and 22 November (days 3 and 4), 30 mm on 29 November (day 11) and 61 mm on 5 to 7 December (days 17 to 19).</figcaption></figure><figure><img src='plot_2.png' alt='Pond inflow and outflows' loading='lazy'><figcaption><b>Pond inflow and outflows</b> The first storm is fully captured and the second almost fully (150 m³ spills). In the third storm the pond is already full and most of the inflow leaves over the spillway; the drywell, also full, takes almost nothing.</figcaption></figure><figure><img src='plot_3.png' alt='Pond water depth' loading='lazy'><figcaption><b>Pond water depth</b> The pond drains within a few days after the small first storm. After the second storm it stays near its 1.914 m crest, because the soil below it is saturated down to a low-permeability layer.</figcaption></figure><figure><img src='plot_4.png' alt='Drywell water depth' loading='lazy'><figcaption><b>Drywell water depth</b> The 42 m drywell fills in the first storm and drains to 14 m over the following week. From the second storm on it stays full, with its water level tied to the pond.</figcaption></figure><figure><img src='plot_5.png' alt='Soil moisture next to the drywell' loading='lazy'><figcaption><b>Soil moisture next to the drywell</b> Cells beside the drywell saturate within hours of the first injection. The wetting front in the permeable layer 9 spreads outward and reaches ring 5 days later.</figcaption></figure><figure><img src='plot_6.png' alt='Surface pollutant load' loading='lazy'><figcaption><b>Surface pollutant load</b> The first storm washes off nearly all of the accumulated 1 g/m². Between storms the load rebuilds at 0.01 g/m²/day, so the later, larger storms carry much less pollutant.</figcaption></figure><figure><img src='plot_7.png' alt='Where the pollutant goes' loading='lazy'><figcaption><b>Where the pollutant goes</b> The first flush goes into the drywell and, through the pond floor and the drywell wall, into the soil (121 kg by the end, not plotted). The spillway carries 10.5 kg off site, mostly in the third storm.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/sewershed-drywells">View source on GitHub</a>.</div></footer>
+</body></html>
