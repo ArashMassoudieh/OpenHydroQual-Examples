@@ -843,6 +843,44 @@
    "thumb": "examples/detention-spillways/thumb.svg"
   },
   {
+   "id": "subsurface-vegetated-bed",
+   "title": "Horizontal Subsurface-Flow Vegetated Bed",
+   "track": "storm",
+   "level": 2,
+   "status": "ready",
+   "summary": "A 150 m\u00b2 horizontal subsurface-flow vegetated polishing bed treats a continuous 10 m\u00b3/day inflow and a short 60 m\u00b3/day design surge. Three gravel cells route water below the surface, remove BOD by first-order decay and send excess flow over a capacity-limited bypass.",
+   "plugins": [
+    "open_channel",
+    "svb_subsurface"
+   ],
+   "features": [
+    "Subsurface-flow wetland",
+    "Gravel-bed hydraulics",
+    "Hydraulic retention time",
+    "First-order BOD removal",
+    "Capacity-limited bypass"
+   ],
+   "keywords": [
+    "constructed wetland",
+    "horizontal subsurface flow",
+    "hssf",
+    "vegetated bed",
+    "gravel bed",
+    "treatment wetland",
+    "nature based treatment",
+    "BOD",
+    "first order decay",
+    "hydraulic loading rate",
+    "hydraulic retention time",
+    "Darcy flow",
+    "overflow",
+    "bypass",
+    "stormwater",
+    "wastewater"
+   ],
+   "thumb": "examples/subsurface-vegetated-bed/thumb.svg"
+  },
+  {
    "id": "infiltration-basin",
    "title": "Infiltration Basin",
    "track": "storm",
@@ -1531,6 +1569,42 @@
    "thumb": "examples/rooted-soil-transpiration/thumb.svg"
   },
   {
+   "id": "groundwater-plume-capture",
+   "title": "Two-Dimensional Groundwater Plume Capture",
+   "track": "soil",
+   "level": 3,
+   "status": "ready",
+   "summary": "A conservative tracer pulse crosses a 5 \u00d7 5 saturated aquifer grid while a constant-head extraction well intercepts part of the plume. The model couples two-dimensional groundwater flow, advection, dispersion and recovery-well mass capture.",
+   "plugins": [
+    "groundwater"
+   ],
+   "features": [
+    "2D groundwater flow",
+    "Solute transport",
+    "Plume capture",
+    "Extraction well",
+    "Advection-dispersion"
+   ],
+   "keywords": [
+    "groundwater",
+    "aquifer",
+    "two dimensional",
+    "2D",
+    "plume",
+    "contaminant transport",
+    "tracer",
+    "pumping well",
+    "extraction well",
+    "capture zone",
+    "remediation",
+    "advection",
+    "dispersion",
+    "mass balance",
+    "saturated flow"
+   ],
+   "thumb": "examples/groundwater-plume-capture/thumb.svg"
+  },
+  {
    "id": "well-field-network",
    "title": "Well Field and Water Supply Network",
    "track": "soil",
@@ -1734,6 +1808,40 @@
    "thumb": "examples/reservoir-operation/thumb.svg"
   },
   {
+   "id": "open-channel-routing",
+   "title": "Transient Open-Channel Routing",
+   "track": "hyd",
+   "level": 2,
+   "status": "ready",
+   "summary": "A stage pulse travels through six trapezoidal channel cells, showing how storage and Manning resistance delay and attenuate a shallow-water disturbance.",
+   "plugins": [
+    "open_channel"
+   ],
+   "features": [
+    "Manning routing",
+    "Stage boundary",
+    "Wave translation",
+    "Channel storage"
+   ],
+   "keywords": [
+    "open channel",
+    "channel routing",
+    "transient flow",
+    "stage hydrograph",
+    "flood wave",
+    "manning equation",
+    "trapezoidal channel",
+    "kinematic wave",
+    "diffusive wave",
+    "attenuation",
+    "translation",
+    "travel time",
+    "hydraulic routing",
+    "boundary condition"
+   ],
+   "thumb": "examples/open-channel-routing/thumb.svg"
+  },
+  {
    "id": "city-water-budget",
    "title": "City Water Budget: Supply, Demand, Reuse",
    "track": "mgmt",
@@ -1859,6 +1967,41 @@
    ],
    "doc": "lm_calibration.pdf",
    "thumb": "examples/lm-calibration/thumb.svg"
+  },
+  {
+   "id": "design-optimization",
+   "title": "Stormwater Outlet Design Optimization",
+   "track": "calib",
+   "level": 2,
+   "status": "ready",
+   "summary": "A genetic algorithm sizes a detention pond low-flow drain and overflow weir to balance downstream peak flow, maximum pond depth and simple construction-cost proxies during a synthetic design storm.",
+   "plugins": [
+    "Pond_Plugin"
+   ],
+   "features": [
+    "Genetic algorithm",
+    "Design optimization",
+    "Multi-objective scoring",
+    "Detention routing",
+    "Outlet sizing"
+   ],
+   "keywords": [
+    "optimization",
+    "design optimization",
+    "genetic algorithm",
+    "GA",
+    "stormwater",
+    "detention pond",
+    "outlet design",
+    "drain pipe",
+    "weir",
+    "peak flow",
+    "pond depth",
+    "cost",
+    "engineering design",
+    "OHQ-GA"
+   ],
+   "thumb": "examples/design-optimization/thumb.svg"
   },
   {
    "id": "ar1-error-model",

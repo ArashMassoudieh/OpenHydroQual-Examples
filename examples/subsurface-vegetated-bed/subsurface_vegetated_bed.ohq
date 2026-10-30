@@ -1,0 +1,24 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = open_channel.json
+addtemplate; filename = svb_subsurface.json
+create constituent;type=Constituent,name=BOD,concentration=0[g/m~^3],constant_inflow_concentration=0[g/m~^3],time_variable_inflow_concentration=,external_mass_flow_timeseries=,external_source=,diffusion_coefficient=0[m~^2/day],dispersivity=0[m],stoichiometric_constant=0
+create reaction_parameter;type=ReactionParameter,name=k_BOD,base_value=0.35,Arrhenius_factor=1,reference_temperature=20,temperature=
+create reaction;type=Reaction,name=BOD_Removal,BOD:stoichiometric_constant=-1,rate_expression=(k_BOD*BOD)
+create block;type=Trapezoidal Channel Segment,name=Inlet_Distribution,BOD:concentration=19.678[g/m~^3],BOD:constant_inflow_concentration=20[g/m~^3],BOD:time_variable_inflow_concentration=,BOD:external_mass_flow_timeseries=,BOD:external_source=,base_width=7.5[m],side_slope=1,ManningCoeff=0.04,bottom_elevation=0.6[m],length=6.6667[m],depth=0.0093[m],inflow=inflow.csv,inflow_multiplier=1,dam_height=0[m],ag_area=0[m~^2],non_ag_area=0[m~^2],_width=220,_height=180,x=100,y=120
+create block;type=Aggregate_storage_layer_confined,name=Bed_1,BOD:concentration=14.213[g/m~^3],BOD:constant_inflow_concentration=0[g/m~^3],BOD:time_variable_inflow_concentration=,BOD:external_mass_flow_timeseries=,BOD:external_source=,area=50[m~^2],bottom_elevation=0[m],porosity=0.4,depth=0.5493[m],K_sat=500[m/day],thickness=0.6[m],confined_storativity=0.05,inflow=,_width=220,_height=180,x=450,y=420
+create block;type=Aggregate_storage_layer_confined,name=Bed_2,BOD:concentration=10.332[g/m~^3],BOD:constant_inflow_concentration=0[g/m~^3],BOD:time_variable_inflow_concentration=,BOD:external_mass_flow_timeseries=,BOD:external_source=,area=50[m~^2],bottom_elevation=-0.02[m],porosity=0.4,depth=0.5366[m],K_sat=500[m/day],thickness=0.6[m],confined_storativity=0.05,inflow=,_width=220,_height=180,x=800,y=420
+create block;type=Aggregate_storage_layer_confined,name=Bed_3,BOD:concentration=7.567[g/m~^3],BOD:constant_inflow_concentration=0[g/m~^3],BOD:time_variable_inflow_concentration=,BOD:external_mass_flow_timeseries=,BOD:external_source=,area=50[m~^2],bottom_elevation=-0.04[m],porosity=0.4,depth=0.5230[m],K_sat=500[m/day],thickness=0.6[m],confined_storativity=0.05,inflow=,_width=220,_height=180,x=1150,y=420
+create block;type=Trapezoidal Channel Segment,name=Receiving_Water,BOD:concentration=0[g/m~^3],BOD:constant_inflow_concentration=0[g/m~^3],BOD:time_variable_inflow_concentration=,BOD:external_mass_flow_timeseries=,BOD:external_source=,base_width=1000[m],side_slope=1,ManningCoeff=0.04,bottom_elevation=0[m],length=1000[m],depth=0.466[m],inflow=,inflow_multiplier=1,dam_height=0[m],ag_area=0[m~^2],non_ag_area=0[m~^2],_width=220,_height=180,x=1500,y=420
+create link;type=channel_to_aggregate_link_Kv,name=Infiltration,from=Inlet_Distribution,to=Bed_1,K_v=1[m/day],length=0.3[m]
+create link;type=aggregate2aggregate_H_Link_b,name=Bed_1_to_2,from=Bed_1,to=Bed_2,width=7.5[m],length=6.6667[m]
+create link;type=aggregate2aggregate_H_Link_b,name=Bed_2_to_3,from=Bed_2,to=Bed_3,width=7.5[m],length=6.6667[m]
+create link;type=aggregate_to_collector_link,name=Treated_Outflow,from=Bed_3,to=Receiving_Water,width=7.5[m],length=3.3333[m]
+create link;type=weir_capped,name=Surface_Bypass,from=Inlet_Distribution,to=Receiving_Water,crest_elevation=0.8[m],alpha=15000,beta=1.5,Q_max=40[m~^3/day],n=6
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=12
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=max_timestep_increase_factor, value=3
+setvalue; object=system, quantity=minimum_timestep, value=1e-07
+setvalue; object=system, quantity=write_interval, value=5
+setvalue; object=system, quantity=timestep_clamp_series, value=All time series

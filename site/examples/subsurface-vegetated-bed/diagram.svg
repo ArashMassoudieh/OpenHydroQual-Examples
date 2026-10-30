@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 60 1740 646" class="ohq-diagram" style="max-width:870px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Infiltration"><title>Infiltration (channel_to_aggregate_link_Kv)</title><path d="M315.0 300.0 L385.0 360.0 L455.0 420.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Bed_1_to_2"><title>Bed_1_to_2 (aggregate2aggregate_H_Link_b)</title><path d="M670.0 510.0 L735.0 510.0 L800.0 510.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Bed_2_to_3"><title>Bed_2_to_3 (aggregate2aggregate_H_Link_b)</title><path d="M1020.0 510.0 L1085.0 510.0 L1150.0 510.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Treated_Outflow"><title>Treated_Outflow (aggregate_to_collector_link)</title><path d="M1370.0 510.0 L1435.0 510.0 L1500.0 510.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Surface_Bypass"><title>Surface_Bypass (weir_capped)</title><path d="M320.0 181.1 Q985.9 6.0 1500.0 421.2"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(947.9 153.6) rotate(11.5) scale(1.6)"/></g>
+<g class="d-node" data-name="Inlet_Distribution"><title>Inlet_Distribution (Trapezoidal Channel Segment)</title><rect x="100" y="120" width="220" height="180" rx="14"/>
+<image href="icons/Trapezoidal_Channel.png" x="140" y="140" width="140" height="140"/>
+<text x="210" y="332" font-size="25" text-anchor="middle">Inlet_Distribution</text></g>
+<g class="d-node" data-name="Bed_1"><title>Bed_1 (Aggregate_storage_layer_confined)</title><rect x="450" y="420" width="220" height="180" rx="14"/>
+<image href="icons/aggregates.png" x="490" y="440" width="140" height="140"/>
+<text x="560" y="632" font-size="25" text-anchor="middle">Bed_1</text></g>
+<g class="d-node" data-name="Bed_2"><title>Bed_2 (Aggregate_storage_layer_confined)</title><rect x="800" y="420" width="220" height="180" rx="14"/>
+<image href="icons/aggregates.png" x="840" y="440" width="140" height="140"/>
+<text x="910" y="632" font-size="25" text-anchor="middle">Bed_2</text></g>
+<g class="d-node" data-name="Bed_3"><title>Bed_3 (Aggregate_storage_layer_confined)</title><rect x="1150" y="420" width="220" height="180" rx="14"/>
+<image href="icons/aggregates.png" x="1190" y="440" width="140" height="140"/>
+<text x="1260" y="632" font-size="25" text-anchor="middle">Bed_3</text></g>
+<g class="d-node" data-name="Receiving_Water"><title>Receiving_Water (Trapezoidal Channel Segment)</title><rect x="1500" y="420" width="220" height="180" rx="14"/>
+<image href="icons/Trapezoidal_Channel.png" x="1540" y="440" width="140" height="140"/>
+<text x="1610" y="632" font-size="25" text-anchor="middle">Receiving_Water</text></g>
+</svg>

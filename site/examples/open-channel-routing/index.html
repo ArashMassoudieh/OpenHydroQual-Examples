@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transient Open-Channel Routing · OpenHydroQual Examples</title>
+<meta name="description" content="A stage pulse travels through six trapezoidal channel cells, showing how storage and Manning resistance delay and attenuate a shallow-water disturbance.">
+<meta name="keywords" content="open channel, channel routing, transient flow, stage hydrograph, flood wave, manning equation, trapezoidal channel, kinematic wave, diffusive wave, attenuation, translation, travel time, hydraulic routing, boundary condition">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#6a55c2">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Hydraulic Structures</div>
+<h1>Transient Open-Channel Routing</h1>
+<p class="lede">A stage pulse travels through six trapezoidal channel cells, showing how storage and Manning resistance delay and attenuate a shallow-water disturbance.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=open_channel'>open_channel</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/open-channel-routing.zip" download>Download model (.zip)</a>
+    <div class="muted">4 KB · 2 files · open <code>open_channel_routing.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A 12 km trapezoidal channel is divided into six equal storage cells. The bed falls 2 m through every 2 km cell, a slope of 0.001. The boundary elevations are extrapolated half a cell beyond the first and last cell centres. Initial depths are the rounded steady-flow values, about 0.77 m through Reach_05 and 0.81 m in Reach_06. After a two-day warm-up, the upstream water level rises by 0.1 m and returns to its starting value over two days.</p>
+<p>This compact model isolates hydraulic routing. It shows how a change in stage creates a flow pulse, how the pulse fills each channel cell, and how resistance and storage change its timing and magnitude as it moves downstream.</p>
+<h2>How it works</h2>
+<p>Each channel block stores a water volume S in a trapezoidal cross-section. For length L, bottom width b, side slope z and water depth d,</p>
+<p>S = L · (b + z·d) · d</p>
+<p>which the block inverts to calculate depth. Water-surface elevation is the bed elevation plus depth.</p>
+<p>Every connection uses the current <code>open_channel.json</code> Manning expression. For positive downstream head difference,</p>
+<p>Q = 86400 · (1/n) · A · R^(2/3) · sqrt((h_s − h_e)/L_link)</p>
+<p>where Q is in m³/day, n is the average Manning roughness, A is the upstream flow cross-sectional area, R is its hydraulic radius, h_s and h_e are the source and destination water-surface elevations, and L_link is the average length of the connected cells. The factor 86400 converts m³/s to m³/day.</p>
+<p>The upstream boundary supplies a prescribed stage. The downstream boundary is fixed at -10.8 m, equal to 0.2 m depth above the bed line extrapolated 1 km beyond the final cell centre. Positive flow is always downstream: boundary to Reach_01, through the numbered reaches, and from Reach_06 to the downstream boundary.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li>Reach_01 peaks at day 3.008, Reach_03 at day 3.028 and Reach_06 at day 3.048. The approximately one-hour lag from the first to the last reach is the translation time of the stage disturbance through the 12 km channel.</li>
+<li>The rise above the day-2 depth decreases from about 0.079 m in Reach_01 to 0.071 m in Reach_06 as channel storage attenuates the disturbance.</li>
+<li>Base flow is about 404,000 m³/day (4.68 m³/s). The pulse peaks at 492,000 m³/day (5.69 m³/s) at the upstream boundary and 489,000 m³/day (5.66 m³/s) at the downstream boundary.</li>
+<li>The upstream flow changes more sharply than the middle and downstream flows. The difference between inflow and outflow is the rate of change of water stored in the six reaches.</li>
+<li>After the boundary returns to its original stage, the reaches continue draining until the original gradually varied profile is restored.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>Each 2 km reach is a single, level storage cell whose representative bed elevation is assigned at its centre. Finer spatial resolution is needed for rapidly varied flow.</li>
+<li>The link uses a one-direction Manning formulation based on the water-surface gradient. Backwater can reduce the gradient, but the standard trapezoidal link is not a full Saint-Venant momentum solver.</li>
+<li>Roughness and geometry are uniform. There are no lateral inflows, losses, structures, sediment processes or floodplain storage.</li>
+<li>The upstream stage pulse is synthetic and the downstream water level is fixed.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 90 2420 366" class="ohq-diagram" style="max-width:1210px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Upstream_Inflow"><title>Upstream_Inflow (Fixedhead_to_channel)</title><path d="M200.0 250.0 L250.0 250.0 L300.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_01_02"><title>Flow_01_02 (Trapezoidal_Channel_link)</title><path d="M500.0 250.0 L550.0 250.0 L600.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_02_03"><title>Flow_02_03 (Trapezoidal_Channel_link)</title><path d="M800.0 250.0 L850.0 250.0 L900.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_03_04"><title>Flow_03_04 (Trapezoidal_Channel_link)</title><path d="M1100.0 250.0 L1150.0 250.0 L1200.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_04_05"><title>Flow_04_05 (Trapezoidal_Channel_link)</title><path d="M1400.0 250.0 L1450.0 250.0 L1500.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_05_06"><title>Flow_05_06 (Trapezoidal_Channel_link)</title><path d="M1700.0 250.0 L1750.0 250.0 L1800.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Downstream_Outflow"><title>Downstream_Outflow (channel2fixed)</title><path d="M2000.0 250.0 L2050.0 250.0 L2100.0 250.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Upstream_Boundary"><title>Upstream_Boundary (time_variable_fixed_head)</title><rect x="0" y="150" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead_timeseries.png" x="22" y="172" width="156" height="156"/>
+<text x="100" y="395" font-size="35" text-anchor="middle">Upstream_Boundary</text></g>
+<g class="d-node" data-name="Reach_01"><title>Reach_01 (Trapezoidal Channel Segment)</title><rect x="300" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="322" y="172" width="156" height="156"/>
+<text x="400" y="395" font-size="35" text-anchor="middle">Reach_01</text></g>
+<g class="d-node" data-name="Reach_02"><title>Reach_02 (Trapezoidal Channel Segment)</title><rect x="600" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="622" y="172" width="156" height="156"/>
+<text x="700" y="395" font-size="35" text-anchor="middle">Reach_02</text></g>
+<g class="d-node" data-name="Reach_03"><title>Reach_03 (Trapezoidal Channel Segment)</title><rect x="900" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="922" y="172" width="156" height="156"/>
+<text x="1000" y="395" font-size="35" text-anchor="middle">Reach_03</text></g>
+<g class="d-node" data-name="Reach_04"><title>Reach_04 (Trapezoidal Channel Segment)</title><rect x="1200" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1222" y="172" width="156" height="156"/>
+<text x="1300" y="395" font-size="35" text-anchor="middle">Reach_04</text></g>
+<g class="d-node" data-name="Reach_05"><title>Reach_05 (Trapezoidal Channel Segment)</title><rect x="1500" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1522" y="172" width="156" height="156"/>
+<text x="1600" y="395" font-size="35" text-anchor="middle">Reach_05</text></g>
+<g class="d-node" data-name="Reach_06"><title>Reach_06 (Trapezoidal Channel Segment)</title><rect x="1800" y="150" width="200" height="200" rx="16"/>
+<image href="icons/Trapezoidal_Channel.png" x="1822" y="172" width="156" height="156"/>
+<text x="1900" y="395" font-size="35" text-anchor="middle">Reach_06</text></g>
+<g class="d-node" data-name="Downstream_Boundary"><title>Downstream_Boundary (fixed_head)</title><rect x="2100" y="150" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="2122" y="172" width="156" height="156"/>
+<text x="2200" y="395" font-size="35" text-anchor="middle">Downstream_Boundary</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>8</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Upstream-Boundary'><summary><span class='cname'>Upstream_Boundary</span><span class='ctype'>time_variable_fixed_head</span><span class='crole'><p>A prescribed water-surface elevation from <code>upstream_stage.csv</code>, rising from 1.20 m to 1.30 m and returning to 1.20 m. The boundary lies half a cell upstream of Reach_01, where the extrapolated bed is at 1.0 m.</p></span></summary><div class='cbody'><p class=type-help><b>time_variable_fixed_head:</b> Time-variable fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head (m)</td><td class='v'>upstream_stage.csv</td><td></td><td></td></tr><tr><td>Initial Storage</td><td class='v'>1000000000</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Reach-01'><summary><span class='cname'>6 × Trapezoidal Channel Segment</span><span class='ctype'>Trapezoidal Channel Segment · open_channel</span><span class='crole'><p>Six 2 km reaches with a 2 m bottom width, 2H:1V side slopes, Manning n = 0.011 and a bed slope of 0.001.</p></span></summary><div class='cbody'><p class='members'>Reach_01, Reach_02, Reach_03, Reach_04, Reach_05, Reach_06</p><p class='muted'>Showing properties of <b>Reach_01</b>.</p><p class=type-help><b>Trapezoidal Channel Segment:</b> Trapezoidal Channel Segment</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Base Width</td><td class='v'>2</td><td>m</td><td>The width of the bottom (flat) portion of the trapezoidal channel cross-section.</td></tr><tr><td>Side Slope</td><td class='v'>2</td><td></td><td>The horizontal to vertical ratio of the sloped sides (e.g., 2 means 2 horizontal to 1 vertical).</td></tr><tr><td>Manning&#x27;s Roughness Coefficient</td><td class='v'>0.011</td><td></td><td>Roughness coefficient used in Manning&#x27;s equation to estimate flow resistance.</td></tr><tr><td>Bottom Elevation</td><td class='v'>0</td><td>m</td><td>Elevation of the channel bottom relative to the model’s vertical datum.</td></tr><tr><td>Segment length</td><td class='v'>2000</td><td>m</td><td></td></tr><tr><td>Initial Water Depth</td><td class='v'>0.7675</td><td>m</td><td>Depth of water in the channel segment. If depth is initially unknown, it is estimated based on storage.</td></tr><tr><td>Inflow multiplier</td><td class='v'>1</td><td></td><td>Scales the inflow time series (for example an uncertain lateral inflow estimate). 1 uses the series as given.</td></tr><tr><td>Obstacle height</td><td class='v'>0</td><td>m</td><td>The water depth below which the flow ceases</td></tr><tr><td>Area of agriculural land</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Area of non-agriculural activity</td><td class='v'>0</td><td>m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Downstream-Boundary'><summary><span class='cname'>Downstream_Boundary</span><span class='ctype'>fixed_head</span><span class='crole'><p>A fixed water-surface elevation of -10.8 m, corresponding to 0.2 m depth over the bed extrapolated half a cell beyond Reach_06.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Head</td><td class='v'>-10.8</td><td>m</td><td></td></tr><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>7</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Upstream-Inflow'><summary><span class='cname'>Upstream_Inflow</span><span class='ctype'>Fixedhead_to_channel · open_channel</span><span class='crole'><p>Manning flow from the prescribed upstream stage into Reach_01. Positive flow enters the modeled channel.</p></span></summary><div class='cbody'><p class=type-help><b>Fixedhead_to_channel:</b> Link from a fixed head boundary to a channel segment</p></div></details>
+<details class='comp' id='c-Flow-01-02'><summary><span class='cname'>Flow_01_02</span><span class='ctype'>Trapezoidal_Channel_link · open_channel</span><span class='crole'><p>Five internal Manning links, positive downstream from the lower-numbered reach to the higher-numbered reach.</p></span></summary><div class='cbody'><p class=type-help><b>Trapezoidal_Channel_link:</b> Link from a channel segment to another</p></div></details>
+<details class='comp' id='c-Flow-02-03'><summary><span class='cname'>Flow_02_03</span><span class='ctype'>Trapezoidal_Channel_link · open_channel</span><span class='crole'><p>Five internal Manning links, positive downstream from the lower-numbered reach to the higher-numbered reach.</p></span></summary><div class='cbody'><p class=type-help><b>Trapezoidal_Channel_link:</b> Link from a channel segment to another</p></div></details>
+<details class='comp' id='c-Flow-03-04'><summary><span class='cname'>Flow_03_04</span><span class='ctype'>Trapezoidal_Channel_link · open_channel</span><span class='crole'><p>Five internal Manning links, positive downstream from the lower-numbered reach to the higher-numbered reach.</p></span></summary><div class='cbody'><p class=type-help><b>Trapezoidal_Channel_link:</b> Link from a channel segment to another</p></div></details>
+<details class='comp' id='c-Flow-04-05'><summary><span class='cname'>Flow_04_05</span><span class='ctype'>Trapezoidal_Channel_link · open_channel</span><span class='crole'><p>Five internal Manning links, positive downstream from the lower-numbered reach to the higher-numbered reach.</p></span></summary><div class='cbody'><p class=type-help><b>Trapezoidal_Channel_link:</b> Link from a channel segment to another</p></div></details>
+<details class='comp' id='c-Flow-05-06'><summary><span class='cname'>Flow_05_06</span><span class='ctype'>Trapezoidal_Channel_link · open_channel</span><span class='crole'><p>Five internal Manning links, positive downstream from the lower-numbered reach to the higher-numbered reach.</p></span></summary><div class='cbody'><p class=type-help><b>Trapezoidal_Channel_link:</b> Link from a channel segment to another</p></div></details>
+<details class='comp' id='c-Downstream-Outflow'><summary><span class='cname'>Downstream_Outflow</span><span class='ctype'>channel2fixed · open_channel</span><span class='crole'><p>Manning flow from Reach_06 to the fixed downstream stage, positive out of the modeled channel.</p></span></summary><div class='cbody'><p class=type-help><b>channel2fixed:</b> Link from a channel segment to fixed head boundary</p></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>upstream_stage.csv</code></td><td><p>Prescribed upstream water-surface elevation (m) versus time (day). After a two-day warm-up, a triangular 0.10 m stage pulse rises to its peak on day 3 and ends on day 4.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>6</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>1</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Water depth through the channel' loading='lazy'><figcaption><b>Water depth through the channel</b> The stage pulse arrives progressively later and with less amplitude as it moves downstream.</figcaption></figure><figure><img src='plot_2.png' alt='Flow through the channel' loading='lazy'><figcaption><b>Flow through the channel</b> Channel storage delays and smooths the pulse between the upstream and downstream boundaries.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/open-channel-routing">View source on GitHub</a>.</div></footer>
+</body></html>
