@@ -271,6 +271,45 @@
    "thumb": "examples/plug-flow-reactor/thumb.svg"
   },
   {
+   "id": "thermal-discharge-pond",
+   "title": "Thermal Discharge to a Flow-Through Pond",
+   "track": "wq",
+   "level": 1,
+   "status": "ready",
+   "summary": "A power plant starts discharging 20 MW of waste heat into a well-mixed pond fed by a river. The Heat constituent carries the water temperature, and the surface heat exchange with the air sets how much the pond warms. The response is checked against its exact solution.",
+   "plugins": [
+    "mass_transfer"
+   ],
+   "features": [
+    "Heat constituent",
+    "Heat input",
+    "Surface heat exchange",
+    "Energy balance",
+    "Analytical verification"
+   ],
+   "keywords": [
+    "heat",
+    "temperature",
+    "water temperature",
+    "thermal pollution",
+    "thermal discharge",
+    "waste heat",
+    "power plant",
+    "cooling water",
+    "cooling pond",
+    "energy balance",
+    "heat budget",
+    "heat capacity",
+    "surface heat exchange",
+    "equilibrium temperature",
+    "cstr",
+    "steady state",
+    "analytical solution",
+    "verification"
+   ],
+   "thumb": "examples/thermal-discharge-pond/thumb.svg"
+  },
+  {
    "id": "batch-sorption",
    "title": "Batch Sorption and Desorption, Two Sorbents",
    "track": "wq",

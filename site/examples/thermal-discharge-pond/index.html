@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thermal Discharge to a Flow-Through Pond · OpenHydroQual Examples</title>
+<meta name="description" content="A power plant starts discharging 20 MW of waste heat into a well-mixed pond fed by a river. The Heat constituent carries the water temperature, and the surface heat exchange with the air sets how much the pond warms. The response is checked against its exact solution.">
+<meta name="keywords" content="heat, temperature, water temperature, thermal pollution, thermal discharge, waste heat, power plant, cooling water, cooling pond, energy balance, heat budget, heat capacity, surface heat exchange, equilibrium temperature, cstr, steady state, analytical solution, verification">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#1f9e89">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Reactions &amp; Water Quality</div>
+<h1>Thermal Discharge to a Flow-Through Pond</h1>
+<p class="lede">A power plant starts discharging 20 MW of waste heat into a well-mixed pond fed by a river. The Heat constituent carries the water temperature, and the surface heat exchange with the air sets how much the pond warms. The response is checked against its exact solution.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class=''></b><b class=''></b><span>Beginner</span></span><a class='plug' href='../../?plugin=mass_transfer'>mass_transfer</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/thermal-discharge-pond.zip" download>Download model (.zip)</a>
+    <div class="muted">6 KB · 3 files · open <code>thermal_discharge_pond.ohq</code> in OpenHydroQual and press Run</div>
+    
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A power plant or industrial facility discharges its waste heat into a pond that a river flows through. The question is how much warmer the pond, and the water leaving it, becomes. That depends on three things: how much heat is added, how fast the flow carries heat away, and how much heat the pond exchanges with the air through its surface.</p>
+<p>The pond is treated as completely mixed. Its temperature is carried by a <strong>Heat (temperature)</strong> constituent, which keeps an energy balance in place of a mass balance. The example runs 10 days without the plant, to show the natural temperature of the pond, then switches on a 20 MW discharge. With a constant air temperature the problem has an exact solution, so the example also verifies the heat transport, the heat input and the surface heat exchange in OpenHydroQual.</p>
+<h2>How it works</h2>
+<p><strong>Water.</strong> The Pond is a <code>Reactor</code> block with a constant inflow Q = 50,000 m³/day. The Outflow link removes the same flow, so the volume stays at V = 200,000 m³ and the hydraulic residence time is V/Q = 4 days.</p>
+<p><strong>Heat content and temperature.</strong> For the Heat constituent, the state of each block is its heat content E = ρ·c_p·V·T (MJ), and the temperature it reports is</p>
+<p>T = E / (ρ·c_p·V)</p>
+<p>with ρ·c_p = 4.186 MJ/m³/°C (the constituent property <code>volumetric_heat_capacity</code>). Because ρ·c_p is constant, heat moves exactly like the mass of a dissolved substance, with ρ·c_p·T in the place of the concentration.</p>
+<p><strong>Heat flows into and out of the pond</strong> (MJ/day):</p>
+<ul>
+<li>carried in by the river: ρ·c_p·T_in·Q, with T_in = 15 °C (<code>inflow_loading</code>)</li>
+<li>added by the plant: 86.4·H, with H in kW from <code>plant_heat.csv</code> (<code>heat_input</code>; 1 kW = 86.4 MJ/day)</li>
+<li>exchanged with the air: 0.0864·K·A·(T_air − T), with K in W/m²/°C (<code>Air_exchange</code>, reported as <code>external_source</code>; positive when the pond gains heat)</li>
+<li>carried out by the outflow: ρ·c_p·Q·T (<code>Outflow</code> link, advective heat transfer of the upstream block)</li>
+</ul>
+<p>so the energy balance of the pond is</p>
+<p>ρ·c_p·V·dT/dt = ρ·c_p·Q·(T_in − T) + 86.4·H + 0.0864·K·A·(T_air − T)</p>
+<p><strong>Exact solution.</strong> Write a = ρ·c_p·Q = 209,300 MJ/day/°C (heat carried away by the flow per degree) and b = 0.0864·K·A = 259,200 MJ/day/°C (surface exchange per degree). For constant inputs the temperature relaxes exponentially toward</p>
+<p>T_eq = (a·T_in + 86.4·H + b·T_air) / (a + b)</p>
+<p>with the time constant</p>
+<p>τ = ρ·c_p·V / (a + b) = 1.787 days</p>
+<p>Without the plant, T_eq = 17.77 °C. With H = 20,000 kW, T_eq = 21.45 °C, a rise of 86.4·H / (a + b) = 3.69 °C. The file <code>exact_temperature.csv</code> tabulates the two exponential segments (starting from 15 °C at day 0 and from the computed day-10 temperature at day 10) every 0.2 days.</p>
+<p><strong>Time stepping.</strong> The run uses a fixed time step of 0.01 days (<code>max_timestep_increase_factor</code> = 1), small compared with τ.</p>
+<h2>What to look for in the results</h2>
+<ul>
+<li><strong>Agreement with theory.</strong> The computed temperature lies on the exact solution. The largest difference is about 0.004 °C, the time discretization error of the fully implicit (backward Euler) scheme, largest just after the heat is switched on.</li>
+<li><strong>The natural temperature.</strong> Without the plant the pond does not stay at the 15 °C of the river. It settles at 17.77 °C, a weighted average of the inflow and air temperatures with weights a and b. The pond gains about 580,000 MJ/day from the air in this state.</li>
+<li><strong>The surface matters.</strong> If the outflow were the only way out, the plant would warm the pond by 86.4·H / (ρ·c_p·Q) = 8.26 °C, the familiar ΔT = H/(ρ·c_p·Q) for a heated stream. The actual rise is 3.69 °C because the warmer pond also loses heat to the air: at the new steady state the surface exchange turns from a gain of 580,000 to a loss of about 377,000 MJ/day.</li>
+<li><strong>Faster response than the residence time.</strong> The temperature responds with τ = 1.79 days, faster than the 4-day residence time, because surface exchange and outflow remove a temperature disturbance together (time constant ρ·c_p·V/(a + b), compared with V/Q for a dissolved tracer).</li>
+<li><strong>Heat budget.</strong> At steady state the heat carried in by the river (3,139,500 MJ/day), plus the plant's 1,728,000 MJ/day, minus the 376,800 MJ/day lost to the air, equals the 4,490,300 MJ/day carried out by the outflow.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The pond is completely mixed and does not stratify. Deep ponds and lakes that receive warm water often form a warm surface layer, which loses heat to the air faster than this model predicts.</li>
+<li>Surface heat exchange is linearized: one coefficient K lumps radiation, evaporation and convection, and T_air acts as the equilibrium temperature the water relaxes toward. Both are held constant here. The source also accepts a time series of air temperature (<code>time_variable_air_temperature</code>) for daily or seasonal cycles.</li>
+<li>ρ·c_p is constant, and the plant's discharge is represented as heat added directly to the pond water, without a separate cooling-water stream.</li>
+<li>Flow, volume and inflow temperature are constant.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 340 920 366" class="ohq-diagram" style="max-width:460px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Outflow"><title>Outflow (Fixed flow)</title><path d="M200.0 500.0 L400.0 500.0 L600.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Pond"><title>Pond (Reactor)</title><rect x="0" y="400" width="200" height="200" rx="16"/>
+<image href="icons/reactor.png" x="22" y="422" width="156" height="156"/>
+<text x="100" y="618" font-size="14" text-anchor="middle">Pond</text></g>
+<g class="d-node" data-name="Downstream"><title>Downstream (fixed_head)</title><rect x="600" y="400" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="622" y="422" width="156" height="156"/>
+<text x="700" y="618" font-size="14" text-anchor="middle">Downstream</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>2</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Pond'><summary><span class='cname'>Pond</span><span class='ctype'>Reactor · mass_transfer</span><span class='crole'><p>A well-mixed pond of 200,000 m³ with a 100,000 m² water surface (2 m deep). It receives 50,000 m³/day of river water at 15 °C, starts at 15 °C, and from day 10 receives the plant's waste heat through its time-variable heat input.</p></span></summary><div class='cbody'><p class=type-help><b>Reactor:</b> Reactor</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>200000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Constant Inflow</td><td class='v'>50000</td><td>m<sup>3</sup>/day</td><td></td></tr><tr><td>Bottom elevation</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Temperature: Temperature</td><td class='v'>15</td><td>degreeC</td><td>Water temperature, heat content/(rho*c_p*Storage). The value entered is the initial temperature of the block.</td></tr><tr><td>Temperature: Inflow temperature</td><td class='v'>15</td><td>degreeC</td><td>Temperature of the block&#x27;s external inflow (constant inflow plus time-variable inflow).</td></tr><tr><td>Temperature: Time-variable heat input</td><td class='v'>plant_heat.csv</td><td>kW</td><td>Time series of heat input in kW, added to the constant heat input.</td></tr><tr><td>Temperature: External source</td><td class='v'>Air_exchange</td><td>MJ/day</td><td>A source whose rate is in MJ/day, e.g. a Surface heat exchange source.</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Downstream'><summary><span class='cname'>Downstream</span><span class='ctype'>fixed_head</span><span class='crole'><p>The receiving river below the pond, a fixed-head boundary at 0 m that accepts the outflow. Its temperature is not part of the analysis.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>100000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Head</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Temperature: Temperature</td><td class='v'>15</td><td>degreeC</td><td>Water temperature, heat content/(rho*c_p*Storage). The value entered is the initial temperature of the block.</td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>1</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Outflow'><summary><span class='cname'>Outflow</span><span class='ctype'>Fixed flow · mass_transfer</span><span class='crole'><p>Fixed flow of 50,000 m³/day from Pond to Downstream, equal to the inflow, so the pond volume stays at 200,000 m³. It carries heat out at ρ·c_p·Q·T.</p></span></summary><div class='cbody'><p class=type-help><b>Fixed flow:</b> Fixed flow</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Flow rate</td><td class='v'>50000</td><td>m<sup>3</sup>/day</td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Sources <small>1</small></h3><p class='kind-blurb'>External inputs or sinks applied to blocks: rainfall, evaporation, loads, exchange with the atmosphere.</p><div class='comp-list'>
+<details class='comp' id='c-Air-exchange'><summary><span class='cname'>Air_exchange</span><span class='ctype'>surface_heat_exchange · mass_transfer</span><span class='crole'><p>Surface heat exchange source attached to the Pond. Heat moves between the water and the air at K·A·(T_air − T), with K = 30 W/m²/°C, A = 100,000 m² and T_air = 20 °C.</p></span></summary><div class='cbody'><p class=type-help><b>surface_heat_exchange:</b> Heat exchange between the water and the air through the water surface, linearized: K*A*(T_air - T). Attach it as the External source of a Heat (temperature) constituent in a block. Positive when the air is warmer than the water. 1 W = 0.0864 MJ/day.</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Water surface area</td><td class='v'>100000</td><td>m<sup>2</sup></td><td>Area of the water surface exposed to the air.</td></tr><tr><td>Surface heat exchange coefficient K</td><td class='v'>30</td><td>W/m<sup>2</sup>/degreeC</td><td>Linear heat exchange coefficient lumping radiation, evaporation and convection; typically 10-50 W/m^2/degC for lakes and rivers.</td></tr><tr><td>Air (equilibrium) temperature</td><td class='v'>20</td><td>degreeC</td><td>Air or equilibrium temperature the water relaxes toward. Added to the time-variable air temperature, so leave one of them 0.</td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>1</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-Temperature'><summary><span class='cname'>Temperature</span><span class='ctype'>Heat · mass_transfer</span><span class='crole'><p>A Heat (temperature) constituent. Each block stores its heat content ρ·c_p·V·T (MJ) and reports the temperature T (°C). The volumetric heat capacity ρ·c_p is 4.186 MJ/m³/°C, the value for water.</p></span></summary><div class='cbody'><p class=type-help><b>Heat:</b> Carries water temperature. The balanced quantity is the heat content rho*c_p*Storage*T (MJ) and the displayed concentration is the temperature T (degrees C); rho*c_p is held constant (volumetric_heat_capacity). Heat moves with flow like a dissolved constituent: advection rho*c_p*Q*T, plus optional conduction/dispersion. Inputs in a block: initial temperature, inflow temperature, and a heat input in kW (heater, waste heat; negative for cooling). For exchange with the air attach a Surface heat exchange source. Works in any block with Storage and inflow (Reactor) and any link with flow (Fixed flow).</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Volumetric heat capacity (rho*c_p)</td><td class='v'>4.186</td><td>MJ/m<sup>3</sup>/degreeC</td><td>Density times specific heat of the water, held constant. 4.186 MJ/m^3/degC for water (1000 kg/m^3 x 4186 J/kg/degC). Converts temperature to heat content: heat content = rho*c_p*Storage*T.</td></tr><tr><td>Thermal diffusivity</td><td class='v'>0</td><td>m<sup>2</sup>/day</td><td>Thermal (or turbulent) diffusivity used for conduction through links that have an area and length. Molecular value for water is about 0.0123 m^2/day (1.43e-7 m^2/s). 0 (the default) turns conduction off; Fixed flow links have a negligible area, so there it has no effect.</td></tr><tr><td>Dispersivity</td><td class='v'>0</td><td>m</td><td></td></tr><tr><td>Stoichiometric Constant (heat of reaction)</td><td class='v'>0</td><td></td><td>Heat released per unit of reaction, in MJ per unit of the reaction rate&#x27;s mass (e.g. MJ/g). Leave 0 (the usual case): the temperature is then not changed by reactions.</td></tr><tr><td>Temperature</td><td class='v'>0</td><td>degreeC</td><td>Water temperature, heat content/(rho*c_p*Storage). The value entered is the initial temperature of the block.</td></tr><tr><td>Inflow temperature</td><td class='v'>0</td><td>degreeC</td><td>Temperature of the block&#x27;s external inflow (constant inflow plus time-variable inflow).</td></tr><tr><td>Heat input (power)</td><td class='v'>0</td><td>kW</td><td>Heat added directly to the water in kW: a heater, or a power plant&#x27;s waste heat. Negative values remove heat (a chiller). 1 kW = 86.4 MJ/day. At steady state in a well-mixed tank it raises the outflow temperature by H/(rho*c_p*Q).</td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>plant_heat.csv</code></td><td><p>Waste heat discharged by the power plant into the pond. Column 1: time (day); column 2: heat input (kW). 0 kW until day 10, then 20,000 kW (20 MW).</p></td></tr><tr><td><code>exact_temperature.csv</code></td><td></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>25</td></tr><tr><td>Initial time step</td><td class='v'>0.01</td></tr><tr><td>Write interval (steps)</td><td class='v'>10</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Pond temperature' loading='lazy'><figcaption><b>Pond temperature</b> Before the plant starts the pond settles at 17.77 °C, between the inflow and air temperatures. The 20 MW discharge from day 10 raises it by 3.69 °C to 21.45 °C, with a time constant of 1.79 days.</figcaption></figure><figure><img src='plot_2.png' alt='Pond heat budget' loading='lazy'><figcaption><b>Pond heat budget</b> At first the pond gains heat from the warmer air. Once the plant runs, the pond is warmer than the air and loses heat through its surface, which removes more than a fifth of the plant&#x27;s heat.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/thermal-discharge-pond">View source on GitHub</a>.</div></footer>
+</body></html>
