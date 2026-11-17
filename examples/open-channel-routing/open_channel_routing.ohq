@@ -1,0 +1,24 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = open_channel.json
+create block;type=time_variable_fixed_head,name=Upstream_Boundary,head=upstream_stage.csv,Storage=1000000000[m~^3],x=0,y=150,_width=200,_height=200
+create block;type=Trapezoidal Channel Segment,name=Reach_01,base_width=2[m],side_slope=2,ManningCoeff=0.011,bottom_elevation=0[m],length=2000[m],depth=0.7675[m],inflow=,inflow_multiplier=1,dam_height=0[m],ag_area=0[m~^2],non_ag_area=0[m~^2],x=300,y=150,_width=200,_height=200
+create block;type=Trapezoidal Channel Segment,name=Reach_02,base_width=2[m],side_slope=2,ManningCoeff=0.011,bottom_elevation=-2[m],length=2000[m],depth=0.7674[m],inflow=,inflow_multiplier=1,dam_height=0[m],ag_area=0[m~^2],non_ag_area=0[m~^2],x=600,y=150,_width=200,_height=200
+create block;type=Trapezoidal Channel Segment,name=Reach_03,base_width=2[m],side_slope=2,ManningCoeff=0.011,bottom_elevation=-4[m],length=2000[m],depth=0.7676[m],inflow=,inflow_multiplier=1,dam_height=0[m],ag_area=0[m~^2],non_ag_area=0[m~^2],x=900,y=150,_width=200,_height=200
+create block;type=Trapezoidal Channel Segment,name=Reach_04,base_width=2[m],side_slope=2,ManningCoeff=0.011,bottom_elevation=-6[m],length=2000[m],depth=0.7687[m],inflow=,inflow_multiplier=1,dam_height=0[m],ag_area=0[m~^2],non_ag_area=0[m~^2],x=1200,y=150,_width=200,_height=200
+create block;type=Trapezoidal Channel Segment,name=Reach_05,base_width=2[m],side_slope=2,ManningCoeff=0.011,bottom_elevation=-8[m],length=2000[m],depth=0.7755[m],inflow=,inflow_multiplier=1,dam_height=0[m],ag_area=0[m~^2],non_ag_area=0[m~^2],x=1500,y=150,_width=200,_height=200
+create block;type=Trapezoidal Channel Segment,name=Reach_06,base_width=2[m],side_slope=2,ManningCoeff=0.011,bottom_elevation=-10[m],length=2000[m],depth=0.8143[m],inflow=,inflow_multiplier=1,dam_height=0[m],ag_area=0[m~^2],non_ag_area=0[m~^2],x=1800,y=150,_width=200,_height=200
+create block;type=fixed_head,name=Downstream_Boundary,head=-10.8[m],Storage=100000[m~^3],x=2100,y=150,_width=200,_height=200
+create link;from=Upstream_Boundary,to=Reach_01,type=Fixedhead_to_channel,name=Upstream_Inflow
+create link;from=Reach_01,to=Reach_02,type=Trapezoidal_Channel_link,name=Flow_01_02
+create link;from=Reach_02,to=Reach_03,type=Trapezoidal_Channel_link,name=Flow_02_03
+create link;from=Reach_03,to=Reach_04,type=Trapezoidal_Channel_link,name=Flow_03_04
+create link;from=Reach_04,to=Reach_05,type=Trapezoidal_Channel_link,name=Flow_04_05
+create link;from=Reach_05,to=Reach_06,type=Trapezoidal_Channel_link,name=Flow_05_06
+create link;from=Reach_06,to=Downstream_Boundary,type=channel2fixed,name=Downstream_Outflow
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=6
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=max_timestep_increase_factor, value=20
+setvalue; object=system, quantity=write_interval, value=1

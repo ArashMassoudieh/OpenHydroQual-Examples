@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-160 60 1950 1306" class="ohq-diagram" style="max-width:975px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Flow_1_1_1_2"><title>Flow_1_1_1_2 (groundwater_link)</title><path d="M400.0 210.0 L440.0 210.0 L480.0 210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_2_1_3"><title>Flow_1_2_1_3 (groundwater_link)</title><path d="M660.0 210.0 L700.0 210.0 L740.0 210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_3_1_4"><title>Flow_1_3_1_4 (groundwater_link)</title><path d="M920.0 210.0 L960.0 210.0 L1000.0 210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_4_1_5"><title>Flow_1_4_1_5 (groundwater_link)</title><path d="M1180.0 210.0 L1220.0 210.0 L1260.0 210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_1_2_2"><title>Flow_2_1_2_2 (groundwater_link)</title><path d="M400.0 450.0 L440.0 450.0 L480.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_2_2_3"><title>Flow_2_2_2_3 (groundwater_link)</title><path d="M660.0 450.0 L700.0 450.0 L740.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_3_2_4"><title>Flow_2_3_2_4 (groundwater_link)</title><path d="M920.0 450.0 L960.0 450.0 L1000.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_4_2_5"><title>Flow_2_4_2_5 (groundwater_link)</title><path d="M1180.0 450.0 L1220.0 450.0 L1260.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_1_3_2"><title>Flow_3_1_3_2 (groundwater_link)</title><path d="M400.0 690.0 L440.0 690.0 L480.0 690.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_2_3_3"><title>Flow_3_2_3_3 (groundwater_link)</title><path d="M660.0 690.0 L700.0 690.0 L740.0 690.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_3_3_4"><title>Flow_3_3_3_4 (groundwater_link)</title><path d="M875.0 600.0 Q960.0 430.0 1045.0 600.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(960.0 515.0) rotate(0.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Flow_3_4_3_5"><title>Flow_3_4_3_5 (groundwater_link)</title><path d="M1180.0 690.0 L1220.0 690.0 L1260.0 690.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_1_4_2"><title>Flow_4_1_4_2 (groundwater_link)</title><path d="M400.0 930.0 L440.0 930.0 L480.0 930.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_2_4_3"><title>Flow_4_2_4_3 (groundwater_link)</title><path d="M660.0 930.0 L700.0 930.0 L740.0 930.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_3_4_4"><title>Flow_4_3_4_4 (groundwater_link)</title><path d="M920.0 930.0 L960.0 930.0 L1000.0 930.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_4_4_5"><title>Flow_4_4_4_5 (groundwater_link)</title><path d="M1180.0 930.0 L1220.0 930.0 L1260.0 930.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_5_1_5_2"><title>Flow_5_1_5_2 (groundwater_link)</title><path d="M400.0 1170.0 L440.0 1170.0 L480.0 1170.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_5_2_5_3"><title>Flow_5_2_5_3 (groundwater_link)</title><path d="M660.0 1170.0 L700.0 1170.0 L740.0 1170.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_5_3_5_4"><title>Flow_5_3_5_4 (groundwater_link)</title><path d="M920.0 1170.0 L960.0 1170.0 L1000.0 1170.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_5_4_5_5"><title>Flow_5_4_5_5 (groundwater_link)</title><path d="M1180.0 1170.0 L1220.0 1170.0 L1260.0 1170.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_1_2_1"><title>Flow_1_1_2_1 (groundwater_link)</title><path d="M310.0 300.0 L310.0 330.0 L310.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_2_2_2"><title>Flow_1_2_2_2 (groundwater_link)</title><path d="M570.0 300.0 L570.0 330.0 L570.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_3_2_3"><title>Flow_1_3_2_3 (groundwater_link)</title><path d="M830.0 300.0 L830.0 330.0 L830.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_4_2_4"><title>Flow_1_4_2_4 (groundwater_link)</title><path d="M1090.0 300.0 L1090.0 330.0 L1090.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_5_2_5"><title>Flow_1_5_2_5 (groundwater_link)</title><path d="M1350.0 300.0 L1350.0 330.0 L1350.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_1_3_1"><title>Flow_2_1_3_1 (groundwater_link)</title><path d="M310.0 540.0 L310.0 570.0 L310.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_2_3_2"><title>Flow_2_2_3_2 (groundwater_link)</title><path d="M570.0 540.0 L570.0 570.0 L570.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_3_3_3"><title>Flow_2_3_3_3 (groundwater_link)</title><path d="M830.0 540.0 L830.0 570.0 L830.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_4_3_4"><title>Flow_2_4_3_4 (groundwater_link)</title><path d="M1090.0 540.0 L1090.0 570.0 L1090.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_5_3_5"><title>Flow_2_5_3_5 (groundwater_link)</title><path d="M1350.0 540.0 L1350.0 570.0 L1350.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_1_4_1"><title>Flow_3_1_4_1 (groundwater_link)</title><path d="M310.0 780.0 L310.0 810.0 L310.0 840.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_2_4_2"><title>Flow_3_2_4_2 (groundwater_link)</title><path d="M570.0 780.0 L570.0 810.0 L570.0 840.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_3_4_3"><title>Flow_3_3_4_3 (groundwater_link)</title><path d="M830.0 780.0 L830.0 810.0 L830.0 840.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_4_4_4"><title>Flow_3_4_4_4 (groundwater_link)</title><path d="M1000.0 731.5 Q830.0 810.0 1000.0 888.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(915.0 810.0) rotate(90.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Flow_3_5_4_5"><title>Flow_3_5_4_5 (groundwater_link)</title><path d="M1350.0 780.0 L1350.0 810.0 L1350.0 840.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_1_5_1"><title>Flow_4_1_5_1 (groundwater_link)</title><path d="M310.0 1020.0 L310.0 1050.0 L310.0 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_2_5_2"><title>Flow_4_2_5_2 (groundwater_link)</title><path d="M570.0 1020.0 L570.0 1050.0 L570.0 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_3_5_3"><title>Flow_4_3_5_3 (groundwater_link)</title><path d="M830.0 1020.0 L830.0 1050.0 L830.0 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_4_5_4"><title>Flow_4_4_5_4 (groundwater_link)</title><path d="M1090.0 1020.0 L1090.0 1050.0 L1090.0 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_5_5_5"><title>Flow_4_5_5_5 (groundwater_link)</title><path d="M1350.0 1020.0 L1350.0 1050.0 L1350.0 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="West_1"><title>West_1 (groundwater_link)</title><path d="M-57.1 300.0 Q-55.3 316.5 220.0 236.2"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(13.1 292.3) rotate(-13.0) scale(1.6)"/></g>
+<g class="d-link" data-name="East_1"><title>East_1 (groundwater_link)</title><path d="M1440.0 237.6 Q1703.2 318.2 1705.9 300.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1638.1 293.5) rotate(13.2) scale(1.6)"/></g>
+<g class="d-link" data-name="West_2"><title>West_2 (groundwater_link)</title><path d="M80.0 665.6 L150.0 600.0 L220.0 534.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="East_2"><title>East_2 (groundwater_link)</title><path d="M1437.0 540.0 L1493.5 598.4 L1550.0 656.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="West_3"><title>West_3 (groundwater_link)</title><path d="M80.0 733.1 L150.0 720.0 L220.0 706.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="East_3"><title>East_3 (groundwater_link)</title><path d="M1440.0 708.6 L1495.0 720.0 L1550.0 731.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="West_4"><title>West_4 (groundwater_link)</title><path d="M80.0 800.6 L150.0 840.0 L220.0 879.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="East_4"><title>East_4 (groundwater_link)</title><path d="M1440.0 874.1 L1495.0 840.0 L1550.0 805.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="West_5"><title>West_5 (groundwater_link)</title><path d="M80.0 868.1 L160.7 974.1 L241.4 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="East_5"><title>East_5 (groundwater_link)</title><path d="M1412.1 1080.0 L1481.1 980.2 L1550.0 880.3" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Well_Capture"><title>Well_Capture (groundwater_link)</title><path d="M1045.0 780.0 L1075.0 720.0 L1105.0 660.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Cell_1_1"><title>Cell_1_1 (Groundwater cell)</title><rect x="220" y="120" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="240" y="140" width="140" height="140"/>
+<text x="310" y="338" font-size="29" text-anchor="middle">Cell_1_1</text></g>
+<g class="d-node" data-name="Cell_1_2"><title>Cell_1_2 (Groundwater cell)</title><rect x="480" y="120" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="500" y="140" width="140" height="140"/>
+<text x="570" y="338" font-size="29" text-anchor="middle">Cell_1_2</text></g>
+<g class="d-node" data-name="Cell_1_3"><title>Cell_1_3 (Groundwater cell)</title><rect x="740" y="120" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="760" y="140" width="140" height="140"/>
+<text x="830" y="338" font-size="29" text-anchor="middle">Cell_1_3</text></g>
+<g class="d-node" data-name="Cell_1_4"><title>Cell_1_4 (Groundwater cell)</title><rect x="1000" y="120" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1020" y="140" width="140" height="140"/>
+<text x="1090" y="338" font-size="29" text-anchor="middle">Cell_1_4</text></g>
+<g class="d-node" data-name="Cell_1_5"><title>Cell_1_5 (Groundwater cell)</title><rect x="1260" y="120" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1280" y="140" width="140" height="140"/>
+<text x="1350" y="338" font-size="29" text-anchor="middle">Cell_1_5</text></g>
+<g class="d-node" data-name="Cell_2_1"><title>Cell_2_1 (Groundwater cell)</title><rect x="220" y="360" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="240" y="380" width="140" height="140"/>
+<text x="310" y="578" font-size="29" text-anchor="middle">Cell_2_1</text></g>
+<g class="d-node" data-name="Cell_2_2"><title>Cell_2_2 (Groundwater cell)</title><rect x="480" y="360" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="500" y="380" width="140" height="140"/>
+<text x="570" y="578" font-size="29" text-anchor="middle">Cell_2_2</text></g>
+<g class="d-node" data-name="Cell_2_3"><title>Cell_2_3 (Groundwater cell)</title><rect x="740" y="360" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="760" y="380" width="140" height="140"/>
+<text x="830" y="578" font-size="29" text-anchor="middle">Cell_2_3</text></g>
+<g class="d-node" data-name="Cell_2_4"><title>Cell_2_4 (Groundwater cell)</title><rect x="1000" y="360" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1020" y="380" width="140" height="140"/>
+<text x="1090" y="578" font-size="29" text-anchor="middle">Cell_2_4</text></g>
+<g class="d-node" data-name="Cell_2_5"><title>Cell_2_5 (Groundwater cell)</title><rect x="1260" y="360" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1280" y="380" width="140" height="140"/>
+<text x="1350" y="578" font-size="29" text-anchor="middle">Cell_2_5</text></g>
+<g class="d-node" data-name="Cell_3_1"><title>Cell_3_1 (Groundwater cell)</title><rect x="220" y="600" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="240" y="620" width="140" height="140"/>
+<text x="310" y="818" font-size="29" text-anchor="middle">Cell_3_1</text></g>
+<g class="d-node" data-name="Cell_3_2"><title>Cell_3_2 (Groundwater cell)</title><rect x="480" y="600" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="500" y="620" width="140" height="140"/>
+<text x="570" y="818" font-size="29" text-anchor="middle">Cell_3_2</text></g>
+<g class="d-node" data-name="Cell_3_3"><title>Cell_3_3 (Groundwater cell)</title><rect x="740" y="600" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="760" y="620" width="140" height="140"/>
+<text x="830" y="818" font-size="29" text-anchor="middle">Cell_3_3</text></g>
+<g class="d-node" data-name="Cell_3_4"><title>Cell_3_4 (Groundwater cell)</title><rect x="1000" y="600" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1020" y="620" width="140" height="140"/>
+<text x="1090" y="818" font-size="29" text-anchor="middle">Cell_3_4</text></g>
+<g class="d-node" data-name="Cell_3_5"><title>Cell_3_5 (Groundwater cell)</title><rect x="1260" y="600" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1280" y="620" width="140" height="140"/>
+<text x="1350" y="818" font-size="29" text-anchor="middle">Cell_3_5</text></g>
+<g class="d-node" data-name="Cell_4_1"><title>Cell_4_1 (Groundwater cell)</title><rect x="220" y="840" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="240" y="860" width="140" height="140"/>
+<text x="310" y="1058" font-size="29" text-anchor="middle">Cell_4_1</text></g>
+<g class="d-node" data-name="Cell_4_2"><title>Cell_4_2 (Groundwater cell)</title><rect x="480" y="840" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="500" y="860" width="140" height="140"/>
+<text x="570" y="1058" font-size="29" text-anchor="middle">Cell_4_2</text></g>
+<g class="d-node" data-name="Cell_4_3"><title>Cell_4_3 (Groundwater cell)</title><rect x="740" y="840" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="760" y="860" width="140" height="140"/>
+<text x="830" y="1058" font-size="29" text-anchor="middle">Cell_4_3</text></g>
+<g class="d-node" data-name="Cell_4_4"><title>Cell_4_4 (Groundwater cell)</title><rect x="1000" y="840" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1020" y="860" width="140" height="140"/>
+<text x="1090" y="1058" font-size="29" text-anchor="middle">Cell_4_4</text></g>
+<g class="d-node" data-name="Cell_4_5"><title>Cell_4_5 (Groundwater cell)</title><rect x="1260" y="840" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1280" y="860" width="140" height="140"/>
+<text x="1350" y="1058" font-size="29" text-anchor="middle">Cell_4_5</text></g>
+<g class="d-node" data-name="Cell_5_1"><title>Cell_5_1 (Groundwater cell)</title><rect x="220" y="1080" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="240" y="1100" width="140" height="140"/>
+<text x="310" y="1298" font-size="29" text-anchor="middle">Cell_5_1</text></g>
+<g class="d-node" data-name="Cell_5_2"><title>Cell_5_2 (Groundwater cell)</title><rect x="480" y="1080" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="500" y="1100" width="140" height="140"/>
+<text x="570" y="1298" font-size="29" text-anchor="middle">Cell_5_2</text></g>
+<g class="d-node" data-name="Cell_5_3"><title>Cell_5_3 (Groundwater cell)</title><rect x="740" y="1080" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="760" y="1100" width="140" height="140"/>
+<text x="830" y="1298" font-size="29" text-anchor="middle">Cell_5_3</text></g>
+<g class="d-node" data-name="Cell_5_4"><title>Cell_5_4 (Groundwater cell)</title><rect x="1000" y="1080" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1020" y="1100" width="140" height="140"/>
+<text x="1090" y="1298" font-size="29" text-anchor="middle">Cell_5_4</text></g>
+<g class="d-node" data-name="Cell_5_5"><title>Cell_5_5 (Groundwater cell)</title><rect x="1260" y="1080" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1280" y="1100" width="140" height="140"/>
+<text x="1350" y="1298" font-size="29" text-anchor="middle">Cell_5_5</text></g>
+<g class="d-node" data-name="West_Boundary"><title>West_Boundary (Groundwater cell)</title><rect x="-100" y="300" width="180" height="900" rx="14"/>
+<image href="icons/Groundwater.png" x="-80" y="680" width="140" height="140"/>
+<text x="-10" y="1238" font-size="29" text-anchor="middle">West_Boundary</text></g>
+<g class="d-node" data-name="East_Boundary"><title>East_Boundary (Groundwater cell)</title><rect x="1550" y="300" width="180" height="900" rx="14"/>
+<image href="icons/Groundwater.png" x="1570" y="680" width="140" height="140"/>
+<text x="1640" y="1238" font-size="29" text-anchor="middle">East_Boundary</text></g>
+<g class="d-node" data-name="Extraction_Well"><title>Extraction_Well (Groundwater cell)</title><rect x="1000" y="660" width="140" height="140" rx="11"/>
+<image href="icons/Groundwater.png" x="1015" y="675" width="109" height="109"/>
+<text x="1070" y="838" font-size="29" text-anchor="middle">Extraction_Well</text></g>
+</svg>

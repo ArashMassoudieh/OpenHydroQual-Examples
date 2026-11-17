@@ -1,0 +1,33 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = Pond_Plugin.json
+create parameter;type=Parameter,name=drain_diameter,low=0.05,high=0.25,value=0.12,prior_distribution=normal
+create parameter;type=Parameter,name=weir_capacity,low=80000,high=300000,value=160000,prior_distribution=normal
+create block;type=Pond,name=Detention_Pond,Storage=0[m~^3],alpha=1500,beta=2,bottom_elevation=100[m],inflow=design_storm.csv,Precipitation=,Evapotranspiration=,_width=200,_height=200,x=250,y=300
+create block;type=fixed_head,name=Receiving_Channel,Storage=1000000[m~^3],head=98.5[m],area=1[m~^2],_width=180,_height=180,x=950,y=300
+create link;type=drain_pipe,name=Low_Flow_Drain,from=Detention_Pond,to=Receiving_Channel,crest_elevation=100[m],head_loss_coefficient=12,pipe_diameter=0.12[m]
+create link;type=wier,name=Overflow_Weir,from=Detention_Pond,to=Receiving_Channel,crest_elevation=101.2[m],alpha=160000,beta=1.5
+create objectivefunction;type=Objective_Function,name=Drain_Peak,object=Low_Flow_Drain,expression=flow/50000,method=maximum,weight=1,exceedance_probability=0
+create objectivefunction;type=Objective_Function,name=Weir_Peak,object=Overflow_Weir,expression=flow/50000,method=maximum,weight=1,exceedance_probability=0
+create objectivefunction;type=Objective_Function,name=Depth_Exceedance,object=Detention_Pond,expression=100*_pos(depth-1.8),method=integrate,weight=1,exceedance_probability=0
+create objectivefunction;type=Objective_Function,name=Drain_Cost,object=Low_Flow_Drain,expression=0.1*(pipe_diameter/0.25)^2,method=maximum,weight=1,exceedance_probability=0
+create objectivefunction;type=Objective_Function,name=Weir_Cost,object=Overflow_Weir,expression=0.05*(alpha/300000),method=maximum,weight=1,exceedance_probability=0
+setasparameter; object=Low_Flow_Drain, quantity=pipe_diameter, parametername=drain_diameter
+setasparameter; object=Overflow_Weir, quantity=alpha, parametername=weir_capacity
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=1.75
+setvalue; object=system, quantity=initial_time_step, value=0.001
+setvalue; object=system, quantity=max_timestep_increase_factor, value=5
+setvalue; object=system, quantity=minimum_timestep, value=1e-07
+setvalue; object=system, quantity=nr_tolerance, value=1e-06
+setvalue; object=system, quantity=write_interval, value=5
+setvalue; object=system, quantity=timestep_clamp_series, value=All time series
+setvalue; object=system, quantity=maxpop, value=20
+setvalue; object=system, quantity=ngen, value=15
+setvalue; object=system, quantity=numthreads, value=2
+setvalue; object=system, quantity=pcross, value=1
+setvalue; object=system, quantity=pmute, value=0.02
+setvalue; object=system, quantity=shakescale, value=0.05
+setvalue; object=system, quantity=shakescalered, value=0.75
+setvalue; object=system, quantity=outputfile, value=GA_output.txt
+setvalue; object=system, quantity=maximum_time_allowed, value=15

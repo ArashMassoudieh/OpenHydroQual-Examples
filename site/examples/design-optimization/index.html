@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stormwater Outlet Design Optimization · OpenHydroQual Examples</title>
+<meta name="description" content="A genetic algorithm sizes a detention pond low-flow drain and overflow weir to balance downstream peak flow, maximum pond depth and simple construction-cost proxies during a synthetic design storm.">
+<meta name="keywords" content="optimization, design optimization, genetic algorithm, GA, stormwater, detention pond, outlet design, drain pipe, weir, peak flow, pond depth, cost, engineering design, OHQ-GA">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#b8417e">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Calibration &amp; Uncertainty</div>
+<h1>Stormwater Outlet Design Optimization</h1>
+<p class="lede">A genetic algorithm sizes a detention pond low-flow drain and overflow weir to balance downstream peak flow, maximum pond depth and simple construction-cost proxies during a synthetic design storm.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class=''></b><span>Intermediate</span></span><a class='plug' href='../../?plugin=Pond_Plugin'>Pond_Plugin</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/design-optimization.zip" download>Download model (.zip)</a>
+    <div class="muted">5 KB · 2 files · open <code>design_optimization.ohq</code> in OpenHydroQual and press Run</div>
+
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>Stormwater design is not a parameter-estimation problem. The unknowns here are physical choices that an engineer can change: the diameter of a low-flow drain and the capacity of an overflow weir. A larger outlet lowers the pond level but can send a larger peak flow downstream and usually costs more. A smaller outlet controls discharge but needs more temporary storage. This example asks OpenHydroQual's genetic algorithm to find a useful compromise.</p>
+<p>The pond receives a synthetic 25,000 m³ design-storm hydrograph. Its initial design has a 0.12 m drain and a weir coefficient of 160,000 m^1.5/day. The two design variables are deliberately linked to real model properties with <code>setasparameter</code>; no observations or likelihood function are involved.</p>
+<h2>How it works</h2>
+<p>The pond storage is</p>
+<p>S = 1500 d²</p>
+<p>where S is volume in m³ and d is water depth in m. The low-flow drain follows the <code>drain_pipe</code> relation</p>
+<p>Q_d = 86400 · 3.47 · D² · [H − z_d]₊^0.5 / (K + 1)^0.5</p>
+<p>with diameter D, pond head H, drain elevation z_d = 100 m and head-loss coefficient K = 12. The overflow weir follows</p>
+<p>Q_w = a · [H − 101.2]₊^1.5</p>
+<p>where a is the second design variable. Both flows are in m³/day.</p>
+<p>The genetic algorithm minimizes the sum of five dimensionless terms:</p>
+<p>J = max(Q_d)/50000 + max(Q_w)/50000
+      + 100 ∫[d − 1.8]₊ dt
+      + 0.1(D/0.25)² + 0.05(a/300000)</p>
+<p>The first two terms add to the normalized maximum total outlet flow because both outlet ratings increase with pond depth and peak at the same time. The third makes 1.8 m a soft maximum-depth constraint. The last two are simple construction-cost proxies. Their coefficients only establish the tradeoff for this tutorial; they are not currency.</p>
+<p><code>drain_diameter</code> is searched from 0.05 to 0.25 m and <code>weir_capacity</code> from 80,000 to 300,000 m^1.5/day. The file uses 20 designs per generation, 15 generations and two worker threads. To run the optimization headlessly from this folder:</p>
+<pre><code>OHQ-GA design_optimization.ohq ./
+</code></pre>
+<p>The same operation is available as <strong>Inverse Run</strong> in the interface. OHQ-GA writes the population history to <code>GA_output.txt</code>, then runs the model once more with the best design and writes the usual model outputs.</p>
+<h2>What to look for in results</h2>
+<p>The ordinary forward run shows the starting design. Its pond depth peaks at 1.691 m on day 1.021. The low-flow drain peaks at 1,557 m³/day and the weir at 54,993 m³/day, giving a combined peak of 56,550 m³/day. The inflow peak is 60,000 m³/day.</p>
+<p>One verified 15-generation run with the current OHQ-GA executable found:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">Starting design</th>
+<th style="text-align: right;">GA design</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Drain diameter</td>
+<td style="text-align: right;">0.120 m</td>
+<td style="text-align: right;">0.0532 m</td>
+</tr>
+<tr>
+<td>Weir coefficient</td>
+<td style="text-align: right;">160,000</td>
+<td style="text-align: right;">118,646</td>
+</tr>
+<tr>
+<td>Maximum pond depth</td>
+<td style="text-align: right;">1.691 m</td>
+<td style="text-align: right;">1.800 m</td>
+</tr>
+<tr>
+<td>Maximum total outflow</td>
+<td style="text-align: right;">56,550 m³/day</td>
+<td style="text-align: right;">55,502 m³/day</td>
+</tr>
+<tr>
+<td>Objective value</td>
+<td style="text-align: right;">1.181</td>
+<td style="text-align: right;">1.135</td>
+</tr>
+</tbody>
+</table>
+<p>The optimized pond rises almost exactly to the 1.8 m limit. This is the expected signature of an efficient constrained design: unused depth would permit a smaller or cheaper outlet, while additional depth is strongly penalized. The GA selects a drain near its lower bound because peak discharge is dominated by the overflow weir during this short storm. The low-flow drain is retained to empty the pond after the event, but its drawdown benefit occurs mostly outside the 1.75-day design window.</p>
+<p>The GA is stochastic. A repeat run may return slightly different values, but it should place the maximum depth close to 1.8 m and substantially reduce the weir coefficient from its starting value.</p>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The inflow is a synthetic triangular hydrograph, not a rainfall-runoff calculation. Real design work should evaluate several storms and antecedent conditions.</li>
+<li>The objective weights and cost terms are dimensionless teaching values. Replace them with project-specific downstream criteria, risk penalties and life-cycle costs.</li>
+<li>The 1.8 m depth criterion is a soft penalty. A regulatory hard constraint should be checked explicitly after optimization and with a suitable freeboard allowance.</li>
+<li>The receiving channel is a fixed-head boundary, so tailwater does not affect either outlet rating in this model.</li>
+<li>The simulation ends at day 1.75 to cover the storm and its peak response. It does not test full drawdown time, consecutive events or long-term water balance.</li>
+<li>No emergency spillway or outlet blockage is represented. Those checks remain essential in a real detention design.</li>
+<li>Fifteen generations are enough for a short tutorial but not a convergence guarantee. Increase the population and generation count, repeat the run with multiple random seeds, and compare the best designs before making an engineering decision.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="190 240 1000 366" class="ohq-diagram" style="max-width:500px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Low_Flow_Drain"><title>Low_Flow_Drain (drain_pipe)</title><path d="M450.0 398.6 L700.0 394.9 L950.0 391.3" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Overflow_Weir"><title>Overflow_Weir (wier)</title><path d="M450.3 416.5 L700.3 412.9 L950.3 409.3" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Detention_Pond"><title>Detention_Pond (Pond)</title><rect x="250" y="300" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="272" y="322" width="156" height="156"/>
+<text x="350" y="519" font-size="14" text-anchor="middle">Detention_Pond</text></g>
+<g class="d-node" data-name="Receiving_Channel"><title>Receiving_Channel (fixed_head)</title><rect x="950" y="300" width="180" height="180" rx="14"/>
+<image href="icons/fixedhead.png" x="970" y="320" width="140" height="140"/>
+<text x="1040" y="499" font-size="14" text-anchor="middle">Receiving_Channel</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>2</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Detention-Pond'><summary><span class='cname'>Detention_Pond</span><span class='ctype'>Pond · Pond_Plugin</span><span class='crole'><p>Dry detention pond with floor elevation 100 m and stage-storage relation S = 1500·d². It receives the 25,000 m³ synthetic design-storm hydrograph from design_storm.csv.</p></span></summary><div class='cbody'><p class=type-help><b>Pond:</b> Stormwater pond</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>0</td><td>m<sup>3</sup></td><td>Initial volume of water stored in the pond at the beginning of the simulation.</td></tr><tr><td>The coefficient (α) in the rating curve S = α d^β</td><td class='v'>1500</td><td></td><td>The coefficient (α) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>The exponent (β) in the rating curve S = α d^β</td><td class='v'>2</td><td></td><td>The exponent (β) in the pond volume-depth relationship: Storage = alpha * depth^beta.</td></tr><tr><td>Bottom elevation of pond</td><td class='v'>100</td><td>m</td><td></td></tr><tr><td>Inflow rate time series</td><td class='v'>design_storm.csv</td><td>m^3/day</td><td>The time series containing the inflow rate into the pond</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Receiving-Channel'><summary><span class='cname'>Receiving_Channel</span><span class='ctype'>fixed_head</span><span class='crole'><p>Fixed-head receiving boundary at elevation 98.5 m. It collects both outlet flows without feeding stage changes back into the pond.</p></span></summary><div class='cbody'><p class=type-help><b>fixed_head:</b> Fixed-head boundary</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Initial Storage</td><td class='v'>1000000</td><td>m<sup>3</sup></td><td></td></tr><tr><td>Head</td><td class='v'>98.5</td><td>m</td><td></td></tr><tr><td>area</td><td class='v'>1</td><td>m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>2</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Low-Flow-Drain'><summary><span class='cname'>Low_Flow_Drain</span><span class='ctype'>drain_pipe · Pond_Plugin</span><span class='crole'><p>Circular drain from the pond floor. Its diameter is controlled by drain_diameter; a head-loss coefficient of 12 represents entrance, pipe and exit losses.</p></span></summary><div class='cbody'><p class=type-help><b>drain_pipe:</b> Drain pipe</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Crest Elevation</td><td class='v'>100</td><td>m</td><td></td></tr><tr><td>Head-loss coefficient</td><td class='v'>12</td><td></td><td></td></tr><tr><td>Pipe Diameter</td><td class='v'>0.12</td><td>m</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Overflow-Weir'><summary><span class='cname'>Overflow_Weir</span><span class='ctype'>wier · Pond_Plugin</span><span class='crole'><p>Overflow outlet with crest elevation 101.2 m and exponent 1.5. Its coefficient is controlled by weir_capacity.</p></span></summary><div class='cbody'><p class=type-help><b>wier:</b> Weir based on a power-law rating curve</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Crest Elevation</td><td class='v'>101.2</td><td>m</td><td></td></tr><tr><td>Coefficient alpha in Q=alpha*(h-z_0)^beta (SI-day units)</td><td class='v'>160000</td><td></td><td></td></tr><tr><td>Exponent beta in Q=alpha*(h-z_0)^beta</td><td class='v'>1.5</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Model parameters <small>2</small></h3><p class='kind-blurb'>Quantities flagged for estimation, with their search ranges or priors.</p><div class='comp-list'>
+<details class='comp' id='c-drain-diameter'><summary><span class='cname'>drain_diameter</span><span class='ctype'>Parameter</span><span class='crole'><p>Design variable for the low-flow drain diameter. The GA searches 0.05 to 0.25 m; its starting value in the file is 0.12 m.</p></span></summary><div class='cbody'><p class=type-help><b>Parameter:</b> Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Lower Limit</td><td class='v'>0.05</td><td></td><td></td></tr><tr><td>Upper Limit</td><td class='v'>0.25</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>0.12</td><td></td><td></td></tr><tr><td>Prior distribution</td><td class='v'>normal</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-weir-capacity'><summary><span class='cname'>weir_capacity</span><span class='ctype'>Parameter</span><span class='crole'><p>Design variable for the overflow-weir coefficient. The GA searches 80,000 to 300,000 m^1.5/day; its starting value in the file is 160,000 m^1.5/day.</p></span></summary><div class='cbody'><p class=type-help><b>Parameter:</b> Parameter</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Lower Limit</td><td class='v'>80000</td><td></td><td></td></tr><tr><td>Upper Limit</td><td class='v'>300000</td><td></td><td></td></tr><tr><td>Value</td><td class='v'>160000</td><td></td><td></td></tr><tr><td>Prior distribution</td><td class='v'>normal</td><td></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Objective functions <small>5</small></h3><p class='kind-blurb'>Quantities the optimizer minimizes.</p><div class='comp-list'>
+<details class='comp' id='c-Drain-Peak'><summary><span class='cname'>Drain_Peak</span><span class='ctype'>Objective_Function</span><span class='crole'><p>Normalized maximum drain flow, max(Q_drain)/50,000, included in the downstream peak-flow objective.</p></span></summary><div class='cbody'><p class=type-help><b>Objective_Function:</b> Objective function</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>flow/50000</td><td></td><td></td></tr><tr><td>Calculation method</td><td class='v'>maximum</td><td></td><td></td></tr><tr><td>Weight</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Exceedance probability</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Weir-Peak'><summary><span class='cname'>Weir_Peak</span><span class='ctype'>Objective_Function</span><span class='crole'><p>Normalized maximum overflow flow, max(Q_weir)/50,000. Since both outlets increase monotonically with pond depth, their maxima occur together and their sum is the maximum total outflow.</p></span></summary><div class='cbody'><p class=type-help><b>Objective_Function:</b> Objective function</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>flow/50000</td><td></td><td></td></tr><tr><td>Calculation method</td><td class='v'>maximum</td><td></td><td></td></tr><tr><td>Weight</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Exceedance probability</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Depth-Exceedance'><summary><span class='cname'>Depth_Exceedance</span><span class='ctype'>Objective_Function</span><span class='crole'><p>Large penalty, 100 times the time integral of depth above 1.8 m, which makes 1.8 m a soft design limit.</p></span></summary><div class='cbody'><p class=type-help><b>Objective_Function:</b> Objective function</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>100*_pos(depth-1.8)</td><td></td><td></td></tr><tr><td>Calculation method</td><td class='v'>integrate</td><td></td><td></td></tr><tr><td>Weight</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Exceedance probability</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Drain-Cost'><summary><span class='cname'>Drain_Cost</span><span class='ctype'>Objective_Function</span><span class='crole'><p>Dimensionless drain cost proxy, 0.1·(D/0.25)². It is a teaching-scale surrogate, not a monetary estimate.</p></span></summary><div class='cbody'><p class=type-help><b>Objective_Function:</b> Objective function</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>0.1*(pipe_diameter/0.25)^2</td><td></td><td></td></tr><tr><td>Calculation method</td><td class='v'>maximum</td><td></td><td></td></tr><tr><td>Weight</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Exceedance probability</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Weir-Cost'><summary><span class='cname'>Weir_Cost</span><span class='ctype'>Objective_Function</span><span class='crole'><p>Dimensionless weir cost proxy, 0.05·a/300,000. It is a teaching-scale surrogate, not a monetary estimate.</p></span></summary><div class='cbody'><p class=type-help><b>Objective_Function:</b> Objective function</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Expression</td><td class='v'>0.05*(alpha/300000)</td><td></td><td></td></tr><tr><td>Calculation method</td><td class='v'>maximum</td><td></td><td></td></tr><tr><td>Weight</td><td class='v'>1</td><td></td><td></td></tr><tr><td>Exceedance probability</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>design_storm.csv</code></td><td><p>Synthetic triangular inflow hydrograph: time (day), flow (m³/day). It begins at day 0.5, reaches 60,000 m³/day at day 1.0, ends at day 1.5 and has a total volume of 25,000 m³.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>1.75</td></tr><tr><td>Initial time step</td><td class='v'>0.001</td></tr><tr><td>Write interval (steps)</td><td class='v'>5</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>1e-06</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Design-storm inflow and outlet flows' loading='lazy'><figcaption><b>Design-storm inflow and outlet flows</b> The values stored in the model file are the starting design: a 0.12 m drain and a 160,000 m^1.5/day weir coefficient. The pond delays and slightly attenuates the inflow peak; most peak discharge passes over the weir.</figcaption></figure><figure><img src='plot_2.png' alt='Pond depth for the starting design' loading='lazy'><figcaption><b>Pond depth for the starting design</b> The starting design peaks at about 1.69 m, below the 1.8 m soft limit used by the optimizer.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/design-optimization">View source on GitHub</a>.</div></footer>
+</body></html>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="190 240 1000 366" class="ohq-diagram" style="max-width:500px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Low_Flow_Drain"><title>Low_Flow_Drain (drain_pipe)</title><path d="M450.0 398.6 L700.0 394.9 L950.0 391.3" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Overflow_Weir"><title>Overflow_Weir (wier)</title><path d="M450.3 416.5 L700.3 412.9 L950.3 409.3" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Detention_Pond"><title>Detention_Pond (Pond)</title><rect x="250" y="300" width="200" height="200" rx="16"/>
+<image href="icons/stormwaterpond.png" x="272" y="322" width="156" height="156"/>
+<text x="350" y="519" font-size="14" text-anchor="middle">Detention_Pond</text></g>
+<g class="d-node" data-name="Receiving_Channel"><title>Receiving_Channel (fixed_head)</title><rect x="950" y="300" width="180" height="180" rx="14"/>
+<image href="icons/fixedhead.png" x="970" y="320" width="140" height="140"/>
+<text x="1040" y="499" font-size="14" text-anchor="middle">Receiving_Channel</text></g>
+</svg>

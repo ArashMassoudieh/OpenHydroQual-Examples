@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two-Dimensional Groundwater Plume Capture · OpenHydroQual Examples</title>
+<meta name="description" content="A conservative tracer pulse crosses a 5 × 5 saturated aquifer grid while a constant-head extraction well intercepts part of the plume. The model couples two-dimensional groundwater flow, advection, dispersion and recovery-well mass capture.">
+<meta name="keywords" content="groundwater, aquifer, two dimensional, 2D, plume, contaminant transport, tracer, pumping well, extraction well, capture zone, remediation, advection, dispersion, mass balance, saturated flow">
+<link rel="icon" href="../../assets/ohq.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css"><link rel="stylesheet" href="../../assets/example.css">
+</head><body style="--c:#a0702a">
+<header class="topbar"><div class="wrap topbar-inner">
+<a class="brand" href="https://openhydroqual.com"><img src="../../assets/ohq.png" alt="" width="32" height="32"><span>OpenHydroQual</span></a>
+<nav class="topnav"><a href="https://openhydroqual.com">Home</a><a href="../../" aria-current="page">Examples</a>
+<a href="../../#docs">Documentation</a><a href="https://github.com/ArashMassoudieh/OpenHydroQual/releases">Download</a></nav>
+</div></header>
+<section class="ex-hero"><div class="wrap">
+<a class="crumb" href="../../">← All examples</a>
+<div class="ex-track">Soil, Plants &amp; Groundwater</div>
+<h1>Two-Dimensional Groundwater Plume Capture</h1>
+<p class="lede">A conservative tracer pulse crosses a 5 × 5 saturated aquifer grid while a constant-head extraction well intercepts part of the plume. The model couples two-dimensional groundwater flow, advection, dispersion and recovery-well mass capture.</p>
+<div class="ex-meta"><span class="level"><b class='f'></b><b class='f'></b><b class='f'></b><span>Advanced</span></span><a class='plug' href='../../?plugin=groundwater'>groundwater</a></div>
+</div></section>
+<main class="wrap ex-main">
+<aside class="ex-side">
+  <div class="dlbox">
+    <a class="btn primary big" href="../../downloads/groundwater-plume-capture.zip" download>Download model (.zip)</a>
+    <div class="muted">8 KB · 2 files · open <code>groundwater_plume_capture.ohq</code> in OpenHydroQual and press Run</div>
+
+  </div>
+  <nav class="toc"><b>On this page</b>
+    <a href="#overview">Overview</a><a href="#diagram">Model diagram</a><a href="#components">Components</a>
+    <a href="#inputs">Input files</a><a href="#settings">Simulation settings</a>
+    <a href="#results">Results</a>
+  </nav>
+</aside>
+<article class="ex-body">
+<section id="overview" class="prose"><h2>What this model represents</h2>
+<p>A soluble contaminant is released for 30 days into a shallow saturated aquifer. Regional groundwater flows from the western boundary toward the eastern boundary. A recovery well two cells downgradient of the release lowers the local head and intercepts part of the moving plume.</p>
+<p>The example is deliberately small enough to inspect: a 5 × 5 finite-volume grid with 100 m cells. It is a transport-focused companion to the existing <em>Well Field and Water Supply Network</em> example. That model emphasizes pumping hydraulics and infrastructure; this one emphasizes where contaminant mass goes and how a recovery well changes the plume.</p>
+<h2>How it works</h2>
+<h3>Groundwater flow</h3>
+<p>Every active cell is a saturated <code>Groundwater cell</code>. Its initial water storage is</p>
+<p>S = A b θ</p>
+<p>with plan area A = 10,000 m², thickness b = 10 m and water content θ. Head responds to storage through</p>
+<p>h = z_b + b + (θ − n)/S_s</p>
+<p>where z_b = 0 m, porosity n = 0.30 and specific storage S_s = 0.01 1/m. Initial water contents set a west-to-east head gradient. The large boundary cells remain practically fixed at 11 m in the west and 5 m in the east.</p>
+<p>Flow between cells follows Darcy's law:</p>
+<p>Q = A_f K_avg (h_s − h_e) / L</p>
+<p>where interface area A_f = 1,000 m², link length L = 100 m and K_avg is the mean hydraulic conductivity of the two cells (50 m/day here). The model solves all cell storages together, so pumping-induced drawdown changes both horizontal and transverse flows.</p>
+<p><code>Extraction_Well</code> is an idealized constant-head recovery sink at 5 m. Its connection to Cell_3_4 is 10 m long with an effective area of 23.5 m². The initial recovery flow is 298 m³/day and declines to about 211 m³/day by day 250 as the surrounding grid adjusts. This is a capture-boundary representation, not a resolved wellbore.</p>
+<h3>Tracer transport</h3>
+<p>The source adds 1,000 g/day of conservative Tracer to Cell_3_2 from day 5 to day 35, a total of 30 kg. For every link OpenHydroQual computes</p>
+<p>M_dot = Q C_up + [(D A_f + α Q)/L] (C_s − C_e)</p>
+<p>where the first term is upstream advection, D = 1 m²/day is an effective diffusion coefficient and α = 10 m is dispersivity. The same transport equation applies to the recovery connection, so <code>Well_Capture_Tracer:masstransfer</code> is the recovered contaminant mass rate.</p>
+<p>The 100 m cells are mixed control volumes. Their mixing creates additional numerical dispersion, as any finite-volume model of this resolution does.</p>
+<h2>What to look for in results</h2>
+<ul>
+<li><strong>Travel time.</strong> The source cell peaks at 0.756 g/m³ on day 35. The next centreline cell peaks at 0.342 g/m³ on day 67, the well cell at 0.184 g/m³ on day 100, and the final active column at 0.126 g/m³ on day 146. Advection moves the pulse east while mixing and dispersion broaden it.</li>
+<li><strong>Recovery.</strong> Captured tracer mass flow peaks at 78.2 g/day near day 100. By day 250 the extraction sink has received about 11.5 kg, 38% of the injected tracer.</li>
+<li><strong>Downgradient escape.</strong> About 11.4 kg has crossed the eastern boundary by day 250. The 25 active cells still hold about 6.8 kg, so the plume has not completely left the domain.</li>
+<li><strong>Transverse spread.</strong> At the well column, the cells immediately north and south peak near 0.011 and 0.008 g/m³. Their lower concentrations show that most mass remains near the release centreline, while cross-gradient flow and diffusion spread a small amount sideways.</li>
+<li><strong>Capture is incomplete.</strong> The well intercepts a substantial fraction but does not create a domain-wide capture zone. Some plume mass continues east past the well cell. This is the useful design question exposed by the example: change recovery head, connection conductance or well location and compare the captured fraction.</li>
+</ul>
+<h2>Assumptions and limitations</h2>
+<ul>
+<li>The aquifer is homogeneous, isotropic, fully saturated and represented by one vertical layer. Vertical gradients, layering and density effects are omitted.</li>
+<li>The Tracer is conservative. Sorption, decay, chemical reactions and nonaqueous phases are not represented.</li>
+<li>The extraction well is a constant-head sink implemented as a very large groundwater cell. It does not model wellbore storage, a pump curve or a specified pumping schedule.</li>
+<li>Cell mixing causes numerical dispersion. A grid-convergence study is needed before using travel times or peak concentrations for design.</li>
+<li>The 1 m²/day coefficient is an effective grid-scale diffusion term, much larger than molecular diffusion for most solutes. It is included to make transverse spreading visible in this compact example.</li>
+<li>The large boundary and extraction cells dilute received tracer to nearly zero, so they act as clean infinite reservoirs. This is appropriate for a boundary-condition example but not for recirculation or reinjection studies.</li>
+<li>The reported mass fractions are evaluated at day 250. About 23% of the release is still in the active grid, so longer simulation would increase both recovered and downgradient fractions.</li>
+</ul></section>
+<section id="diagram"><h2>Model diagram</h2>
+<div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-160 60 1950 1306" class="ohq-diagram" style="max-width:975px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Flow_1_1_1_2"><title>Flow_1_1_1_2 (groundwater_link)</title><path d="M400.0 210.0 L440.0 210.0 L480.0 210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_2_1_3"><title>Flow_1_2_1_3 (groundwater_link)</title><path d="M660.0 210.0 L700.0 210.0 L740.0 210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_3_1_4"><title>Flow_1_3_1_4 (groundwater_link)</title><path d="M920.0 210.0 L960.0 210.0 L1000.0 210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_4_1_5"><title>Flow_1_4_1_5 (groundwater_link)</title><path d="M1180.0 210.0 L1220.0 210.0 L1260.0 210.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_1_2_2"><title>Flow_2_1_2_2 (groundwater_link)</title><path d="M400.0 450.0 L440.0 450.0 L480.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_2_2_3"><title>Flow_2_2_2_3 (groundwater_link)</title><path d="M660.0 450.0 L700.0 450.0 L740.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_3_2_4"><title>Flow_2_3_2_4 (groundwater_link)</title><path d="M920.0 450.0 L960.0 450.0 L1000.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_4_2_5"><title>Flow_2_4_2_5 (groundwater_link)</title><path d="M1180.0 450.0 L1220.0 450.0 L1260.0 450.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_1_3_2"><title>Flow_3_1_3_2 (groundwater_link)</title><path d="M400.0 690.0 L440.0 690.0 L480.0 690.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_2_3_3"><title>Flow_3_2_3_3 (groundwater_link)</title><path d="M660.0 690.0 L700.0 690.0 L740.0 690.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_3_3_4"><title>Flow_3_3_3_4 (groundwater_link)</title><path d="M875.0 600.0 Q960.0 430.0 1045.0 600.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(960.0 515.0) rotate(0.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Flow_3_4_3_5"><title>Flow_3_4_3_5 (groundwater_link)</title><path d="M1180.0 690.0 L1220.0 690.0 L1260.0 690.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_1_4_2"><title>Flow_4_1_4_2 (groundwater_link)</title><path d="M400.0 930.0 L440.0 930.0 L480.0 930.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_2_4_3"><title>Flow_4_2_4_3 (groundwater_link)</title><path d="M660.0 930.0 L700.0 930.0 L740.0 930.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_3_4_4"><title>Flow_4_3_4_4 (groundwater_link)</title><path d="M920.0 930.0 L960.0 930.0 L1000.0 930.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_4_4_5"><title>Flow_4_4_4_5 (groundwater_link)</title><path d="M1180.0 930.0 L1220.0 930.0 L1260.0 930.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_5_1_5_2"><title>Flow_5_1_5_2 (groundwater_link)</title><path d="M400.0 1170.0 L440.0 1170.0 L480.0 1170.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_5_2_5_3"><title>Flow_5_2_5_3 (groundwater_link)</title><path d="M660.0 1170.0 L700.0 1170.0 L740.0 1170.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_5_3_5_4"><title>Flow_5_3_5_4 (groundwater_link)</title><path d="M920.0 1170.0 L960.0 1170.0 L1000.0 1170.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_5_4_5_5"><title>Flow_5_4_5_5 (groundwater_link)</title><path d="M1180.0 1170.0 L1220.0 1170.0 L1260.0 1170.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_1_2_1"><title>Flow_1_1_2_1 (groundwater_link)</title><path d="M310.0 300.0 L310.0 330.0 L310.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_2_2_2"><title>Flow_1_2_2_2 (groundwater_link)</title><path d="M570.0 300.0 L570.0 330.0 L570.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_3_2_3"><title>Flow_1_3_2_3 (groundwater_link)</title><path d="M830.0 300.0 L830.0 330.0 L830.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_4_2_4"><title>Flow_1_4_2_4 (groundwater_link)</title><path d="M1090.0 300.0 L1090.0 330.0 L1090.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_1_5_2_5"><title>Flow_1_5_2_5 (groundwater_link)</title><path d="M1350.0 300.0 L1350.0 330.0 L1350.0 360.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_1_3_1"><title>Flow_2_1_3_1 (groundwater_link)</title><path d="M310.0 540.0 L310.0 570.0 L310.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_2_3_2"><title>Flow_2_2_3_2 (groundwater_link)</title><path d="M570.0 540.0 L570.0 570.0 L570.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_3_3_3"><title>Flow_2_3_3_3 (groundwater_link)</title><path d="M830.0 540.0 L830.0 570.0 L830.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_4_3_4"><title>Flow_2_4_3_4 (groundwater_link)</title><path d="M1090.0 540.0 L1090.0 570.0 L1090.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_2_5_3_5"><title>Flow_2_5_3_5 (groundwater_link)</title><path d="M1350.0 540.0 L1350.0 570.0 L1350.0 600.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_1_4_1"><title>Flow_3_1_4_1 (groundwater_link)</title><path d="M310.0 780.0 L310.0 810.0 L310.0 840.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_2_4_2"><title>Flow_3_2_4_2 (groundwater_link)</title><path d="M570.0 780.0 L570.0 810.0 L570.0 840.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_3_4_3"><title>Flow_3_3_4_3 (groundwater_link)</title><path d="M830.0 780.0 L830.0 810.0 L830.0 840.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_3_4_4_4"><title>Flow_3_4_4_4 (groundwater_link)</title><path d="M1000.0 731.5 Q830.0 810.0 1000.0 888.5"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(915.0 810.0) rotate(90.0) scale(1.6)"/></g>
+<g class="d-link" data-name="Flow_3_5_4_5"><title>Flow_3_5_4_5 (groundwater_link)</title><path d="M1350.0 780.0 L1350.0 810.0 L1350.0 840.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_1_5_1"><title>Flow_4_1_5_1 (groundwater_link)</title><path d="M310.0 1020.0 L310.0 1050.0 L310.0 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_2_5_2"><title>Flow_4_2_5_2 (groundwater_link)</title><path d="M570.0 1020.0 L570.0 1050.0 L570.0 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_3_5_3"><title>Flow_4_3_5_3 (groundwater_link)</title><path d="M830.0 1020.0 L830.0 1050.0 L830.0 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_4_5_4"><title>Flow_4_4_5_4 (groundwater_link)</title><path d="M1090.0 1020.0 L1090.0 1050.0 L1090.0 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Flow_4_5_5_5"><title>Flow_4_5_5_5 (groundwater_link)</title><path d="M1350.0 1020.0 L1350.0 1050.0 L1350.0 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="West_1"><title>West_1 (groundwater_link)</title><path d="M-57.1 300.0 Q-55.3 316.5 220.0 236.2"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(13.1 292.3) rotate(-13.0) scale(1.6)"/></g>
+<g class="d-link" data-name="East_1"><title>East_1 (groundwater_link)</title><path d="M1440.0 237.6 Q1703.2 318.2 1705.9 300.0"/><path class="d-arrow" d="M8 0L-6 6L-6 -6Z" transform="translate(1638.1 293.5) rotate(13.2) scale(1.6)"/></g>
+<g class="d-link" data-name="West_2"><title>West_2 (groundwater_link)</title><path d="M80.0 665.6 L150.0 600.0 L220.0 534.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="East_2"><title>East_2 (groundwater_link)</title><path d="M1437.0 540.0 L1493.5 598.4 L1550.0 656.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="West_3"><title>West_3 (groundwater_link)</title><path d="M80.0 733.1 L150.0 720.0 L220.0 706.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="East_3"><title>East_3 (groundwater_link)</title><path d="M1440.0 708.6 L1495.0 720.0 L1550.0 731.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="West_4"><title>West_4 (groundwater_link)</title><path d="M80.0 800.6 L150.0 840.0 L220.0 879.4" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="East_4"><title>East_4 (groundwater_link)</title><path d="M1440.0 874.1 L1495.0 840.0 L1550.0 805.9" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="West_5"><title>West_5 (groundwater_link)</title><path d="M80.0 868.1 L160.7 974.1 L241.4 1080.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="East_5"><title>East_5 (groundwater_link)</title><path d="M1412.1 1080.0 L1481.1 980.2 L1550.0 880.3" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Well_Capture"><title>Well_Capture (groundwater_link)</title><path d="M1045.0 780.0 L1075.0 720.0 L1105.0 660.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Cell_1_1"><title>Cell_1_1 (Groundwater cell)</title><rect x="220" y="120" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="240" y="140" width="140" height="140"/>
+<text x="310" y="338" font-size="29" text-anchor="middle">Cell_1_1</text></g>
+<g class="d-node" data-name="Cell_1_2"><title>Cell_1_2 (Groundwater cell)</title><rect x="480" y="120" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="500" y="140" width="140" height="140"/>
+<text x="570" y="338" font-size="29" text-anchor="middle">Cell_1_2</text></g>
+<g class="d-node" data-name="Cell_1_3"><title>Cell_1_3 (Groundwater cell)</title><rect x="740" y="120" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="760" y="140" width="140" height="140"/>
+<text x="830" y="338" font-size="29" text-anchor="middle">Cell_1_3</text></g>
+<g class="d-node" data-name="Cell_1_4"><title>Cell_1_4 (Groundwater cell)</title><rect x="1000" y="120" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1020" y="140" width="140" height="140"/>
+<text x="1090" y="338" font-size="29" text-anchor="middle">Cell_1_4</text></g>
+<g class="d-node" data-name="Cell_1_5"><title>Cell_1_5 (Groundwater cell)</title><rect x="1260" y="120" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1280" y="140" width="140" height="140"/>
+<text x="1350" y="338" font-size="29" text-anchor="middle">Cell_1_5</text></g>
+<g class="d-node" data-name="Cell_2_1"><title>Cell_2_1 (Groundwater cell)</title><rect x="220" y="360" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="240" y="380" width="140" height="140"/>
+<text x="310" y="578" font-size="29" text-anchor="middle">Cell_2_1</text></g>
+<g class="d-node" data-name="Cell_2_2"><title>Cell_2_2 (Groundwater cell)</title><rect x="480" y="360" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="500" y="380" width="140" height="140"/>
+<text x="570" y="578" font-size="29" text-anchor="middle">Cell_2_2</text></g>
+<g class="d-node" data-name="Cell_2_3"><title>Cell_2_3 (Groundwater cell)</title><rect x="740" y="360" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="760" y="380" width="140" height="140"/>
+<text x="830" y="578" font-size="29" text-anchor="middle">Cell_2_3</text></g>
+<g class="d-node" data-name="Cell_2_4"><title>Cell_2_4 (Groundwater cell)</title><rect x="1000" y="360" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1020" y="380" width="140" height="140"/>
+<text x="1090" y="578" font-size="29" text-anchor="middle">Cell_2_4</text></g>
+<g class="d-node" data-name="Cell_2_5"><title>Cell_2_5 (Groundwater cell)</title><rect x="1260" y="360" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1280" y="380" width="140" height="140"/>
+<text x="1350" y="578" font-size="29" text-anchor="middle">Cell_2_5</text></g>
+<g class="d-node" data-name="Cell_3_1"><title>Cell_3_1 (Groundwater cell)</title><rect x="220" y="600" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="240" y="620" width="140" height="140"/>
+<text x="310" y="818" font-size="29" text-anchor="middle">Cell_3_1</text></g>
+<g class="d-node" data-name="Cell_3_2"><title>Cell_3_2 (Groundwater cell)</title><rect x="480" y="600" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="500" y="620" width="140" height="140"/>
+<text x="570" y="818" font-size="29" text-anchor="middle">Cell_3_2</text></g>
+<g class="d-node" data-name="Cell_3_3"><title>Cell_3_3 (Groundwater cell)</title><rect x="740" y="600" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="760" y="620" width="140" height="140"/>
+<text x="830" y="818" font-size="29" text-anchor="middle">Cell_3_3</text></g>
+<g class="d-node" data-name="Cell_3_4"><title>Cell_3_4 (Groundwater cell)</title><rect x="1000" y="600" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1020" y="620" width="140" height="140"/>
+<text x="1090" y="818" font-size="29" text-anchor="middle">Cell_3_4</text></g>
+<g class="d-node" data-name="Cell_3_5"><title>Cell_3_5 (Groundwater cell)</title><rect x="1260" y="600" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1280" y="620" width="140" height="140"/>
+<text x="1350" y="818" font-size="29" text-anchor="middle">Cell_3_5</text></g>
+<g class="d-node" data-name="Cell_4_1"><title>Cell_4_1 (Groundwater cell)</title><rect x="220" y="840" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="240" y="860" width="140" height="140"/>
+<text x="310" y="1058" font-size="29" text-anchor="middle">Cell_4_1</text></g>
+<g class="d-node" data-name="Cell_4_2"><title>Cell_4_2 (Groundwater cell)</title><rect x="480" y="840" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="500" y="860" width="140" height="140"/>
+<text x="570" y="1058" font-size="29" text-anchor="middle">Cell_4_2</text></g>
+<g class="d-node" data-name="Cell_4_3"><title>Cell_4_3 (Groundwater cell)</title><rect x="740" y="840" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="760" y="860" width="140" height="140"/>
+<text x="830" y="1058" font-size="29" text-anchor="middle">Cell_4_3</text></g>
+<g class="d-node" data-name="Cell_4_4"><title>Cell_4_4 (Groundwater cell)</title><rect x="1000" y="840" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1020" y="860" width="140" height="140"/>
+<text x="1090" y="1058" font-size="29" text-anchor="middle">Cell_4_4</text></g>
+<g class="d-node" data-name="Cell_4_5"><title>Cell_4_5 (Groundwater cell)</title><rect x="1260" y="840" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1280" y="860" width="140" height="140"/>
+<text x="1350" y="1058" font-size="29" text-anchor="middle">Cell_4_5</text></g>
+<g class="d-node" data-name="Cell_5_1"><title>Cell_5_1 (Groundwater cell)</title><rect x="220" y="1080" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="240" y="1100" width="140" height="140"/>
+<text x="310" y="1298" font-size="29" text-anchor="middle">Cell_5_1</text></g>
+<g class="d-node" data-name="Cell_5_2"><title>Cell_5_2 (Groundwater cell)</title><rect x="480" y="1080" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="500" y="1100" width="140" height="140"/>
+<text x="570" y="1298" font-size="29" text-anchor="middle">Cell_5_2</text></g>
+<g class="d-node" data-name="Cell_5_3"><title>Cell_5_3 (Groundwater cell)</title><rect x="740" y="1080" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="760" y="1100" width="140" height="140"/>
+<text x="830" y="1298" font-size="29" text-anchor="middle">Cell_5_3</text></g>
+<g class="d-node" data-name="Cell_5_4"><title>Cell_5_4 (Groundwater cell)</title><rect x="1000" y="1080" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1020" y="1100" width="140" height="140"/>
+<text x="1090" y="1298" font-size="29" text-anchor="middle">Cell_5_4</text></g>
+<g class="d-node" data-name="Cell_5_5"><title>Cell_5_5 (Groundwater cell)</title><rect x="1260" y="1080" width="180" height="180" rx="14"/>
+<image href="icons/Groundwater.png" x="1280" y="1100" width="140" height="140"/>
+<text x="1350" y="1298" font-size="29" text-anchor="middle">Cell_5_5</text></g>
+<g class="d-node" data-name="West_Boundary"><title>West_Boundary (Groundwater cell)</title><rect x="-100" y="300" width="180" height="900" rx="14"/>
+<image href="icons/Groundwater.png" x="-80" y="680" width="140" height="140"/>
+<text x="-10" y="1238" font-size="29" text-anchor="middle">West_Boundary</text></g>
+<g class="d-node" data-name="East_Boundary"><title>East_Boundary (Groundwater cell)</title><rect x="1550" y="300" width="180" height="900" rx="14"/>
+<image href="icons/Groundwater.png" x="1570" y="680" width="140" height="140"/>
+<text x="1640" y="1238" font-size="29" text-anchor="middle">East_Boundary</text></g>
+<g class="d-node" data-name="Extraction_Well"><title>Extraction_Well (Groundwater cell)</title><rect x="1000" y="660" width="140" height="140" rx="11"/>
+<image href="icons/Groundwater.png" x="1015" y="675" width="109" height="109"/>
+<text x="1070" y="838" font-size="29" text-anchor="middle">Extraction_Well</text></g>
+</svg></div>
+<p class="muted">Hover a block or link to see its name and type. Arrows show the positive flow direction.</p></section>
+<section id="components"><h2>Components</h2>
+<p class="muted">Click a component to see every property set in the model file, with units and meaning.</p>
+<h3>Blocks <small>28</small></h3><p class='kind-blurb'>Storage compartments: each holds water (and dissolved or particulate mass) and has a state that evolves in time.</p><div class='comp-list'>
+<details class='comp' id='c-Cell-1-1'><summary><span class='cname'>24 × Groundwater cell</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>The 25 active cells Cell_1_1 to Cell_5_5 form a 500 m × 500 m aquifer. Each cell is 100 m × 100 m × 10 m, with porosity 0.30, specific storage 0.01 1/m and hydraulic conductivity 50 m/day.</p></span></summary><div class='cbody'><p class='members'>Cell_1_1, Cell_1_2, Cell_1_3, Cell_1_4, Cell_1_5, Cell_2_1, Cell_2_2, Cell_2_3 …</p><p class='muted'>Showing properties of <b>Cell_1_1</b>.</p><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cell area</td><td class='v'>10000</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>0</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>10</td><td>m</td><td></td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.30247</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.3</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>50</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Tracer: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Cell-3-2'><summary><span class='cname'>Cell_3_2</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>Tracer-source cell, 100 m inside the western half of the domain on the centre row. It receives the mass-loading pulse from tracer_source.csv.</p></span></summary><div class='cbody'><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cell area</td><td class='v'>10000</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>0</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>10</td><td>m</td><td></td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.29434</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.3</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>50</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Tracer: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Tracer: External mass flow time-series</td><td class='v'>tracer_source.csv</td><td>g/day</td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-West-Boundary'><summary><span class='cname'>West_Boundary</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>Very large Groundwater cell held effectively at head 11 m. Five links supply clean water from this western regional boundary to the grid.</p></span></summary><div class='cbody'><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cell area</td><td class='v'>10000000000</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>1</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>10</td><td>m</td><td></td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.3</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.3</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>50</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Tracer: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr></tbody></table></div></details>
+<details class='comp' id='c-East-Boundary'><summary><span class='cname'>East_Boundary</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>Very large Groundwater cell held effectively at head 5 m. Five links receive water and tracer leaving the eastern edge of the grid.</p></span></summary><div class='cbody'><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cell area</td><td class='v'>10000000000</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>-5</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>10</td><td>m</td><td></td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.3</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.3</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>50</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Tracer: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr></tbody></table></div></details>
+<details class='comp' id='c-Extraction-Well'><summary><span class='cname'>Extraction_Well</span><span class='ctype'>Groundwater cell · groundwater</span><span class='crole'><p>Very large sink cell held effectively at head 5 m. It idealizes a fully penetrating constant-head recovery well; its large storage prevents recovered water and tracer from changing the imposed head or concentration appreciably.</p></span></summary><div class='cbody'><p class=type-help><b>Groundwater cell:</b> Groundwater cell</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Cell area</td><td class='v'>1000000000</td><td>m<sup>2</sup></td><td></td></tr><tr><td>Bottom Elevation</td><td class='v'>-5</td><td>m</td><td>Elevation of the bottom of the groundwater cell, used to determine hydraulic gradients and head.</td></tr><tr><td>Cell Depth</td><td class='v'>10</td><td>m</td><td></td></tr><tr><td>Initial Moisture Content</td><td class='v'>0.3</td><td></td><td>Computed as Storage/(depth*area)</td></tr><tr><td>Porosity</td><td class='v'>0.3</td><td></td><td>The fraction of the total volume of the subsurface that is occupied by voids or pores, representing storage capacity.</td></tr><tr><td>Specific Storage</td><td class='v'>0.01</td><td>1/m</td><td>Volume of water released per unit volume of aquifer per unit change in head. Reflects aquifer compressibility.</td></tr><tr><td>Hydraulic Conductivity</td><td class='v'>50</td><td>m/day</td><td>Rate at which water can move through pore spaces or fractures in the subsurface. Influences groundwater flow velocity.</td></tr><tr><td>Tracer: Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr></tbody></table></div></details>
+</div>
+<h3>Links <small>51</small></h3><p class='kind-blurb'>Connections that move water (and the mass it carries) between blocks.</p><div class='comp-list'>
+<details class='comp' id='c-Flow-1-1-1-2'><summary><span class='cname'>50 × groundwater_link</span><span class='ctype'>groundwater_link · groundwater</span><span class='crole'><p>Forty links connect neighbouring active cells. Each has length 100 m and interface area 1,000 m². They carry Darcy flow and the Tracer by advection and dispersion.</p></span></summary><div class='cbody'><p class='members'>Flow_1_1_1_2, Flow_1_2_1_3, Flow_1_3_1_4, Flow_1_4_1_5, Flow_2_1_2_2, Flow_2_2_2_3, Flow_2_3_2_4, Flow_2_4_2_5 …</p><p class='muted'>Showing properties of <b>Flow_1_1_1_2</b>.</p><p class=type-help><b>groundwater_link:</b> Groundwater link</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Length</td><td class='v'>100</td><td>m</td><td></td></tr><tr><td>Interface Area</td><td class='v'>1000</td><td>m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+<details class='comp' id='c-Well-Capture'><summary><span class='cname'>Well_Capture</span><span class='ctype'>groundwater_link · groundwater</span><span class='crole'><p>Short groundwater link from Cell_3_4 to Extraction_Well. Its 23.5 m² effective interface gives an initial capture flow near 298 m³/day; flow falls as drawdown develops in the aquifer.</p></span></summary><div class='cbody'><p class=type-help><b>groundwater_link:</b> Groundwater link</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Length</td><td class='v'>10</td><td>m</td><td></td></tr><tr><td>Interface Area</td><td class='v'>23.5</td><td>m<sup>2</sup></td><td></td></tr></tbody></table></div></details>
+</div>
+<h3>Constituents <small>1</small></h3><p class='kind-blurb'>Substances or particles carried by the water.</p><div class='comp-list'>
+<details class='comp' id='c-Tracer'><summary><span class='cname'>Tracer</span><span class='ctype'>Constituent</span><span class='crole'><p>Conservative dissolved constituent with longitudinal dispersivity 10 m and effective diffusion coefficient 1 m²/day. It has no decay or sorption.</p></span></summary><div class='cbody'><p class=type-help><b>Constituent:</b> Chemical constituent</p><table class='props'><thead><tr><th>Property</th><th>Value</th><th>Unit</th><th>Meaning</th></tr></thead><tbody><tr><td>Concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td>Computed as mass/(Storage+0.00001)</td></tr><tr><td>Constant Inflow concentration</td><td class='v'>0</td><td>g/m<sup>3</sup></td><td></td></tr><tr><td>Diffusion Coefficient</td><td class='v'>1</td><td>m<sup>2</sup>/day</td><td></td></tr><tr><td>Dispersivity</td><td class='v'>10</td><td>m</td><td></td></tr><tr><td>Interface exchange velocity</td><td class='v'>0</td><td>m/day</td><td>Link-specific mass-transfer velocity for exchange across an interface, e.g. hyporheic/bioturbation exchange between a channel and the bed or aggregate beneath it: exchange_velocity*area*(concentration.s-concentration.e), with area the link&#x27;s interface area. Equivalent to an effective diffusion coefficient D_eff = exchange_velocity*length. 0 (the default) leaves the link without it.</td></tr><tr><td>Stoichiometric Constant</td><td class='v'>0</td><td></td><td></td></tr></tbody></table></div></details>
+</div></section>
+<section id="inputs"><h2>Input files</h2><table class="props files"><tbody><tr><td><code>tracer_source.csv</code></td><td><p>Tracer loading (g/day) versus time (day): 1,000 g/day from day 5 to day 35, for a total release of 30 kg.</p></td></tr></tbody></table></section>
+<section id="settings"><h2>Simulation settings</h2><table class="props narrow"><tbody><tr><td>Start time</td><td class='v'>0</td></tr><tr><td>End time</td><td class='v'>250</td></tr><tr><td>Initial time step</td><td class='v'>0.05</td></tr><tr><td>Write interval (steps)</td><td class='v'>5</td></tr><tr><td>Newton-Raphson tolerance</td><td class='v'>1e-06</td></tr></tbody></table></section>
+<section id="results"><h2>Results</h2><p class="muted">Produced by running the downloaded model unchanged.</p><figure><img src='plot_1.png' alt='Tracer pulse along the centreline' loading='lazy'><figcaption><b>Tracer pulse along the centreline</b> The pulse broadens and its peak falls as it moves east. The source peaks when loading stops on day 35; the peak reaches the well cell near day 100 and the last active column near day 146.</figcaption></figure><figure><img src='plot_2.png' alt='Transverse spreading near the extraction well' loading='lazy'><figcaption><b>Transverse spreading near the extraction well</b> Diffusion and pumping-induced cross-gradient flow spread a small fraction of the plume into the rows beside the well. The centreline concentration is much larger because the release begins on that row.</figcaption></figure><figure><img src='plot_3.png' alt='Tracer recovery rate' loading='lazy'><figcaption><b>Tracer recovery rate</b> Mass recovery peaks at about 78 g/day near day 100, when the centre of the plume reaches the extraction connection.</figcaption></figure><figure><img src='plot_4.png' alt='Groundwater heads along the centreline' loading='lazy'><figcaption><b>Groundwater heads along the centreline</b> Regional flow is west to east. The extraction sink adds drawdown around Cell_3_4, bending nearby flow toward the recovery well.</figcaption></figure></section>
+</article></main>
+<footer class="foot"><div class="wrap">OpenHydroQual is open source. This example is free to use and adapt.
+<a href="https://github.com/ArashMassoudieh/OpenHydroQual-Examples/tree/main/examples/groundwater-plume-capture">View source on GitHub</a>.</div></footer>
+</body></html>
