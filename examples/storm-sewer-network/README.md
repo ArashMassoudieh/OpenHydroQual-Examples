@@ -121,4 +121,4 @@ where H_s and H_e are the heads at the upstream and downstream manholes, z_s and
 - Pipes carry no storage of their own (the catch basins hold the water), and inertia is neglected: the pipe flow follows Manning's equation on the head difference at every step. Entrance and exit losses at the manholes are not modeled.
 - The circular-section area and wetted perimeter come from polynomial fits; at full flow the fitted wetted perimeter is about 2.99·D, slightly less than π·D, so the full-pipe flow is about 3 % higher than the exact Manning value.
 - The creek level is fixed and below the outfall, so there is no tailwater effect.
-- Rain depths in rainfall.csv are in meters, the unit OpenHydroQual uses for precipitation files.
+- Rain depths in rainfall.csv are in meters, the default unit of a precipitation file. A file in other units can be used by choosing its unit (for example `in`) for the source's time series before loading it; the model file then stores it as `timeseries=rain.csv [in]`. The video version of this model uses storm files in inches.
