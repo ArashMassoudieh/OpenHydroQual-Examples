@@ -963,6 +963,48 @@
    "thumb": "examples/infiltration-basin/thumb.svg"
   },
   {
+   "id": "storm-sewer-network",
+   "title": "Storm Sewer Network with Modified Rational Method Catchments",
+   "track": "storm",
+   "level": 2,
+   "status": "ready",
+   "summary": "Four small urban catchments (Catchment MRM blocks) drain through catch basins into a branched storm sewer that discharges to a creek. A 2-year storm passes through the pipes; a 100-year storm surcharges them, floods three manholes onto the street, and the ponded water drains back after the rain.",
+   "plugins": [
+    "Sewer_system"
+   ],
+   "features": [
+    "Modified Rational Method catchments",
+    "Branched sewer network",
+    "Pipe surcharge",
+    "Street flooding at catch basins",
+    "Design storm vs extreme storm"
+   ],
+   "keywords": [
+    "storm sewer",
+    "sewer network",
+    "rational method",
+    "modified rational method",
+    "mrm",
+    "runoff coefficient",
+    "time of concentration",
+    "catch basin",
+    "manhole",
+    "surcharge",
+    "hydraulic grade line",
+    "manning",
+    "pipe capacity",
+    "street flooding",
+    "ponding",
+    "design storm",
+    "2-year storm",
+    "100-year storm",
+    "urban drainage",
+    "outfall",
+    "nonlinear reservoir"
+   ],
+   "thumb": "examples/storm-sewer-network/thumb.svg"
+  },
+  {
    "id": "sewershed-drywells",
    "title": "Sewershed with Infiltration Pond and Drywell",
    "track": "storm",

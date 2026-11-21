@@ -1,0 +1,47 @@
+loadtemplate; filename = main_components.json
+addtemplate; filename = Sewer_system.json
+setvalue; object=system, quantity=chain_write_interval, value=50
+setvalue; object=system, quantity=alloutputfile, value=output.txt
+setvalue; object=system, quantity=c_n_weight, value=1
+setvalue; object=system, quantity=jacobian_assembly, value=Dependency
+setvalue; object=system, quantity=jacobian_dt_refresh_factor, value=2
+setvalue; object=system, quantity=jacobian_method, value=Direct
+setvalue; object=system, quantity=make_timeseries_uniform, value=Yes
+setvalue; object=system, quantity=max_timestep_decrease_factor, value=100000
+setvalue; object=system, quantity=max_timestep_increase_factor, value=50
+setvalue; object=system, quantity=maximum_number_of_matrix_inverstions, value=200000
+setvalue; object=system, quantity=maximum_time_allowed, value=86400
+setvalue; object=system, quantity=minimum_timestep, value=1e-06
+setvalue; object=system, quantity=n_threads, value=8
+setvalue; object=system, quantity=nr_block_tolerance, value=0.001
+setvalue; object=system, quantity=nr_niteration_lower, value=20
+setvalue; object=system, quantity=nr_niteration_upper, value=40
+setvalue; object=system, quantity=nr_timestep_reduction_factor, value=0.75
+setvalue; object=system, quantity=nr_timestep_reduction_factor_fail, value=0.2
+setvalue; object=system, quantity=nr_tolerance, value=0.001
+setvalue; object=system, quantity=rate_output_interpolation, value=midpoint
+setvalue; object=system, quantity=timestep_clamp_series, value=Precipitation only
+setvalue; object=system, quantity=update_jacobian_every_iteration, value=No
+setvalue; object=system, quantity=verify_jacobian, value=
+setvalue; object=system, quantity=write_interval, value=100
+setvalue; object=system, quantity=simulation_start_time, value=0
+setvalue; object=system, quantity=simulation_end_time, value=0.5
+setvalue; object=system, quantity=initial_time_step, value=0.0001
+create source;type=Precipitation,name=Rain,timeseries=rainfall.csv
+create block;type=Catchment_MRM,name=Catchment_A,Precipitation=Rain,area=20234.3[m~^2],Runoff_coeff=0.6,length=152.40[m],Slope=0.02,elevation=0[m],depression_storage=0[m],depth=0[m],loss_coefficient=0[1/day],x=0,y=0,_width=200,_height=200
+create block;type=Catch basin,name=MH_A,area=0.9290[m~^2],bottom_elevation=3.0480[m],max_height=1.8288[m],spread_side_slope=50,x=400,y=0,_width=200,_height=200
+create link;from=Catchment_A,to=MH_A,type=Catchment_link_MRM,name=Runoff_A
+create block;type=Catchment_MRM,name=Catchment_B,Precipitation=Rain,area=16187.4[m~^2],Runoff_coeff=0.6,length=121.92[m],Slope=0.02,elevation=0[m],depression_storage=0[m],depth=0[m],loss_coefficient=0[1/day],x=0,y=800,_width=200,_height=200
+create block;type=Catch basin,name=MH_B,area=0.9290[m~^2],bottom_elevation=2.9413[m],max_height=1.8288[m],spread_side_slope=50,x=400,y=800,_width=200,_height=200
+create link;from=Catchment_B,to=MH_B,type=Catchment_link_MRM,name=Runoff_B
+create block;type=Catchment_MRM,name=Catchment_C,Precipitation=Rain,area=10117.1[m~^2],Runoff_coeff=0.9,length=79.25[m],Slope=0.01,elevation=0[m],depression_storage=0[m],depth=0[m],loss_coefficient=0[1/day],x=900,y=0,_width=200,_height=200
+create block;type=Catch basin,name=MH_C,area=0.9290[m~^2],bottom_elevation=2.3774[m],max_height=1.8288[m],spread_side_slope=50,x=900,y=400,_width=200,_height=200
+create link;from=Catchment_C,to=MH_C,type=Catchment_link_MRM,name=Runoff_C
+create block;type=Catchment_MRM,name=Catchment_D,Precipitation=Rain,area=16187.4[m~^2],Runoff_coeff=0.8,length=100.58[m],Slope=0.01,elevation=0[m],depression_storage=0[m],depth=0[m],loss_coefficient=0[1/day],x=1400,y=0,_width=200,_height=200
+create block;type=Catch basin,name=MH_D,area=0.9290[m~^2],bottom_elevation=1.5240[m],max_height=1.8288[m],spread_side_slope=50,x=1400,y=400,_width=200,_height=200
+create link;from=Catchment_D,to=MH_D,type=Catchment_link_MRM,name=Runoff_D
+create block;type=fixed_head,name=Creek,Storage=100000[m~^3],head=0.7620[m],x=1900,y=400,_width=200,_height=200
+create link;from=MH_A,to=MH_C,type=Sewer_pipe,name=P1,diameter=0.3810[m],ManningCoeff=0.013,length=121.92[m],start_elevation=3.0480[m],end_elevation=2.4384[m]
+create link;from=MH_B,to=MH_C,type=Sewer_pipe,name=P2,diameter=0.3810[m],ManningCoeff=0.013,length=100.58[m],start_elevation=2.9413[m],end_elevation=2.4384[m]
+create link;from=MH_C,to=MH_D,type=Sewer_pipe,name=P3,diameter=0.5334[m],ManningCoeff=0.013,length=152.40[m],start_elevation=2.3774[m],end_elevation=1.6154[m]
+create link;from=MH_D,to=Creek,type=Sewer_pipe,name=P4,diameter=0.6096[m],ManningCoeff=0.013,length=100.58[m],start_elevation=1.5240[m],end_elevation=1.0211[m]

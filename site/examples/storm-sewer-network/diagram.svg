@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 2220 1166" class="ohq-diagram" style="max-width:1110px" role="img" aria-label="Model diagram">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="d-arrow"/></marker></defs>
+<g class="d-link" data-name="Runoff_A"><title>Runoff_A (Catchment_link_MRM)</title><path d="M200.0 100.0 L300.0 100.0 L400.0 100.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_B"><title>Runoff_B (Catchment_link_MRM)</title><path d="M200.0 900.0 L300.0 900.0 L400.0 900.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_C"><title>Runoff_C (Catchment_link_MRM)</title><path d="M1000.0 200.0 L1000.0 300.0 L1000.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="Runoff_D"><title>Runoff_D (Catchment_link_MRM)</title><path d="M1500.0 200.0 L1500.0 300.0 L1500.0 400.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="P1"><title>P1 (Sewer_pipe)</title><path d="M600.0 180.0 L750.0 300.0 L900.0 420.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="P2"><title>P2 (Sewer_pipe)</title><path d="M600.0 820.0 L750.0 700.0 L900.0 580.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="P3"><title>P3 (Sewer_pipe)</title><path d="M1100.0 500.0 L1250.0 500.0 L1400.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-link" data-name="P4"><title>P4 (Sewer_pipe)</title><path d="M1600.0 500.0 L1750.0 500.0 L1900.0 500.0" marker-mid="url(#arr)"/></g>
+<g class="d-node" data-name="Catchment_A"><title>Catchment_A (Catchment_MRM)</title><rect x="0" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Catchment_MRM.png" x="22" y="22" width="156" height="156"/>
+<text x="100" y="241" font-size="32" text-anchor="middle">Catchment_A</text></g>
+<g class="d-node" data-name="MH_A"><title>MH_A (Catch basin)</title><rect x="400" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Catch_basin.png" x="422" y="22" width="156" height="156"/>
+<text x="500" y="241" font-size="32" text-anchor="middle">MH_A</text></g>
+<g class="d-node" data-name="Catchment_B"><title>Catchment_B (Catchment_MRM)</title><rect x="0" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Catchment_MRM.png" x="22" y="822" width="156" height="156"/>
+<text x="100" y="1041" font-size="32" text-anchor="middle">Catchment_B</text></g>
+<g class="d-node" data-name="MH_B"><title>MH_B (Catch basin)</title><rect x="400" y="800" width="200" height="200" rx="16"/>
+<image href="icons/Catch_basin.png" x="422" y="822" width="156" height="156"/>
+<text x="500" y="1041" font-size="32" text-anchor="middle">MH_B</text></g>
+<g class="d-node" data-name="Catchment_C"><title>Catchment_C (Catchment_MRM)</title><rect x="900" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Catchment_MRM.png" x="922" y="22" width="156" height="156"/>
+<text x="1000" y="241" font-size="32" text-anchor="middle">Catchment_C</text></g>
+<g class="d-node" data-name="MH_C"><title>MH_C (Catch basin)</title><rect x="900" y="400" width="200" height="200" rx="16"/>
+<image href="icons/Catch_basin.png" x="922" y="422" width="156" height="156"/>
+<text x="1000" y="641" font-size="32" text-anchor="middle">MH_C</text></g>
+<g class="d-node" data-name="Catchment_D"><title>Catchment_D (Catchment_MRM)</title><rect x="1400" y="0" width="200" height="200" rx="16"/>
+<image href="icons/Catchment_MRM.png" x="1422" y="22" width="156" height="156"/>
+<text x="1500" y="241" font-size="32" text-anchor="middle">Catchment_D</text></g>
+<g class="d-node" data-name="MH_D"><title>MH_D (Catch basin)</title><rect x="1400" y="400" width="200" height="200" rx="16"/>
+<image href="icons/Catch_basin.png" x="1422" y="422" width="156" height="156"/>
+<text x="1500" y="641" font-size="32" text-anchor="middle">MH_D</text></g>
+<g class="d-node" data-name="Creek"><title>Creek (fixed_head)</title><rect x="1900" y="400" width="200" height="200" rx="16"/>
+<image href="icons/fixedhead.png" x="1922" y="422" width="156" height="156"/>
+<text x="2000" y="641" font-size="32" text-anchor="middle">Creek</text></g>
+</svg>
